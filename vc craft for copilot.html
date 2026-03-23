@@ -295,7 +295,7 @@ const BDt={
 [BI.DRY_COAST]:{n:'Dry Coast',bH:36,a:3,sf:B.SAND,su:B.SSTON,structs:['boardwalk','condo','restaurant']},
 [BI.RIO_LAGOON]:{n:'Rio Lagoon',bH:31,a:2,sf:B.SAND,su:B.MUD,tr:'jungle',tc:.03,structs:['boardwalk']},
 [BI.GARFBOT_CITY]:{n:'Garfbot City',bH:40,a:2,sf:B.ASPHALT,su:B.CONCRETE,structs:['tower','gomp']},
-[BI.DISCORD_DEEP]:{n:'Discord Depths',bH:25,a:2,sf:B.DARK_PANEL,su:B.DEEP},
+[BI.DISCORD_DEEP]:{n:'Discord Depths',bH:28,a:4,sf:B.DARK_PANEL,su:B.DEEP,structs:['shrine','broken_tower']},
 [BI.TAIGA]:{n:'Taiga',bH:44,a:8,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.035},
 [BI.SNOWY]:{n:'Snowy Plains',bH:40,a:3,sf:B.SNOW,su:B.DIRT,tr:'spruce',tc:.004},
 [BI.PROPS_ISLAND]:{n:'Props Island',bH:36,a:4,sf:B.SAND,su:B.SAND,tr:'jungle',tc:.02,structs:['boardwalk','shrine','arcade']},
@@ -324,6 +324,8 @@ function bio(x,z){
   if(c<-.15)return BI.BE;
   // Mountains - large ranges
   if(e>.5)return BI.MO;
+  // Rare Discord Depths - underground deep zone
+  if(s<-.65&&m<-.1&&abs(t)<.3)return BI.DISCORD_DEEP;
   // Rare Garfbot City - very specific, isolated
   if(s>.75&&abs(t)<.15&&abs(m)<.2)return BI.GARFBOT_CITY;
   // Hot biomes (t > 0.25)
@@ -1720,8 +1722,8 @@ function cheatTP(biomeId){
     }
   }
   if(biomeId===BI.DISCORD_DEEP){
-    for(let gx=-2000;gx<2000;gx+=32)for(let gz=-2000;gz<2000;gz+=32){
-      if(bio(gx,gz)===BI.DISCORD_DEEP){W.pl.pos.set(gx+.5,20,gz+.5);W.pl.vel.set(0,0,0);closeCheat();return}
+    for(let gx=-5000;gx<5000;gx+=16)for(let gz=-5000;gz<5000;gz+=16){
+      if(bio(gx,gz)===BI.DISCORD_DEEP){W.pl.pos.set(gx+.5,28,gz+.5);W.pl.vel.set(0,0,0);closeCheat();return}
     }
   }
   closeCheat();

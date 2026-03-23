@@ -325,7 +325,7 @@ function bio(x,z){
   // Mountains - large ranges
   if(e>.5)return BI.MO;
   // Rare Discord Depths - underground deep zone
-  if(s<-.65&&m<-.1&&abs(t)<.3)return BI.DISCORD_DEEP;
+  if(s<-.55&&m<-.05&&abs(t)<.4)return BI.DISCORD_DEEP;
   // Rare Garfbot City - very specific, isolated
   if(s>.75&&abs(t)<.15&&abs(m)<.2)return BI.GARFBOT_CITY;
   // Hot biomes (t > 0.25)
@@ -975,8 +975,12 @@ gen(){
       if(y===0)b=B.BED;else if(y<3&&rv<.5)b=B.BED;
       else if(y<=h){
         if(y<h-1&&y>3){const c1=nC.n3(wx*.05,y*.06,wz*.05),c2=nC.n3(wx*.08+99,y*.1+99,wz*.08+99);
-          if(c1*c1+c2*c2<.012){this.blk[this.I(x,y,z)]=y<=WL?B.WATER:B.AIR;continue}
-          if(nC.n3(wx*.02,y*.03,wz*.02)>.64&&y<32){this.blk[this.I(x,y,z)]=y<=WL?B.WATER:B.AIR;continue}}
+          const caveVal=c1*c1+c2*c2;
+          if(caveVal<.018){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-6)?B.WATER:B.AIR;continue}
+          const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
+          if(bigCave>.55&&y>8&&y<55){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-8)?B.WATER:B.AIR;continue}
+          const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
+          if(ravine<.02&&y>5&&y<50){this.blk[this.I(x,y,z)]=B.AIR;continue}}
         if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>64?B.SNOW:bd.sf;
         else if(y>h-4)b=bd.su;
         else if(y<8)b=B.DEEP;
@@ -1062,42 +1066,93 @@ deco(){
       this.S(ix,WL+9,iz,B.JLVS);
     }
     // Pirate ships - 4 tiers
-    if(dh01(this.cx*137+17,this.cz*251+31)>.94){
+    if(dh01(this.cx*137+17,this.cz*251+31)>.96){
       const shipSeed=dh01(this.cx*99,this.cz*77);
-      const tier=shipSeed>.9?3:shipSeed>.6?2:shipSeed>.3?1:0;
+      const tier=shipSeed>.92?3:shipSeed>.65?2:shipSeed>.35?1:0;
       const sx=tier>2?0:1,sz2=tier>2?0:1;
-      const sw=[7,10,13,16][tier],sd=[3,5,6,9][tier],sh=[5,7,9,12][tier],hullD=[2,3,4,5][tier];
+      const sw=[8,12,16,22][tier],sd=[4,6,8,12][tier],sh=[6,8,11,15][tier],hullD=[3,4,5,7][tier];
       const deckY=WL+hullD;
+      // Hull construction
       for(let dy=-hullD;dy<2;dy++)for(let dx=0;dx<sw;dx++)for(let dz=0;dz<sd;dz++){
         const bt=dx<2?mx(0,2-dx):dx>sw-3?mx(0,dx-(sw-3)):0;
         if(bt>0&&(dz<bt||dz>=sd-bt))continue;
         const isH=dx===0||dx===sw-1||dz===0||dz===sd-1||dy===-hullD||dy===1;
         if(isH)this.S(sx+dx,WL+dy,sz2+dz,dy<0?B.BARNACLE_WOOD:B.SHIP_TIMBER);
       }
+      // Main deck
       for(let dx=1;dx<sw-1;dx++)for(let dz=1;dz<sd-1;dz++)this.S(sx+dx,deckY,sz2+dz,B.PIRATE_PLNK);
+      // Deck rails
       for(let dx=1;dx<sw-1;dx++){this.S(sx+dx,deckY+1,sz2,B.FENCE_BLK);this.S(sx+dx,deckY+1,sz2+sd-1,B.FENCE_BLK)}
-      const masts=tier>=2?[fl(sw*.25),fl(sw*.5),fl(sw*.75)]:[fl(sw*.4)];
+      for(let dz=1;dz<sd-1;dz++){this.S(sx,deckY+1,sz2+dz,B.FENCE_BLK);this.S(sx+sw-1,deckY+1,sz2+dz,B.FENCE_BLK)}
+      // Masts with sails
+      const masts=tier>=2?[fl(sw*.2),fl(sw*.5),fl(sw*.8)]:[fl(sw*.4)];
       if(tier===1)masts.push(fl(sw*.65));
       for(const mx3 of masts){const mz3=sz2+fl(sd/2);
         for(let dy=0;dy<sh;dy++)this.S(sx+mx3,deckY+1+dy,mz3,B.SHIP_TIMBER);
         for(let dz=-2;dz<=2;dz++){const az=mz3+dz;if(az>=0&&az<CS)this.S(sx+mx3,deckY+sh,az,B.SHIP_TIMBER)}
-        for(let dy=0;dy<fl(sh*.5);dy++)for(let dz=-1;dz<=1;dz++){const az=mz3+dz;if(az>=0&&az<CS)this.S(sx+mx3+1,deckY+sh-1-dy,az,B.SAIL_BLK)}
+        for(let dy=0;dy<fl(sh*.6);dy++)for(let dz=-mn(2,fl(sd/3));dz<=mn(2,fl(sd/3));dz++){const az=mz3+dz;if(az>=0&&az<CS)this.S(sx+mx3+1,deckY+sh-1-dy,az,B.SAIL_BLK)}
       }
-      if(tier>=1){for(let dx=2;dx<sw-2;dx++)for(let dz=1;dz<sd-1;dz++){for(let dy=0;dy<hullD-1;dy++)this.S(sx+dx,WL+dy,sz2+dz,B.AIR);this.S(sx+dx,WL-1,sz2+dz,B.PIRATE_PLNK)}
-        if(tier>=2){const mid=fl(sw/2);for(let dy=0;dy<hullD-1;dy++)for(let dz=1;dz<sd-1;dz++){if(dz===fl(sd/2))continue;this.S(sx+mid,WL+dy,sz2+dz,B.SHIP_TIMBER)}
+      // LOWER DECK INTERIORS - full rooms below main deck
+      if(tier>=1){
+        // Clear interior space
+        for(let dx=2;dx<sw-2;dx++)for(let dz=1;dz<sd-1;dz++){
+          for(let dy=0;dy<hullD-1;dy++)this.S(sx+dx,WL+dy,sz2+dz,B.AIR);
+          this.S(sx+dx,WL-1,sz2+dz,B.PIRATE_PLNK); // lower deck floor
+        }
+        // Stairway access from main deck
+        for(let dy=0;dy<hullD;dy++)this.S(sx+2,WL+dy,sz2+1,B.SLOG);
+        // Cargo hold dividers
+        if(tier>=2){
+          const mid=fl(sw/2);
+          for(let dy=0;dy<hullD-1;dy++)for(let dz=1;dz<sd-1;dz++){
+            if(dz===fl(sd/2))continue; // doorway
+            this.S(sx+mid,WL+dy,sz2+dz,B.SHIP_TIMBER);
+          }
           this.S(sx+mid,WL,sz2+fl(sd/2),B.AIR);this.S(sx+mid,WL+1,sz2+fl(sd/2),B.AIR);
-          if(tier===3){const q=fl(sw*.25);for(let dy=0;dy<hullD-1;dy++)for(let dz=1;dz<sd-1;dz++){if(dz===fl(sd/2))continue;this.S(sx+q,WL+dy,sz2+dz,B.SHIP_TIMBER)}this.S(sx+q,WL,sz2+fl(sd/2),B.AIR);this.S(sx+q,WL+1,sz2+fl(sd/2),B.AIR)}}
-        this.S(sx+3,WL,sz2+1,B.CHST);if(tier>=2)this.S(sx+sw-4,WL,sz2+sd-2,B.CHST);
+          // Second divider on largest ships
+          if(tier===3){
+            const q=fl(sw*.25);
+            for(let dy=0;dy<hullD-1;dy++)for(let dz=1;dz<sd-1;dz++){
+              if(dz===fl(sd/2))continue;
+              this.S(sx+q,WL+dy,sz2+dz,B.SHIP_TIMBER);
+            }
+            this.S(sx+q,WL,sz2+fl(sd/2),B.AIR);this.S(sx+q,WL+1,sz2+fl(sd/2),B.AIR);
+          }
+        }
+        // Chests in cargo holds
+        this.S(sx+3,WL,sz2+1,B.CHST);
+        if(tier>=2)this.S(sx+sw-4,WL,sz2+sd-2,B.CHST);
         if(tier===3){this.S(sx+sw-4,WL,sz2+1,B.CHST);this.S(sx+4,WL,sz2+sd-2,B.CHST)}
-        for(let dy=0;dy<hullD;dy++)this.S(sx+2,WL+dy,sz2+1,B.SLOG)}
-      if(tier>=1){const cw=tier===3?6:tier===2?5:3,cd=mn(sd-2,tier===3?7:tier===2?5:3),cx2=sx+sw-1-cw,cz2=sz2+1;
-        for(let dy=0;dy<3;dy++)for(let dx=0;dx<cw;dx++)for(let dz=0;dz<cd;dz++){const w2=dx===0||dx===cw-1||dz===0||dz===cd-1;
+        // Furnishings in lower deck
+        this.S(sx+3,WL,sz2+sd-2,B.PLNK); // table
+        if(tier>=2){
+          this.S(sx+sw-4,WL,sz2+2,B.FURN); // furnace
+          this.S(sx+sw-5,WL,sz2+sd-2,B.PLNK); // another table
+        }
+        // Cannon ports (decorative on larger ships)
+        if(tier>=2){
+          for(let dx=3;dx<sw-3;dx+=4){
+            if(dx<sw-2)this.S(sx+dx,WL+1,sz2,B.RUSTED_METAL);
+            if(dx<sw-2)this.S(sx+dx,WL+1,sz2+sd-1,B.RUSTED_METAL);
+          }
+        }
+      }
+      // Captain's cabin on deck (medium+ ships)
+      if(tier>=1){
+        const cw=tier===3?7:tier===2?6:4,cd=mn(sd-2,tier===3?8:tier===2?6:4),cx2=sx+sw-1-cw,cz2=sz2+1;
+        for(let dy=0;dy<4;dy++)for(let dx=0;dx<cw;dx++)for(let dz=0;dz<cd;dz++){
+          const w2=dx===0||dx===cw-1||dz===0||dz===cd-1;
           if(w2)this.S(cx2+dx,deckY+1+dy,cz2+dz,B.SHIP_TIMBER);
           else if(dy===0)this.S(cx2+dx,deckY+1+dy,cz2+dz,B.PIRATE_PLNK);
-          else if(dy===2)this.S(cx2+dx,deckY+1+dy,cz2+dz,B.SHIP_TIMBER);
-          if(w2&&dy===1&&dz===cd-1&&dx>0&&dx<cw-1)this.S(cx2+dx,deckY+2,cz2+dz,B.GLASS)}
-        this.S(cx2,deckY+1,cz2+fl(cd/2),B.AIR);this.S(cx2,deckY+2,cz2+fl(cd/2),B.AIR);
-        this.S(cx2+fl(cw/2),deckY+2,cz2+cd-2,B.PLNK);this.S(cx2+cw-2,deckY+2,cz2+1,B.CHST)}
+          else if(dy===3)this.S(cx2+dx,deckY+1+dy,cz2+dz,B.SHIP_TIMBER);
+          if(w2&&dy===1&&dz===cd-1&&dx>0&&dx<cw-1)this.S(cx2+dx,deckY+2,cz2+dz,B.GLASS);
+        }
+        this.S(cx2,deckY+1,cz2+fl(cd/2),B.AIR);this.S(cx2,deckY+2,cz2+fl(cd/2),B.AIR); // door
+        // Captain's furniture
+        this.S(cx2+fl(cw/2),deckY+2,cz2+cd-2,B.PLNK); // desk
+        this.S(cx2+cw-2,deckY+2,cz2+1,B.CHST); // captain's chest
+        if(tier>=2)this.S(cx2+1,deckY+2,cz2+1,B.PLNK); // bed
+      }
     }
     return;
   }
@@ -1263,6 +1318,36 @@ deco(){
     if(bi2===BI.DISCORD_DEEP){if(h<40&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)this.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)this.S(x,h+1,z,B.NEON_BLK)}
     if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.02&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.008)this.S(x,h,z,B.VINE_STONE);if(dh01(wx+260,wz+260)<.003)this.S(x,h,z,B.MOSS);if(dh01(wx+270,wz+270)<.002&&this.G(x,h+1,z)===B.AIR){this.S(x,h+1,z,B.VINE_STONE);this.S(x,h+2,z,B.VINE_STONE)}}
     if(bi2===BI.CAMGROVE){if(dh01(wx+350,wz+350)<.01)this.S(x,h,z,B.TRAIL_STONE);if(dh01(wx+360,wz+360)<.002)this.S(x,h,z,B.CABIN_WALL);if(dh01(wx+370,wz+370)<.003)this.S(x,h,z,B.COB)}
+  }
+  // ═══ CAVE DECORATION PASS ═══
+  for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
+    const wx=ox+x,wz=oz+z,surfH=this.sY(x,z);
+    for(let y=5;y<mn(surfH-2,50);y++){
+      if(this.G(x,y,z)!==B.AIR)continue;
+      if(this.G(x,y-1,z)===B.AIR)continue; // need floor below
+      const floorB=this.G(x,y-1,z);
+      if(floorB===B.WATER||floorB===B.AIR)continue;
+      const cr=dh01(wx*111+y,wz*222);
+      const caveBiome=nC.n3(wx*.008,y*.01,wz*.008);
+      // Lush cave: moss, glow flowers, vines
+      if(caveBiome>.3){
+        if(cr<.06)this.S(x,y,z,B.GLOW_FLOWER);
+        else if(cr<.12)this.S(x,y-1,z,B.MOSS);
+      }
+      // Crystal cave: glow crystals, sea lanterns
+      else if(caveBiome<-.3){
+        if(cr<.04){const gh=1+fl(dh01(wx+y,wz)*3);for(let dy=0;dy<gh;dy++)this.S(x,y+dy,z,B.GLOW_CRYSTAL)}
+        else if(cr<.06)this.S(x,y,z,B.SEA_LANTERN);
+      }
+      // Dripstone/stalactite: from ceiling
+      if(this.G(x,y+1,z)===B.AIR&&this.G(x,y+2,z)!==B.AIR&&dh01(wx+500+y,wz+500)<.03){
+        this.S(x,y+1,z,B.COB);
+      }
+      // Stalagmites from floor
+      if(cr>.97)this.S(x,y,z,B.COB);
+      // Underground ore veins exposed in cave walls
+      if(y<20&&cr>.95)this.S(x,y,z,y<12?B.GOLD:B.IRON);
+    }
   }
 }
 tree(x,y,z,t,r2){
@@ -1862,8 +1947,8 @@ function cheat(cmd){
 function cheatTP(biomeId){
   const px2=fl(W.pl.pos.x),pz2=fl(W.pl.pos.z);
   // Extended search for rare biomes (Garfbot City, Discord Depths, VCLANTIS)
-  const maxR=(biomeId===BI.GARFBOT_CITY||biomeId===BI.DISCORD_DEEP||biomeId===BI.VCLANTIS||biomeId===BI.PROPS_ISLAND)?12000:5000;
-  const step=(biomeId===BI.GARFBOT_CITY||biomeId===BI.DISCORD_DEEP)?8:16;
+  const maxR=(biomeId===BI.GARFBOT_CITY||biomeId===BI.DISCORD_DEEP||biomeId===BI.VCLANTIS||biomeId===BI.PROPS_ISLAND)?20000:5000;
+  const step=(biomeId===BI.GARFBOT_CITY||biomeId===BI.DISCORD_DEEP)?4:16;
   for(let r=16;r<maxR;r+=step){
     const angles=r<2000?24:12; // more angles for closer search
     for(let a=0;a<angles;a++){
@@ -1885,7 +1970,7 @@ function cheatTP(biomeId){
     }
   }
   if(biomeId===BI.DISCORD_DEEP){
-    for(let gx=-5000;gx<5000;gx+=16)for(let gz=-5000;gz<5000;gz+=16){
+    for(let gx=-8000;gx<8000;gx+=8)for(let gz=-8000;gz<8000;gz+=8){
       if(bio(gx,gz)===BI.DISCORD_DEEP){W.pl.pos.set(gx+.5,28,gz+.5);W.pl.vel.set(0,0,0);closeCheat();return}
     }
   }

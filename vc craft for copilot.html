@@ -1065,6 +1065,52 @@ deco(){
     this.S(5,vy+8,5,B.SEA_LANTERN);this.S(10,vy+8,5,B.SEA_LANTERN);this.S(5,vy+8,10,B.SEA_LANTERN);this.S(10,vy+8,10,B.SEA_LANTERN);
     return;
   }
+  // ═══ DISCORD DEPTHS: underground mega-region ═══
+  if(chunkBio===BI.DISCORD_DEEP){
+    const dh2=this.sY(8,8);
+    // Carve cave chambers below surface
+    for(let x=1;x<15;x++)for(let z=1;z<15;z++){
+      const h=this.sY(x,z);
+      const caveN=nC.n3((ox+x)*.04,15*.06,(oz+z)*.04);
+      // Large cave chambers from surface down
+      if(caveN>.15){
+        for(let y=mn(h,35);y>10;y--){
+          const caveR=nC.n3((ox+x)*.06,y*.08,(oz+z)*.06);
+          if(caveR>.1)this.S(x,y,z,B.AIR);
+        }
+      }
+      // Floor detail
+      const baseY=10+fl(abs(nD.n2((ox+x)*.03,(oz+z)*.03))*5);
+      if(this.G(x,baseY,z)!==B.AIR){
+        // Glow crystal stalagmites
+        if(dh01(ox+x+300,oz+z+300)<.04){
+          const gh=2+fl(dh01(ox+x,oz+z+500)*5);
+          for(let dy=0;dy<gh;dy++)this.S(x,baseY+1+dy,z,B.GLOW_CRYSTAL);
+        }
+        // Signal stone clusters
+        if(dh01(ox+x+600,oz+z+600)<.02){
+          this.S(x,baseY+1,z,B.SIGNAL_STONE);
+          if(dh01(ox+x+601,oz+z+601)<.5)this.S(x,baseY+2,z,B.SIGNAL_STONE);
+        }
+        // Dark panel tech ruins
+        if(dh01(ox+x+700,oz+z+700)<.015){
+          for(let dy=1;dy<4;dy++)this.S(x,baseY+dy,z,B.DARK_PANEL);
+          if(dh01(ox+x+701,oz+z)<.3)this.S(x,baseY+4,z,B.NEON_BLK);
+        }
+      }
+      // Ceiling stalactites
+      const ceilY=mn(h,35);
+      if(this.G(x,ceilY,z)!==B.AIR&&dh01(ox+x+400,oz+z+400)<.06){
+        const sh=1+fl(dh01(ox+x+401,oz+z+401)*4);
+        for(let dy=0;dy<sh;dy++){
+          if(this.G(x,ceilY-dy,z)===B.AIR)this.S(x,ceilY-dy,z,dy===sh-1?B.GLOW_CRYSTAL:B.DEEP);
+        }
+      }
+    }
+    // Register as structure for teleport
+    regStruct('Discord Depths Cave',ox+8,15,oz+8);
+  }
+
   // ═══ STRUCTURE GEN ═══
   const ch=this.sY(8,8);
   if(ch>WL&&ch<CH-10)genStructure(this,ox,oz,ox+8,oz+8,ch,chunkBio);
@@ -1152,7 +1198,7 @@ deco(){
     if(bi2===BI.SA_PLAINS&&dh01(wx+200,wz+200)<.008)this.S(x,h,z,B.CRACK_PAVE);
     if(bi2===BI.WATCHER&&dh01(wx+400,wz+400)<.006)this.S(x,h,z,B.TOWER_BRICK);
     if(bi2===BI.DRY_COAST&&dh01(wx+800,wz+800)<.006)this.S(x,h,z,B.BOARDWALK);
-    if(bi2===BI.DISCORD_DEEP&&h<35){if(dh01(wx+300,wz+300)<.015)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*4);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL)}
+    if(bi2===BI.DISCORD_DEEP){if(h<40&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)this.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)this.S(x,h+1,z,B.NEON_BLK)}
     if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.015&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.004)this.S(x,h,z,B.VINE_STONE)}
     if(bi2===BI.CAMGROVE&&dh01(wx+350,wz+350)<.006)this.S(x,h,z,B.TRAIL_STONE);
   }

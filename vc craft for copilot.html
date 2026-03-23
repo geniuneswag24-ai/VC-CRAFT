@@ -1028,8 +1028,7 @@ buildMesh(gB){
       const isRail = b===B.RAIL_IRON||b===B.RAIL_POWERED||b===B.RAIL_BED;
       const thinH = isRail ? 0.125 : 1;
       for(const c of f.v){
-        let vy = c[1];
-        if(isRail) vy = c[1] * thinH;
+        let vy = isRail ? c[1] * thinH : c[1];
         p.push(ox+x+c[0], y+vy-(isW&&f.f===0?.12:0), oz+z+c[2]);
         n.push(f.n[0],f.n[1],f.n[2]);
       }

@@ -1101,17 +1101,16 @@ gen(){
       else if(y<=h){
         if(y<h-1&&y>3){const c1=nC.n3(wx*.05,y*.06,wz*.05),c2=nC.n3(wx*.08+99,y*.1+99,wz*.08+99);
           const caveVal=c1*c1+c2*c2;
-          if(caveVal<.018){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-6)?B.WATER:B.AIR;continue}
+          if(caveVal<.018){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-6)?B.WATER:(y<20&&dh01(wx*333+y,wz*444)<.02)?B.LAVA:B.AIR;continue}
           const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
-          if(bigCave>.55&&y>8&&y<120){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-8)?B.WATER:B.AIR;continue}
+          if(bigCave>.55&&y>8&&y<120){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-8)?B.WATER:(y<20&&dh01(wx*333+y,wz*444)<.02)?B.LAVA:B.AIR;continue}
           const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
-          if(ravine<.02&&y>5&&y<100){this.blk[this.I(x,y,z)]=B.AIR;continue}}
+          if(ravine<.02&&y>5&&y<100){this.blk[this.I(x,y,z)]=(y<20&&dh01(wx*333+y,wz*444)<.02)?B.LAVA:B.AIR;continue}}
         if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>140?B.SNOW:bd.sf;
         else if(y>h-4)b=bd.su;
         else if(y<16)b=B.DEEP;
         else{b=B.STONE;if(y<24&&rv<.004)b=B.DIAM;else if(y<56&&rv<.01)b=B.GOLD;else if(y<100&&rv<.018)b=B.IRON;else if(y<130&&rv<.022)b=B.COAL}
       }else if(y<=WL)b=B.WATER;
-      if(b===B.AIR&&y<20&&y>3&&dh01(wx*333+y,wz*444)<.02)b=B.LAVA;
       this.blk[this.I(x,y,z)]=b;
     }
   }

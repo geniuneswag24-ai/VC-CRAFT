@@ -495,17 +495,35 @@ function genHouse(ck,x,y,z,r){
 }
 // CABIN: rustic with porch
 function genCabin(ck,x,y,z){
-  buildRoom(ck,x,y,z,6,5,4,B.CABIN_WALL,B.PLNK,B.CABIN_WALL,true);
-  // Porch
-  for(let dx=0;dx<6;dx++)ss(ck,x+dx,y,z-1,B.PLNK);
-  for(let dx=0;dx<6;dx++)ss(ck,x+dx,y+3,z-1,B.CABIN_WALL);
+  buildRoom(ck,x,y,z,7,6,4,B.CABIN_WALL,B.PLNK,B.CABIN_WALL,true);
+  // Porch with posts
+  for(let dx=0;dx<7;dx++)ss(ck,x+dx,y,z-1,B.PLNK);
+  for(let dx=0;dx<7;dx++)ss(ck,x+dx,y,z-2,B.PLNK);
+  for(let dy=1;dy<4;dy++){ss(ck,x,y+dy,z-2,B.SLOG);ss(ck,x+6,y+dy,z-2,B.SLOG)}
+  for(let dx=0;dx<7;dx++)ss(ck,x+dx,y+3,z-2,B.CABIN_WALL);
   // Door
   ss(ck,x+3,y+1,z,B.AIR);ss(ck,x+3,y+2,z,B.AIR);
-  // Furniture
-  ss(ck,x+1,y+1,z+1,B.PLNK); // table
-  ss(ck,x+1,y+1,z+3,B.CHST); // chest
-  // Roof
-  for(let dx=-1;dx<=6;dx++)for(let dz=-1;dz<=5;dz++)ss(ck,x+dx,y+4,z+dz,B.CABIN_WALL);
+  // Windows - larger
+  ss(ck,x+1,y+2,z,B.GLASS);ss(ck,x+5,y+2,z,B.GLASS);
+  ss(ck,x,y+2,z+2,B.GLASS);ss(ck,x+6,y+2,z+2,B.GLASS);
+  // Interior - table, chairs, bed, chest, furnace
+  ss(ck,x+1,y+1,z+1,B.PLNK);ss(ck,x+2,y+1,z+1,B.PLNK); // table
+  ss(ck,x+1,y+1,z+2,B.COB);ss(ck,x+2,y+1,z+2,B.COB); // chairs
+  ss(ck,x+5,y+1,z+4,B.CHST);
+  ss(ck,x+1,y+1,z+4,B.FURN);
+  // Bed (plank blocks)
+  ss(ck,x+4,y+1,z+1,B.PLNK);ss(ck,x+5,y+1,z+1,B.PLNK);
+  // Chimney
+  for(let dy=0;dy<7;dy++)ss(ck,x+6,y+dy,z+5,B.COB);
+  // Peaked roof
+  for(let dz=-2;dz<=6;dz++){
+    for(let dx=-1;dx<=7;dx++){
+      const dist=abs(dx-3);
+      if(dist<=2)ss(ck,x+dx,y+4+2-dist,z+dz,B.CABIN_WALL);
+    }
+  }
+  // Woodpile outside
+  for(let dx=0;dx<2;dx++)ss(ck,x-1+dx,y+1,z+5,B.SLOG);
 }
 // TOWER RUIN: tall weathered desert tower
 function genTowerRuin(ck,x,y,z,r){
@@ -536,12 +554,23 @@ function genShrine(ck,x,y,z){
 }
 // WATCHTOWER: tall with ladder
 function genWatchtower(ck,x,y,z){
-  for(let dy=0;dy<14;dy++){ss(ck,x,y+dy,z,B.SLOG);ss(ck,x+1,y+dy,z,B.SLOG);ss(ck,x,y+dy,z+1,B.SLOG);ss(ck,x+1,y+dy,z+1,B.SLOG)}
-  // Platform
-  for(let dx=-2;dx<=3;dx++)for(let dz=-2;dz<=3;dz++){ss(ck,x+dx,y+12,z+dz,B.PLNK);ss(ck,x+dx,y+13,z+dz,B.PLNK)}
+  const tH=16;
+  // Four corner posts
+  for(let dy=0;dy<tH;dy++){ss(ck,x-1,y+dy,z-1,B.SLOG);ss(ck,x+2,y+dy,z-1,B.SLOG);ss(ck,x-1,y+dy,z+2,B.SLOG);ss(ck,x+2,y+dy,z+2,B.SLOG)}
+  // Cross-braces every 4 blocks
+  for(let dy=4;dy<tH;dy+=4){for(let dx=-1;dx<=2;dx++){ss(ck,x+dx,y+dy,z-1,B.PLNK);ss(ck,x+dx,y+dy,z+2,B.PLNK)}for(let dz=0;dz<=1;dz++){ss(ck,x-1,y+dy,z+dz,B.PLNK);ss(ck,x+2,y+dy,z+dz,B.PLNK)}}
+  // Ladder column
+  for(let dy=0;dy<tH;dy++)ss(ck,x,y+dy,z,B.COB);
+  // Main platform
+  for(let dx=-2;dx<=3;dx++)for(let dz=-2;dz<=3;dz++)ss(ck,x+dx,y+tH,z+dz,B.PLNK);
   // Railing
-  for(let dx=-2;dx<=3;dx++){ss(ck,x+dx,y+14,z-2,B.FENCE_BLK);ss(ck,x+dx,y+14,z+3,B.FENCE_BLK)}
-  for(let dz=-2;dz<=3;dz++){ss(ck,x-2,y+14,z+dz,B.FENCE_BLK);ss(ck,x+3,y+14,z+dz,B.FENCE_BLK)}
+  for(let dx=-2;dx<=3;dx++){ss(ck,x+dx,y+tH+1,z-2,B.FENCE_BLK);ss(ck,x+dx,y+tH+1,z+3,B.FENCE_BLK)}
+  for(let dz=-2;dz<=3;dz++){ss(ck,x-2,y+tH+1,z+dz,B.FENCE_BLK);ss(ck,x+3,y+tH+1,z+dz,B.FENCE_BLK)}
+  // Small roof shelter
+  for(let dx=-1;dx<=2;dx++)for(let dz=-1;dz<=2;dz++)ss(ck,x+dx,y+tH+3,z+dz,B.PLNK);
+  for(let dy=tH+1;dy<tH+3;dy++){ss(ck,x-1,y+dy,z-1,B.SLOG);ss(ck,x+2,y+dy,z-1,B.SLOG);ss(ck,x-1,y+dy,z+2,B.SLOG);ss(ck,x+2,y+dy,z+2,B.SLOG)}
+  // Torch/light on top
+  ss(ck,x,y+tH+4,z,B.GLOW_CRYSTAL);
 }
 // CITY TOWER: real skyscraper with floors, lobby, offices, stairwell
 function genCityTower(ck,x,y,z,r){
@@ -584,18 +613,31 @@ function genCityTower(ck,x,y,z,r){
 }
 // BROKEN TOWER
 function genBrokenTower(ck,x,y,z){
-  const h2=8+fl(dh01(x+77,z+77)*10);
+  const h2=12+fl(dh01(x+77,z+77)*12);
+  // Wider base tapering up
   for(let dy=0;dy<h2;dy++){
-    const intact=dh01(dy*50+x,z*31)>.25;
-    for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++){
-      if(abs(dx)===2&&abs(dz)===2)continue;
-      const isWall=abs(dx)===2||abs(dz)===2;
-      if(isWall&&intact)ss(ck,x+dx,y+dy,z+dz,B.COB);
-      else if(dy%4===0&&intact)ss(ck,x+dx,y+dy,z+dz,B.COB);
+    const w=dy<h2*.4?3:dy<h2*.7?2:1;
+    const intact=dh01(dy*50+x,z*31)>.2;
+    const mat=dy<4?B.COB:B.TOWER_BRICK;
+    for(let dx=-w;dx<=w;dx++)for(let dz=-w;dz<=w;dz++){
+      if(abs(dx)===w&&abs(dz)===w)continue;
+      const isWall=abs(dx)===w||abs(dz)===w;
+      if(isWall&&intact)ss(ck,x+dx,y+dy,z+dz,mat);
+      else if(dy%5===0&&intact)ss(ck,x+dx,y+dy,z+dz,mat);
     }
   }
-  // Rubble
-  for(let i=0;i<6;i++){const rx=x+fl(dh01(i*17,z)*6)-3,rz=z+fl(dh01(x,i*19)*6)-3;ss(ck,rx,y,rz,B.CITY_RUBBLE)}
+  // Interior spiral staircase remnant
+  for(let dy=0;dy<mn(h2,8);dy+=2)ss(ck,x+(dy%4<2?-1:1),y+dy,z,B.COB);
+  // Rubble pile around base
+  for(let i=0;i<12;i++){
+    const rx=x+fl(dh01(i*17,z)*8)-4,rz=z+fl(dh01(x,i*19)*8)-4;
+    ss(ck,rx,y,rz,B.CITY_RUBBLE);
+    if(dh01(i*33,z*33)>.6)ss(ck,rx,y+1,rz,B.CITY_RUBBLE);
+  }
+  // Partial collapse - rubble leaning
+  const colSide=dh01(x*99,z*99)>.5?1:-1;
+  for(let dy=0;dy<3;dy++)ss(ck,x+colSide*3,y+dy,z,B.COB);
+  ss(ck,x+colSide*4,y,z,B.CITY_RUBBLE);ss(ck,x+colSide*4,y,z+1,B.CITY_RUBBLE);
 }
 // WAFFLE HOUSE: proper diner with interior
 function genWaffle(ck,x,y,z){
@@ -709,13 +751,24 @@ function genGomp(ck,x,y,z,r){
 }
 // BOARDWALK: coastal/island walkway
 function genBoardwalk(ck,x,y,z){
-  const len=8+fl(dh01(x*31,z*17)*6);
+  const len=10+fl(dh01(x*31,z*17)*6);
+  // Main walkway - wider
   for(let dx=0;dx<len;dx++){
-    ss(ck,x+dx,y,z,B.BOARDWALK);ss(ck,x+dx,y,z+1,B.BOARDWALK);
-    ss(ck,x+dx,y+1,z-1,B.FENCE_BLK);ss(ck,x+dx,y+1,z+2,B.FENCE_BLK);
-    // Support posts
-    if(dx%3===0){ss(ck,x+dx,y-1,z,B.SLOG);ss(ck,x+dx,y-2,z,B.SLOG)}
+    for(let dz=0;dz<3;dz++)ss(ck,x+dx,y,z+dz,B.BOARDWALK);
+    ss(ck,x+dx,y+1,z-1,B.FENCE_BLK);ss(ck,x+dx,y+1,z+3,B.FENCE_BLK);
+    // Support posts - weathered
+    if(dx%3===0){for(let dy=-3;dy<0;dy++){ss(ck,x+dx,y+dy,z,B.SLOG);ss(ck,x+dx,y+dy,z+2,B.SLOG)}}
+    // Some broken sections
+    if(dh01(x+dx*50,z*50)>.85)ss(ck,x+dx,y,z+1,B.AIR);
   }
+  // Scenic overlook / pavilion at midpoint
+  const mid=fl(len/2);
+  for(let dx=mid-2;dx<=mid+2;dx++)for(let dz=-2;dz<5;dz++)ss(ck,x+dx,y,z+dz,B.BOARDWALK);
+  // Pavilion posts and roof
+  for(let dy=1;dy<4;dy++){ss(ck,x+mid-2,y+dy,z-2,B.SLOG);ss(ck,x+mid+2,y+dy,z-2,B.SLOG);ss(ck,x+mid-2,y+dy,z+4,B.SLOG);ss(ck,x+mid+2,y+dy,z+4,B.SLOG)}
+  for(let dx=mid-2;dx<=mid+2;dx++)for(let dz=-2;dz<=4;dz++)ss(ck,x+dx,y+4,z+dz,B.PLNK);
+  // Bench
+  ss(ck,x+mid,y+1,z-1,B.PLNK);ss(ck,x+mid+1,y+1,z-1,B.PLNK);
 }
 // CHAPEL: forested stone chapel
 function genChapel(ck,x,y,z){

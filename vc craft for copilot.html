@@ -668,52 +668,61 @@ function genWaffle(ck,x,y,z){
 }
 // SCHOOL (Sweetwater High): large multi-wing school
 function genSchool(ck,x,y,z,r){
-  const fh=4,mainW=14,mainD=12;
+  const fh=4,mainW=15,mainD=14;
   // Main building - 2 floors with hallways, classrooms, lockers
   for(let f=0;f<2;f++){
     const fy=y+f*fh;
     buildRoom(ck,x,fy,z,mainW,mainD,fh,B.SCHOOL_WALL,f===0?B.CONCRETE:B.GYM_FLOOR,B.CONCRETE,true);
     // Central hallway running full length
-    for(let dx=1;dx<mainW-1;dx++){ss(ck,x+dx,fy+1,z+fl(mainD/2),B.AIR);ss(ck,x+dx,fy+2,z+fl(mainD/2),B.AIR);ss(ck,x+dx,fy+3,z+fl(mainD/2),B.AIR)}
-    // Classroom partitions - 4 rooms per side
+    for(let dx=1;dx<mainW-1;dx++)for(let dy=1;dy<fh-1;dy++){ss(ck,x+dx,fy+dy,z+fl(mainD/2),B.AIR);ss(ck,x+dx,fy+dy,z+fl(mainD/2)-1,B.AIR)}
+    // Classroom partitions - rooms on both sides
     for(let room=0;room<4;room++){
       const rx=1+room*3;
-      // North-side classroom wall
-      for(let dy=1;dy<fh-1;dy++)ss(ck,x+rx,fy+dy,z+2,B.SCHOOL_WALL);
-      ss(ck,x+rx,fy+1,z+fl(mainD/2)-1,B.AIR);ss(ck,x+rx,fy+2,z+fl(mainD/2)-1,B.AIR); // door
-      // South-side classroom wall
-      for(let dy=1;dy<fh-1;dy++)ss(ck,x+rx,fy+dy,z+mainD-3,B.SCHOOL_WALL);
-      ss(ck,x+rx,fy+1,z+fl(mainD/2)+1,B.AIR);ss(ck,x+rx,fy+2,z+fl(mainD/2)+1,B.AIR); // door
+      for(let dy=1;dy<fh-1;dy++){ss(ck,x+rx,fy+dy,z+2,B.SCHOOL_WALL);ss(ck,x+rx,fy+dy,z+mainD-3,B.SCHOOL_WALL)}
+      ss(ck,x+rx,fy+1,z+fl(mainD/2)-2,B.AIR);ss(ck,x+rx,fy+2,z+fl(mainD/2)-2,B.AIR);
+      ss(ck,x+rx,fy+1,z+fl(mainD/2)+1,B.AIR);ss(ck,x+rx,fy+2,z+fl(mainD/2)+1,B.AIR);
     }
     // Lockers along hallway walls
     for(let dx=1;dx<mainW-1;dx++){
-      if(dx%2===0){ss(ck,x+dx,fy+1,z+fl(mainD/2)-1,B.LOCKER_BLK);ss(ck,x+dx,fy+1,z+fl(mainD/2)+1,B.LOCKER_BLK)}
+      if(dx%2===0){ss(ck,x+dx,fy+1,z+fl(mainD/2)-2,B.LOCKER_BLK);ss(ck,x+dx,fy+1,z+fl(mainD/2)+1,B.LOCKER_BLK)}
     }
-    // Desks in some classrooms
-    if(f===0){for(let dx=2;dx<4;dx++)for(let dz=2;dz<5;dz+=2)ss(ck,x+dx,fy+1,z+dz,B.PLNK)}
+    // Desks in classrooms
+    if(f===0){for(let dx=2;dx<5;dx++)for(let dz=2;dz<5;dz+=2)ss(ck,x+dx,fy+1,z+dz,B.PLNK)}
+    if(f===1){for(let dx=8;dx<12;dx++)for(let dz=mainD-5;dz<mainD-2;dz+=2)ss(ck,x+dx,fy+1,z+dz,B.PLNK)}
+    // Bathroom block
+    if(f===0){
+      for(let dy=1;dy<fh-1;dy++)for(let dz=1;dz<3;dz++)ss(ck,x+mainW-2,fy+dy,z+dz,B.CONCRETE);
+      ss(ck,x+mainW-3,fy+1,z+2,B.AIR);ss(ck,x+mainW-3,fy+2,z+2,B.AIR);
+    }
   }
-  // Stairs
-  for(let dy=0;dy<fh;dy++){ss(ck,x+1,y+dy,z+1,B.COB);ss(ck,x+1,y+fh+dy,z+1,B.COB);ss(ck,x+mainW-2,y+dy,z+1,B.COB);ss(ck,x+mainW-2,y+fh+dy,z+1,B.COB)}
+  // Stairs at both ends
+  for(let dy=0;dy<fh*2;dy++){ss(ck,x+1,y+dy,z+1,B.COB);ss(ck,x+mainW-2,y+dy,z+1,B.COB);ss(ck,x+1,y+dy,z+mainD-2,B.COB);ss(ck,x+mainW-2,y+dy,z+mainD-2,B.COB)}
   // Front entrance - wide double door
-  for(let dx=5;dx<9;dx++){ss(ck,x+dx,y+1,z,B.AIR);ss(ck,x+dx,y+2,z,B.AIR);ss(ck,x+dx,y+3,z,B.AIR)}
-  // Gym wing (east side) - tall ceiling
-  buildRoom(ck,x+mainW,y,z,10,10,7,B.SCHOOL_WALL,B.GYM_FLOOR,B.CONCRETE,true);
-  ss(ck,x+mainW,y+1,z+5,B.AIR);ss(ck,x+mainW,y+2,z+5,B.AIR);ss(ck,x+mainW,y+3,z+5,B.AIR); // gym door
-  // Bleachers inside gym
-  for(let dz=1;dz<9;dz++){ss(ck,x+mainW+1,y+1,z+dz,B.COB);ss(ck,x+mainW+1,y+2,z+dz,B.COB)}
+  for(let dx=5;dx<10;dx++){ss(ck,x+dx,y+1,z,B.AIR);ss(ck,x+dx,y+2,z,B.AIR);ss(ck,x+dx,y+3,z,B.AIR)}
+  // Admin/office wing (east side)
+  buildRoom(ck,x+mainW,y,z,8,6,fh,B.SCHOOL_WALL,B.CONCRETE,B.CONCRETE,true);
+  ss(ck,x+mainW,y+1,z+3,B.AIR);ss(ck,x+mainW,y+2,z+3,B.AIR);
+  for(let dx=1;dx<7;dx++)ss(ck,x+mainW+dx,y+1,z+3,B.PLNK); // admin desks
+  // Gym wing (attached east)
+  buildRoom(ck,x+mainW,y,z+6,10,8,7,B.SCHOOL_WALL,B.GYM_FLOOR,B.CONCRETE,true);
+  ss(ck,x+mainW,y+1,z+9,B.AIR);ss(ck,x+mainW,y+2,z+9,B.AIR);ss(ck,x+mainW,y+3,z+9,B.AIR);
+  for(let dz=7;dz<13;dz++){ss(ck,x+mainW+1,y+1,z+dz,B.COB);ss(ck,x+mainW+1,y+2,z+dz,B.COB)} // bleachers
   // Cafeteria (west side)
-  buildRoom(ck,x-8,y,z+2,8,8,fh,B.SCHOOL_WALL,B.CONCRETE,B.CONCRETE,true);
-  ss(ck,x,y+1,z+5,B.AIR);ss(ck,x,y+2,z+5,B.AIR); // cafeteria door
-  // Cafeteria tables
-  for(let dx=1;dx<7;dx+=3)for(let dz=3;dz<8;dz+=2)ss(ck,x-8+dx,y+1,z+dz,B.PLNK);
+  buildRoom(ck,x-9,y,z+2,9,9,fh,B.SCHOOL_WALL,B.CONCRETE,B.CONCRETE,true);
+  ss(ck,x,y+1,z+5,B.AIR);ss(ck,x,y+2,z+5,B.AIR);
+  for(let dx=1;dx<8;dx+=3)for(let dz=4;dz<10;dz+=2)ss(ck,x-9+dx,y+1,z+dz,B.PLNK);
   // Kitchen behind cafeteria
-  for(let dx=1;dx<7;dx++)ss(ck,x-8+dx,y+1,z+9,B.METAL_PANEL);
+  for(let dx=1;dx<8;dx++)ss(ck,x-9+dx,y+1,z+10,B.METAL_PANEL);
+  ss(ck,x-5,y+1,z+9,B.FURN);ss(ck,x-3,y+1,z+9,B.FURN);
   // Football field (behind school)
-  for(let dx=-2;dx<mainW+12;dx++)for(let dz=mainD+1;dz<mainD+8;dz++)ss(ck,x+dx,y-1,z+dz,B.GRASS);
-  // Field markings
-  for(let dx=0;dx<mainW+10;dx++)ss(ck,x+dx,y,z+mainD+4,B.SIDEWALK);
+  for(let dx=-3;dx<mainW+12;dx++)for(let dz=mainD+1;dz<mainD+10;dz++)ss(ck,x+dx,y-1,z+dz,B.GRASS);
+  for(let dx=0;dx<mainW+10;dx++){ss(ck,x+dx,y,z+mainD+5,B.SIDEWALK);ss(ck,x+dx,y,z+mainD+1,B.SIDEWALK)}
+  // Parking lot in front
+  for(let dx=-2;dx<mainW+2;dx++)for(let dz=-4;dz<0;dz++)ss(ck,x+dx,y-1,z+dz,B.ASPHALT);
   // Roof
   for(let dx=-1;dx<=mainW;dx++)for(let dz=-1;dz<=mainD;dz++)ss(ck,x+dx,y+2*fh,z+dz,B.CONCRETE);
+  // Signage
+  ss(ck,x+7,y+2*fh+1,z,B.NEON_BLK);ss(ck,x+8,y+2*fh+1,z,B.NEON_BLK);
 }
 // GOMP INDUSTRIES TOWER: tall corporate tower with boss arena
 function genGomp(ck,x,y,z,r){
@@ -818,36 +827,45 @@ function genMonument(ck,x,y,z,r){
 
 // FOOTBALL STADIUM: large open-air arena
 function genStadium(ck,x,y,z,r){
-  const w=14,d=12,h2=8;
+  const w=15,d=14,h2=10;
   // Field floor
   for(let dx=0;dx<w;dx++)for(let dz=0;dz<d;dz++)ss(ck,x+dx,y,z+dz,B.GYM_FLOOR);
   // Field markings
   for(let dx=0;dx<w;dx++){ss(ck,x+dx,y,z,B.SIDEWALK);ss(ck,x+dx,y,z+d-1,B.SIDEWALK)}
   for(let dz=0;dz<d;dz++){ss(ck,x,y,z+dz,B.SIDEWALK);ss(ck,x+w-1,y,z+dz,B.SIDEWALK)}
   for(let dx=0;dx<w;dx++)ss(ck,x+dx,y,z+fl(d/2),B.SIDEWALK);
-  // Bleachers on two sides (stepped seating)
-  for(let tier=0;tier<4;tier++){
-    for(let dx=0;dx<w;dx++){
-      ss(ck,x+dx,y+tier+1,z-1-tier,B.COB);ss(ck,x+dx,y+tier+1,z+d+tier,B.COB);
-    }
+  // Bleachers on all four sides (stepped seating)
+  for(let tier=0;tier<5;tier++){
+    for(let dx=0;dx<w;dx++){ss(ck,x+dx,y+tier+1,z-1-tier,B.COB);ss(ck,x+dx,y+tier+1,z+d+tier,B.COB)}
+    for(let dz=0;dz<d;dz++){ss(ck,x-1-tier,y+tier+1,z+dz,B.COB);ss(ck,x+w+tier,y+tier+1,z+dz,B.COB)}
   }
+  // Under-bleacher tunnels (walkable)
+  for(let dz=2;dz<d-2;dz++){ss(ck,x-4,y+1,z+dz,B.AIR);ss(ck,x-4,y+2,z+dz,B.AIR);ss(ck,x+w+3,y+1,z+dz,B.AIR);ss(ck,x+w+3,y+2,z+dz,B.AIR)}
   // Corner towers with lights
-  for(const[cx2,cz2]of[[0,0],[w-1,0],[0,d-1],[w-1,d-1]]){
-    for(let dy=1;dy<h2+2;dy++)ss(ck,x+cx2,y+dy,z+cz2,B.CONCRETE);
-    ss(ck,x+cx2,y+h2+2,z+cz2,B.NEON_BLK);
+  for(const[cx2,cz2]of[[-2,-2],[w+1,-2],[-2,d+1],[w+1,d+1]]){
+    for(let dy=1;dy<h2+3;dy++)ss(ck,x+cx2,y+dy,z+cz2,B.CONCRETE);
+    ss(ck,x+cx2,y+h2+3,z+cz2,B.NEON_BLK);ss(ck,x+cx2,y+h2+4,z+cz2,B.NEON_BLK);
   }
   // Press box
-  buildRoom(ck,x+4,y+5,z-3,6,3,3,B.CONCRETE,B.METAL_PANEL,B.METAL_PANEL,true);
-  for(let dx=5;dx<9;dx++)ss(ck,x+dx,y+6,z-3,B.GLASS);
+  buildRoom(ck,x+3,y+6,z-4,8,3,4,B.CONCRETE,B.METAL_PANEL,B.METAL_PANEL,true);
+  for(let dx=4;dx<10;dx++){ss(ck,x+dx,y+7,z-4,B.GLASS);ss(ck,x+dx,y+8,z-4,B.GLASS)}
+  // Service rooms under bleachers
+  buildRoom(ck,x-5,y,z+2,4,4,3,B.CONCRETE,B.CONCRETE,B.CONCRETE,true);
+  ss(ck,x-5,y+1,z+3,B.AIR);ss(ck,x-5,y+2,z+3,B.AIR);
   // Entrance gates
-  ss(ck,x+fl(w/2),y+1,z-4,B.AIR);ss(ck,x+fl(w/2),y+2,z-4,B.AIR);
-  for(let dx=fl(w/2)-1;dx<=fl(w/2)+1;dx++)ss(ck,x+dx,y,z-4,B.CONCRETE);
-  // Goal posts
-  for(let dy=1;dy<5;dy++){ss(ck,x+3,y+dy,z+1,B.METAL_PANEL);ss(ck,x+w-4,y+dy,z+1,B.METAL_PANEL)}
-  ss(ck,x+3,y+5,z+1,B.METAL_PANEL);ss(ck,x+4,y+5,z+1,B.METAL_PANEL);ss(ck,x+w-4,y+5,z+1,B.METAL_PANEL);ss(ck,x+w-5,y+5,z+1,B.METAL_PANEL);
+  for(let dx=fl(w/2)-1;dx<=fl(w/2)+1;dx++){ss(ck,x+dx,y+1,z-5,B.AIR);ss(ck,x+dx,y+2,z-5,B.AIR);ss(ck,x+dx,y+3,z-5,B.AIR)}
+  for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++)ss(ck,x+dx,y,z-5,B.CONCRETE);
+  // Goal posts (both ends)
+  for(const gz of[2,d-3]){
+    for(let dy=1;dy<6;dy++){ss(ck,x+3,y+dy,z+gz,B.METAL_PANEL);ss(ck,x+w-4,y+dy,z+gz,B.METAL_PANEL)}
+    for(let dx=3;dx<=w-4;dx++)ss(ck,x+dx,y+6,z+gz,B.METAL_PANEL);
+  }
   // Scoreboard
-  for(let dx=5;dx<9;dx++)for(let dy=h2;dy<h2+3;dy++)ss(ck,x+dx,y+dy,z+d+3,B.DARK_PANEL);
-  ss(ck,x+6,y+h2+1,z+d+3,B.NEON_BLK);ss(ck,x+7,y+h2+1,z+d+3,B.NEON_BLK);
+  for(let dx=4;dx<w-4;dx++)for(let dy=h2;dy<h2+4;dy++)ss(ck,x+dx,y+dy,z+d+4,B.DARK_PANEL);
+  ss(ck,x+6,y+h2+1,z+d+4,B.NEON_BLK);ss(ck,x+7,y+h2+1,z+d+4,B.NEON_BLK);ss(ck,x+8,y+h2+1,z+d+4,B.NEON_BLK);
+  // Fencing around exterior
+  for(let dx=-6;dx<=w+5;dx++){ss(ck,x+dx,y+1,z-6,B.FENCE_BLK);ss(ck,x+dx,y+1,z+d+5,B.FENCE_BLK)}
+  for(let dz=-6;dz<=d+5;dz++){ss(ck,x-6,y+1,z+dz,B.FENCE_BLK);ss(ck,x+w+5,y+1,z+dz,B.FENCE_BLK)}
 }
 // VC RESTAURANT: full sit-down restaurant with kitchen, dining, patio
 function genRestaurant(ck,x,y,z){
@@ -898,38 +916,52 @@ function genArcade(ck,x,y,z){
 }
 // VC MALL: large shopping complex with multiple stores, food court, atrium
 function genMall(ck,x,y,z,r){
-  const w=14,d=12,floors=2,fh=5;
+  const w=15,d=14,floors=2,fh=5;
   for(let f=0;f<floors;f++){
     const fy=y+f*fh;
     buildRoom(ck,x,fy,z,w,d,fh,B.CONCRETE,f===0?B.CONCRETE:B.PLNK,B.CONCRETE,true);
-    // Central atrium/hallway
-    for(let dz=1;dz<d-1;dz++)for(let dy=1;dy<fh-1;dy++){ss(ck,x+fl(w/2),fy+dy,z+dz,B.AIR);ss(ck,x+fl(w/2)-1,fy+dy,z+dz,B.AIR)}
-    // Store partitions on each side
-    for(let store=0;store<3;store++){
+    // Wide central atrium/hallway (3 blocks wide)
+    for(let dz=1;dz<d-1;dz++)for(let dy=1;dy<fh-1;dy++){ss(ck,x+fl(w/2),fy+dy,z+dz,B.AIR);ss(ck,x+fl(w/2)-1,fy+dy,z+dz,B.AIR);ss(ck,x+fl(w/2)+1,fy+dy,z+dz,B.AIR)}
+    // Store partitions on each side - 4 stores per side
+    for(let store=0;store<4;store++){
       const sz=1+store*3;
       for(let dy=1;dy<fh-1;dy++){ss(ck,x+2,fy+dy,z+sz+2,B.GLASS);ss(ck,x+w-3,fy+dy,z+sz+2,B.GLASS)}
-      // Store entrance
-      ss(ck,x+fl(w/2)+1,fy+1,z+sz+1,B.AIR);ss(ck,x+fl(w/2)+1,fy+2,z+sz+1,B.AIR);
+      // Store entrances both sides
+      ss(ck,x+fl(w/2)+2,fy+1,z+sz+1,B.AIR);ss(ck,x+fl(w/2)+2,fy+2,z+sz+1,B.AIR);
       ss(ck,x+fl(w/2)-2,fy+1,z+sz+1,B.AIR);ss(ck,x+fl(w/2)-2,fy+2,z+sz+1,B.AIR);
-      // Display shelves
+      // Display shelves inside stores
       ss(ck,x+1,fy+1,z+sz,B.PLNK);ss(ck,x+w-2,fy+1,z+sz,B.PLNK);
+      // Store counter
+      if(store%2===0){ss(ck,x+1,fy+1,z+sz+1,B.METAL_PANEL);ss(ck,x+w-2,fy+1,z+sz+1,B.METAL_PANEL)}
     }
-    // Escalator/stairs
-    if(f<floors-1){for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.COB);ss(ck,x+w-2,fy+dy,z+1,B.COB)}}
+    // Escalator/stairs at both ends
+    if(f<floors-1){for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.COB);ss(ck,x+w-2,fy+dy,z+1,B.COB);ss(ck,x+1,fy+dy,z+d-2,B.COB);ss(ck,x+w-2,fy+dy,z+d-2,B.COB)}}
+    // Neon signage inside
+    if(f===0){ss(ck,x+fl(w/2),fy+fh-1,z+3,B.NEON_BLK);ss(ck,x+fl(w/2),fy+fh-1,z+d-4,B.NEON_BLK)}
   }
-  // Main entrance
-  for(let dx=fl(w/2)-2;dx<=fl(w/2)+1;dx++){ss(ck,x+dx,y+1,z,B.AIR);ss(ck,x+dx,y+2,z,B.AIR);ss(ck,x+dx,y+3,z,B.AIR)}
+  // Main entrance - grand
+  for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++){ss(ck,x+dx,y+1,z,B.AIR);ss(ck,x+dx,y+2,z,B.AIR);ss(ck,x+dx,y+3,z,B.AIR)}
+  // Back entrance
+  for(let dx=fl(w/2)-1;dx<=fl(w/2)+1;dx++){ss(ck,x+dx,y+1,z+d-1,B.AIR);ss(ck,x+dx,y+2,z+d-1,B.AIR)}
   // Food court on top floor
   const ftY=y+(floors-1)*fh;
   for(let dx=2;dx<w-2;dx+=3)ss(ck,x+dx,ftY+1,z+d-3,B.METAL_PANEL);
+  for(let dx=3;dx<w-3;dx+=4)ss(ck,x+dx,ftY+1,z+d-4,B.PLNK); // food court seating
   // Atrium skylight
-  for(let dx=fl(w/2)-2;dx<=fl(w/2)+1;dx++)for(let dz=2;dz<d-2;dz++)ss(ck,x+dx,y+floors*fh,z+dz,B.GLASS_TOWER);
-  // Roof
+  for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++)for(let dz=2;dz<d-2;dz++)ss(ck,x+dx,y+floors*fh,z+dz,B.GLASS_TOWER);
+  // Roof with equipment
   for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d;dz++)ss(ck,x+dx,y+floors*fh,z+dz,B.CONCRETE);
+  // Loading dock (back service area)
+  buildRoom(ck,x+2,y,z+d,6,4,4,B.CONCRETE,B.CONCRETE,B.METAL_PANEL,false);
+  ss(ck,x+4,y+1,z+d,B.AIR);ss(ck,x+4,y+2,z+d,B.AIR);ss(ck,x+4,y+3,z+d,B.AIR);
   // Parking lot
-  for(let dx=-2;dx<w+2;dx++)for(let dz=-4;dz<0;dz++)ss(ck,x+dx,y-1,z+dz,B.ASPHALT);
+  for(let dx=-3;dx<w+3;dx++)for(let dz=-5;dz<0;dz++)ss(ck,x+dx,y-1,z+dz,B.ASPHALT);
+  // Parking line markings
+  for(let dx=0;dx<w;dx+=3)ss(ck,x+dx,y-1,z-2,B.SIDEWALK);
   // Mall sign
-  for(let dx=4;dx<10;dx++){ss(ck,x+dx,y+floors*fh+1,z,B.NEON_BLK);ss(ck,x+dx,y+floors*fh+2,z,B.NEON_BLK)}
+  for(let dx=4;dx<11;dx++){ss(ck,x+dx,y+floors*fh+1,z,B.NEON_BLK);ss(ck,x+dx,y+floors*fh+2,z,B.NEON_BLK)}
+  // Roof access
+  for(let dy=0;dy<3;dy++)ss(ck,x+w-2,y+floors*fh+1+dy,z+d-2,B.COB);
 }
 // TEMPLE: large ancient temple with multiple rooms, columns, and altar
 function genTemple(ck,x,y,z){
@@ -1247,23 +1279,40 @@ deco(){
     // East-West rail: runs along x-axis at z=8
     if(isEWRail){
       const rz=8;
+      let lastH=-1;
       for(let x=0;x<CS;x++){
-        const h=this.sY(x,rz);if(h<=WL)continue;
-        // Gravel bed on surface
+        let h=this.sY(x,rz);
+        // Bridge over water/gaps
+        if(h<=WL&&lastH>WL){h=lastH} // extend bridge from last solid
+        else if(h<=WL){
+          // Check ahead for land to bridge to
+          let ahead=-1;for(let ax=x+1;ax<CS&&ax<x+8;ax++){const ah=this.sY(ax,rz);if(ah>WL){ahead=ah;break}}
+          if(ahead>0){h=lastH>WL?lastH:ahead;
+            // Build bridge support
+            for(let by=WL;by<=h;by++)this.S(x,by,rz,B.COB);
+          }else continue;
+        }
+        lastH=h;
         this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
-        // Rail ties every 3 blocks
         if(x%3===0){this.S(x,h,rz,B.RAIL_BED)}
-        // Thin rail on top of surface
         this.S(x,h+1,rz,B.RAIL_IRON);
-        // Powered rail every 8 blocks for speed
         if(x%8===0)this.S(x,h+1,rz,B.RAIL_POWERED);
       }
     }
     // North-South rail: runs along z-axis at x=8
     if(isNSRail){
       const rx=8;
+      let lastH=-1;
       for(let z=0;z<CS;z++){
-        const h=this.sY(rx,z);if(h<=WL)continue;
+        let h=this.sY(rx,z);
+        if(h<=WL&&lastH>WL){h=lastH}
+        else if(h<=WL){
+          let ahead=-1;for(let az=z+1;az<CS&&az<z+8;az++){const ah=this.sY(rx,az);if(ah>WL){ahead=ah;break}}
+          if(ahead>0){h=lastH>WL?lastH:ahead;
+            for(let by=WL;by<=h;by++)this.S(rx,by,z,B.COB);
+          }else continue;
+        }
+        lastH=h;
         this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
         if(z%3===0){this.S(rx,h,z,B.RAIL_BED)}
         this.S(rx,h+1,z,B.RAIL_IRON);
@@ -1920,12 +1969,13 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     else if(b3===BI.OC&&dh01(fl(now/150),2)>.4)this.mobs.push(new FishMob(mx2+.5,WL-3,mz+.5))}
     this.mobs=this.mobs.filter(m=>{if(m.pos.distanceTo(this.pl.pos)>RD*CS){m.rm();return false}return m.tick(dt)});
     // Tick trains - spawn near player on rail corridors
-    if(this.trains.length<3&&this.mT>8){
+    if(this.trains.length<2&&this.mT>15){
       const px2=fl(this.pl.pos.x/CS),pz2=fl(this.pl.pos.z/CS);
-      for(let dx=-RD;dx<=RD&&this.trains.length<3;dx++)for(let dz=-RD;dz<=RD&&this.trains.length<3;dz++){
+      for(let dx=-RD;dx<=RD&&this.trains.length<2;dx++)for(let dz=-RD;dz<=RD&&this.trains.length<2;dz++){
         const cx2=px2+dx,cz2=pz2+dz;
         const isEW=(((cz2%16)+16)%16===0),isNS=(((cx2%20)+20)%20===0);
         if(!isEW&&!isNS)continue;
+        if(dh01(cx2*37+13,cz2*53+7)>.15)continue; // only 15% of valid rail chunks spawn trains
         const tKey=cx2+','+cz2;if(this.trains.some(t=>fl(t.pos.x/CS)===cx2&&fl(t.pos.z/CS)===cz2))continue;
         const bi2=bio(cx2*CS+8,cz2*CS+8);if(bi2===BI.OC||bi2===BI.VCLANTIS)continue;
         const th=htA(cx2*CS+8,cz2*CS+8,bi2);if(th<=WL)continue;

@@ -1653,7 +1653,7 @@ async function doMP(){const nm=$('mpnm').value||'P',cd=$('mpcd').value.trim();W.
 function toggleP(){if(W.st==='play'){W.st='pause';$('pauseUI').style.display='flex';document.exitPointerLock()}else if(W.st==='pause'){W.st='play';$('pauseUI').style.display='none';W.ren.domElement.requestPointerLock()}}
 function toggleI(){if(W.st==='play'){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const hit=W.pl.ray(W.cam.position.clone(),dir,5.5);openI(hit&&hit.b===B.CRFT)}else if(W.st==='inv')closeI()}
 function unpause(){toggleP()}
-function saveQuit(){if(W.curW)saveW(W.curW.nm,W.curW.sd,W.curW.md);W.st='menu';hideAll();$('menu').style.display='flex';for(const k in W.ch)W.ch[k].disp();W.ch={};W.mobs.forEach(m=>m.rm());W.mobs=[];W.drops.forEach(d=>d.rm());W.drops=[];if(W.net){W.net.stop();W.net=null}if(W.ren){const c=W.ren.domElement;if(c.parentNode)c.parentNode.removeChild(c);W.ren.dispose();W.ren=null}W.sc=null}
+function saveQuit(){if(W.curW)saveW(W.curW.nm,W.curW.sd,W.curW.md);W.st='menu';hideAll();$('menu').style.display='flex';for(const k in W.ch)W.ch[k].disp();W.ch={};W.mobs.forEach(m=>m.rm());W.mobs=[];W.drops.forEach(d=>d.rm());W.drops=[];if(W.trains)W.trains.forEach(t=>t.rm());W.trains=[];if(W.net){W.net.stop();W.net=null}if(W.ren){const c=W.ren.domElement;if(c.parentNode)c.parentNode.removeChild(c);W.ren.dispose();W.ren=null}W.sc=null}
 function doResp(){W.st='play';$('deathUI').style.display='none';W.pl.rsp();W.ren.domElement.requestPointerLock()}
 
 // ═══ CHEAT SYSTEM (Creative Mode) ═══
@@ -1670,9 +1670,12 @@ function openCheat(){
   // ─── Structure teleports ───
   const sHead=document.createElement('div');sHead.style.cssText='font-size:7px;color:#888;margin:8px 0 4px';sHead.textContent='STRUCTURES:';bc.appendChild(sHead);
   const structNames=['Sweetwater High','Football Stadium','VC Restaurant','Props Arcade','VC Mall','Gomp Industries Tower','Waffle House','Train Station','Abandoned Cabin','Watchtower','Temple','Shrine','Broken Tower','Condo Complex','Boardwalk Ruins','Chapel','Monument','City Tower','Statue'];
+  // Also add any dynamically discovered structures not in the static list
+  for(const k in _structRegistry){if(!structNames.includes(k))structNames.push(k)}
   for(const sn of structNames){
-    const btn=document.createElement('div');btn.className='btn';btn.style.cssText='width:280px;font-size:6px;margin:1px 0;background:linear-gradient(180deg,#556 0%,#556 48%,#445 52%,#445 100%)';
-    btn.textContent='⚑ '+sn;btn.onclick=()=>cheatTPStruct(sn);bc.appendChild(btn);
+    const found=_structRegistry[sn]&&_structRegistry[sn].length>0;
+    const btn=document.createElement('div');btn.className='btn';btn.style.cssText='width:280px;font-size:6px;margin:1px 0;background:linear-gradient(180deg,'+(found?'#464':'#556')+' 0%,'+(found?'#464':'#556')+' 48%,'+(found?'#353':'#445')+' 52%,'+(found?'#353':'#445')+' 100%)';
+    btn.textContent=(found?'✓ ':'⚑ ')+sn+(found?' ('+_structRegistry[sn].length+')':'');btn.onclick=()=>cheatTPStruct(sn);bc.appendChild(btn);
   }
   // ─── Station teleport ───
   if(W._stations&&W._stations.length>0){

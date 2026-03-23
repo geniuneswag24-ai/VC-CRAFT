@@ -131,7 +131,7 @@ const BD={};function db(id,nm,o={}){BD[id]={nm,sol:o.s!==0,tr:!!o.t,liq:!!o.l,hd
 db(B.AIR,'Air',{s:0,t:1});db(B.GRASS,'Grass Block',{h:.6});db(B.DIRT,'Dirt',{h:.5});db(B.STONE,'Stone',{h:1.5,d:B.COB});db(B.SAND,'Sand',{h:.5});db(B.WATER,'Water',{s:0,t:1,l:1,h:-1});db(B.BED,'Bedrock',{h:-1});db(B.OLOG,'Oak Log',{h:2});db(B.OLVS,'Oak Leaves',{h:.2,t:1});db(B.BLOG,'Birch Log',{h:2});db(B.BLVS,'Birch Leaves',{h:.2,t:1});db(B.SLOG,'Spruce Log',{h:2});db(B.SLVS,'Spruce Leaves',{h:.2,t:1});db(B.SNOW,'Snow',{h:.3});db(B.COB,'Cobblestone',{h:1.5});db(B.SSTON,'Sandstone',{h:1.2});db(B.PLNK,'Oak Planks',{h:1.5});db(B.GLASS,'Glass',{h:.3,t:1,d:B.AIR});db(B.GRAV,'Gravel',{h:.6});db(B.CLAY,'Clay',{h:.6});db(B.RSAND,'Red Sand',{h:.5});db(B.MUD,'Mud',{h:.5});db(B.CACT,'Cactus',{h:.4});db(B.DEEP,'Deepslate',{h:2});db(B.COAL,'Coal Ore',{h:1.8,d:B.COAL_I});db(B.IRON,'Iron Ore',{h:2.2});db(B.GOLD,'Gold Ore',{h:2.5});db(B.DIAM,'Diamond Ore',{h:3});db(B.MOSS,'Mossy Stone',{h:1.5});db(B.BRK,'Bricks',{h:2});db(B.SBK,'Stone Bricks',{h:1.5});db(B.DLOG,'Dark Oak Log',{h:2});db(B.DLVS,'Dark Leaves',{h:.2,t:1});db(B.JLOG,'Jungle Log',{h:2});db(B.JLVS,'Jungle Leaves',{h:.2,t:1});db(B.ALOG,'Acacia Log',{h:2});db(B.ALVS,'Acacia Leaves',{h:.2,t:1});db(B.CRFT,'Crafting Table',{h:1.5});db(B.FURN,'Furnace',{h:2});db(B.CHST,'Chest',{h:1.5});db(B.ICE,'Ice',{h:.5,t:1});db(B.STICK,'Stick',{s:0,t:1,st:64});db(B.COAL_I,'Coal',{s:0,t:1,st:64});db(B.IRON_I,'Iron Ingot',{s:0,t:1,st:64});db(B.WPICK,'Wood Pickaxe',{s:0,t:1,st:1});db(B.SPICK,'Stone Pickaxe',{s:0,t:1,st:1});db(B.WSWD,'Wood Sword',{s:0,t:1,st:1});
 // VC World block defs
 db(B.ASPHALT,'Asphalt',{h:1.5});db(B.SIDEWALK,'Sidewalk',{h:1.2});db(B.CONCRETE,'Concrete',{h:2});db(B.STUCCO,'Stucco Wall',{h:1.5});db(B.CONDO_WALL,'Condo Wall',{h:1.5});db(B.ROOF_TILE,'Roof Tile',{h:1});db(B.DRY_GRASS,'Dry Grass',{h:.5});db(B.CRACK_PAVE,'Cracked Pavement',{h:1});db(B.STATUE_STONE,'Statue Stone',{h:3});db(B.BRONZE,'Bronze Block',{h:2.5});db(B.METAL_PANEL,'Metal Panel',{h:2});db(B.GLASS_TOWER,'Tower Glass',{h:.5,t:1});db(B.NEON_BLK,'Neon Block',{h:1});db(B.CITY_RUBBLE,'City Rubble',{h:1});db(B.SHIP_TIMBER,'Ship Timber',{h:1.5});db(B.BARNACLE_WOOD,'Barnacle Wood',{h:1.5});db(B.SAIL_BLK,'Sail Block',{h:.3});db(B.MARBLE,'Marble',{h:2});db(B.SEA_MARBLE,'Sea Marble',{h:2});db(B.COLUMN_BLK,'Column Block',{h:2.5});db(B.TEMPLE_STONE,'Temple Stone',{h:2});db(B.NICSHADE_LOG,'Nicshade Log',{h:2});db(B.NICSHADE_LVS,'Nicshade Leaves',{h:.2,t:1});db(B.GLOW_FLOWER,'Glow Flower',{h:.2,t:1});db(B.VINE_STONE,'Vine Stone',{h:1.5});db(B.CANYON_STONE,'Canyon Stone',{h:2});db(B.MONUMENT_STN,'Monument Stone',{h:3});db(B.RUSTED_METAL,'Rusted Metal',{h:2});db(B.GLOW_CRYSTAL,'Glow Crystal',{h:1,t:1});db(B.DARK_PANEL,'Dark Panel',{h:2});db(B.SIGNAL_STONE,'Signal Stone',{h:2});db(B.RAIL_BLK,'Rail',{h:.5});db(B.RAIL_TIE,'Rail Tie',{h:1});db(B.PLATFORM_BLK,'Platform',{h:1.5});db(B.SCHOOL_WALL,'School Wall',{h:1.5});db(B.LOCKER_BLK,'Locker',{h:1});db(B.GYM_FLOOR,'Gym Floor',{h:1});db(B.BOARDWALK,'Boardwalk',{h:1});db(B.RESORT_WALL,'Resort Wall',{h:1.5});db(B.POOL_TILE,'Pool Tile',{h:1});db(B.CABIN_WALL,'Cabin Wall',{h:1.5});db(B.TRAIL_STONE,'Trail Stone',{h:1});db(B.CHAPEL_STONE,'Chapel Stone',{h:2});db(B.SIDING,'House Siding',{h:1.5});db(B.SHINGLE,'Roof Shingle',{h:1});db(B.FENCE_BLK,'Fence',{h:1});db(B.DRIVEWAY,'Driveway',{h:1});db(B.WATCHER_SAND,'Watcher Sand',{h:.5});db(B.TOWER_BRICK,'Tower Brick',{h:2});db(B.ANCIENT_METAL,'Ancient Metal',{h:2.5});db(B.PIRATE_PLNK,'Pirate Planks',{h:1.5});
-db(B.CORAL_PINK,'Pink Coral',{h:.3});db(B.CORAL_BLUE,'Blue Coral',{h:.3});db(B.CORAL_YELLOW,'Yellow Coral',{h:.3});db(B.KELP,'Kelp',{h:.2,t:1,s:0});db(B.SEA_LANTERN,'Sea Lantern',{h:1});db(B.RAIL_IRON,'Iron Rail',{h:.5});db(B.RAIL_POWERED,'Powered Rail',{h:.5});db(B.RAIL_BED,'Rail Bed',{h:1});
+db(B.CORAL_PINK,'Pink Coral',{h:.3});db(B.CORAL_BLUE,'Blue Coral',{h:.3});db(B.CORAL_YELLOW,'Yellow Coral',{h:.3});db(B.KELP,'Kelp',{h:.2,t:1,s:0});db(B.SEA_LANTERN,'Sea Lantern',{h:1});db(B.RAIL_IRON,'Iron Rail',{h:.5,s:0,t:1});db(B.RAIL_POWERED,'Powered Rail',{h:.5,s:0,t:1});db(B.RAIL_BED,'Rail Bed',{h:1,s:0,t:1});
 
 // RECIPES
 const RCP=[];function addR(g,r,n){RCP.push({g,r,n:n||1})}
@@ -907,21 +907,76 @@ deco(){
   // ═══ STRUCTURE GEN ═══
   const ch=this.sY(8,8);
   if(ch>WL&&ch<CH-10)genStructure(this,ox,oz,ox+8,oz+8,ch,chunkBio);
-  // ═══ RAIL SYSTEM - connected corridors ═══
-  const isRailChunk=abs(nR.n2(this.cx*.02,this.cz*.08))<.035;
-  if(isRailChunk&&chunkBio!==BI.OC&&chunkBio!==BI.VCLANTIS&&chunkBio!==BI.PROPS_ISLAND){
-    const rz=8;
-    for(let x=0;x<CS;x++){const h=this.sY(x,rz);if(h<=WL)continue;this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz,B.RAIL_BED);this.S(x,h,rz+1,B.GRAV);this.S(x,h+1,rz,B.RAIL_IRON);if(x%3===0){this.S(x,h,rz-1,B.RAIL_BED);this.S(x,h,rz+1,B.RAIL_BED)}}
-    if(abs(dh01(this.cx*41,this.cz*37)-.5)<.015){const sh2=this.sY(8,rz);if(sh2>WL){
-      for(let dx=1;dx<15;dx++)for(let dz=rz-3;dz<rz;dz++)this.S(dx,sh2,dz,B.PLATFORM_BLK);
-      for(let dx=1;dx<15;dx++)this.S(dx,sh2,rz-1,B.CONCRETE);
-      for(let dx=3;dx<13;dx++)for(let dz=rz-3;dz<rz-1;dz++)this.S(dx,sh2+4,dz,B.METAL_PANEL);
-      for(const px3 of[3,7,12])for(let dy=1;dy<4;dy++)this.S(px3,sh2+dy,rz-3,B.CONCRETE);
-      for(let dx=5;dx<11;dx+=3)this.S(dx,sh2+1,rz-2,B.PLNK);
-      buildRoom(this,1,sh2+1,rz-7,5,3,3,B.CONCRETE,B.CONCRETE,B.METAL_PANEL,true);this.S(2,sh2+2,rz-7,B.AIR);
-      for(let dx=1;dx<15;dx++)this.S(dx,sh2+1,rz-3,B.FENCE_BLK);
-      for(let dx=4;dx<12;dx++){this.S(dx,sh2+2,rz,B.METAL_PANEL);this.S(dx,sh2+3,rz,dx===4||dx===11?B.CONCRETE:B.GLASS_TOWER)}
-      this.S(4,sh2+4,rz,B.NEON_BLK)}}
+  // ═══ RAIL SYSTEM - grid-based connected corridors ═══
+  const isEWRail = (((this.cz%8)+8)%8===0); // east-west corridor every 8 chunks
+  const isNSRail = (((this.cx%12)+12)%12===0); // north-south corridor every 12 chunks
+  const skipBiome = chunkBio===BI.OC||chunkBio===BI.VCLANTIS||chunkBio===BI.PROPS_ISLAND;
+  if((isEWRail||isNSRail)&&!skipBiome){
+    // East-West rail: runs along x-axis at z=8
+    if(isEWRail){
+      const rz=8;
+      for(let x=0;x<CS;x++){
+        const h=this.sY(x,rz);if(h<=WL)continue;
+        // Gravel bed on surface
+        this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
+        // Rail ties every 3 blocks
+        if(x%3===0){this.S(x,h,rz,B.RAIL_BED)}
+        // Thin rail on top of surface
+        this.S(x,h+1,rz,B.RAIL_IRON);
+        // Powered rail every 8 blocks for speed
+        if(x%8===0)this.S(x,h+1,rz,B.RAIL_POWERED);
+      }
+    }
+    // North-South rail: runs along z-axis at x=8
+    if(isNSRail){
+      const rx=8;
+      for(let z=0;z<CS;z++){
+        const h=this.sY(rx,z);if(h<=WL)continue;
+        this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
+        if(z%3===0){this.S(rx,h,z,B.RAIL_BED)}
+        this.S(rx,h+1,z,B.RAIL_IRON);
+        if(z%8===0)this.S(rx,h+1,z,B.RAIL_POWERED);
+      }
+    }
+    // ═══ LARGE STATION at intersections or every ~15 chunks ═══
+    const isIntersection = isEWRail && isNSRail;
+    const isStationChunk = isIntersection || (isEWRail && (((this.cx%15)+15)%15===0)) || (isNSRail && (((this.cz%15)+15)%15===0));
+    if(isStationChunk){
+      const sh=this.sY(8,8);if(sh>WL){
+        // ──── LARGE TRAIN STATION ────
+        // Main platform: 14x10 blocks
+        for(let dx=1;dx<15;dx++)for(let dz=2;dz<12;dz++)this.S(dx,sh,dz,B.PLATFORM_BLK);
+        // Platform edge markings (yellow line)
+        for(let dx=1;dx<15;dx++){this.S(dx,sh,5,B.CONCRETE);this.S(dx,sh,10,B.CONCRETE)}
+        // Waiting shelter - roof with pillars (main structure)
+        for(let dx=2;dx<14;dx++)for(let dz=2;dz<5;dz++)this.S(dx,sh+5,dz,B.METAL_PANEL);
+        for(const px3 of[2,6,10,13])for(let dy=1;dy<=4;dy++)this.S(px3,sh+dy,2,B.CONCRETE);
+        for(const px3 of[2,6,10,13])for(let dy=1;dy<=4;dy++)this.S(px3,sh+dy,4,B.CONCRETE);
+        // Benches
+        for(let dx=3;dx<13;dx+=2)this.S(dx,sh+1,3,B.PLNK);
+        // Ticket booth / control room
+        buildRoom(this,1,sh+1,12,6,4,4,B.CONCRETE,B.CONCRETE,B.METAL_PANEL,true);
+        this.S(3,sh+2,12,B.AIR);this.S(3,sh+3,12,B.AIR); // door
+        this.S(2,sh+2,12,B.GLASS);this.S(4,sh+2,12,B.GLASS); // windows
+        // Ticket counter inside
+        for(let dx=2;dx<6;dx++)this.S(dx,sh+2,14,B.METAL_PANEL);
+        // Second waiting area on other side
+        for(let dx=2;dx<14;dx++)for(let dz=10;dz<12;dz++)this.S(dx,sh+5,dz,B.METAL_PANEL);
+        for(const px3 of[2,6,10,13])for(let dy=1;dy<=4;dy++)this.S(px3,sh+dy,11,B.CONCRETE);
+        for(let dx=3;dx<13;dx+=2)this.S(dx,sh+1,11,B.PLNK);
+        // Platform fencing along edges
+        for(let dx=1;dx<15;dx++){this.S(dx,sh+1,1,B.FENCE_BLK);this.S(dx,sh+1,12,B.FENCE_BLK)}
+        for(let dz=2;dz<12;dz++){this.S(0,sh+1,dz,B.FENCE_BLK);this.S(15,sh+1,dz,B.FENCE_BLK)}
+        // Station signage
+        this.S(7,sh+5,2,B.NEON_BLK);this.S(8,sh+5,2,B.NEON_BLK);
+        this.S(7,sh+6,2,B.NEON_BLK);this.S(8,sh+6,2,B.NEON_BLK);
+        // Stairs/ramp to platform
+        for(let dy=0;dy<2;dy++)for(let dz=6;dz<9;dz++)this.S(0,sh+dy,dz,B.COB);
+        // Register station for teleport
+        if(!W._stations)W._stations=[];
+        W._stations.push({x:this.cx*CS+8,y:sh+2,z:this.cz*CS+8});
+      }
+    }
   }
   // ═══ NORMAL BIOME DECO ═══
   if(this._hasStruct)return;
@@ -970,7 +1025,14 @@ buildMesh(gB){
       if(!show)continue;if(isW&&nd.liq)continue;
       const uv=uvL[bf2[f.f]];if(!uv)continue;
       const p=isW?WP:P,n=isW?WN:N,u=isW?WU:U,idx=isW?WI2:IX,base=isW?wvi:vi;
-      for(const c of f.v){p.push(ox+x+c[0],y+c[1]-(isW&&f.f===0?.12:0),oz+z+c[2]);n.push(f.n[0],f.n[1],f.n[2])}
+      const isRail = b===B.RAIL_IRON||b===B.RAIL_POWERED||b===B.RAIL_BED;
+      const thinH = isRail ? 0.125 : 1;
+      for(const c of f.v){
+        let vy = c[1];
+        if(isRail) vy = c[1] * thinH;
+        p.push(ox+x+c[0], y+vy-(isW&&f.f===0?.12:0), oz+z+c[2]);
+        n.push(f.n[0],f.n[1],f.n[2]);
+      }
       u.push(uv.u,uv.v+uv.h,uv.u+uv.w,uv.v+uv.h,uv.u+uv.w,uv.v,uv.u,uv.v);
       idx.push(base,base+1,base+2,base,base+2,base+3);if(isW)wvi+=4;else vi+=4;
     }

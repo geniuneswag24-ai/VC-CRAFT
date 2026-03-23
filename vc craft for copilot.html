@@ -126,12 +126,13 @@ DARK_PANEL:76,SIGNAL_STONE:77,RAIL_BLK:78,RAIL_TIE:79,PLATFORM_BLK:80,
 SCHOOL_WALL:81,LOCKER_BLK:82,GYM_FLOOR:83,BOARDWALK:84,RESORT_WALL:85,
 POOL_TILE:86,CABIN_WALL:87,TRAIL_STONE:88,CHAPEL_STONE:89,SIDING:90,
 SHINGLE:91,FENCE_BLK:92,DRIVEWAY:93,WATCHER_SAND:94,TOWER_BRICK:95,
-ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105};
+ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112};
 const BD={};function db(id,nm,o={}){BD[id]={nm,sol:o.s!==0,tr:!!o.t,liq:!!o.l,hd:o.h||1,dr:o.d!==undefined?o.d:id,st:o.st||64}}
 db(B.AIR,'Air',{s:0,t:1});db(B.GRASS,'Grass Block',{h:.6});db(B.DIRT,'Dirt',{h:.5});db(B.STONE,'Stone',{h:1.5,d:B.COB});db(B.SAND,'Sand',{h:.5});db(B.WATER,'Water',{s:0,t:1,l:1,h:-1});db(B.BED,'Bedrock',{h:-1});db(B.OLOG,'Oak Log',{h:2});db(B.OLVS,'Oak Leaves',{h:.2,t:1});db(B.BLOG,'Birch Log',{h:2});db(B.BLVS,'Birch Leaves',{h:.2,t:1});db(B.SLOG,'Spruce Log',{h:2});db(B.SLVS,'Spruce Leaves',{h:.2,t:1});db(B.SNOW,'Snow',{h:.3});db(B.COB,'Cobblestone',{h:1.5});db(B.SSTON,'Sandstone',{h:1.2});db(B.PLNK,'Oak Planks',{h:1.5});db(B.GLASS,'Glass',{h:.3,t:1,d:B.AIR});db(B.GRAV,'Gravel',{h:.6});db(B.CLAY,'Clay',{h:.6});db(B.RSAND,'Red Sand',{h:.5});db(B.MUD,'Mud',{h:.5});db(B.CACT,'Cactus',{h:.4});db(B.DEEP,'Deepslate',{h:2});db(B.COAL,'Coal Ore',{h:1.8,d:B.COAL_I});db(B.IRON,'Iron Ore',{h:2.2});db(B.GOLD,'Gold Ore',{h:2.5});db(B.DIAM,'Diamond Ore',{h:3});db(B.MOSS,'Mossy Stone',{h:1.5});db(B.BRK,'Bricks',{h:2});db(B.SBK,'Stone Bricks',{h:1.5});db(B.DLOG,'Dark Oak Log',{h:2});db(B.DLVS,'Dark Leaves',{h:.2,t:1});db(B.JLOG,'Jungle Log',{h:2});db(B.JLVS,'Jungle Leaves',{h:.2,t:1});db(B.ALOG,'Acacia Log',{h:2});db(B.ALVS,'Acacia Leaves',{h:.2,t:1});db(B.CRFT,'Crafting Table',{h:1.5});db(B.FURN,'Furnace',{h:2});db(B.CHST,'Chest',{h:1.5});db(B.ICE,'Ice',{h:.5,t:1});db(B.STICK,'Stick',{s:0,t:1,st:64});db(B.COAL_I,'Coal',{s:0,t:1,st:64});db(B.IRON_I,'Iron Ingot',{s:0,t:1,st:64});db(B.WPICK,'Wood Pickaxe',{s:0,t:1,st:1});db(B.SPICK,'Stone Pickaxe',{s:0,t:1,st:1});db(B.WSWD,'Wood Sword',{s:0,t:1,st:1});
 // VC World block defs
 db(B.ASPHALT,'Asphalt',{h:1.5});db(B.SIDEWALK,'Sidewalk',{h:1.2});db(B.CONCRETE,'Concrete',{h:2});db(B.STUCCO,'Stucco Wall',{h:1.5});db(B.CONDO_WALL,'Condo Wall',{h:1.5});db(B.ROOF_TILE,'Roof Tile',{h:1});db(B.DRY_GRASS,'Dry Grass',{h:.5});db(B.CRACK_PAVE,'Cracked Pavement',{h:1});db(B.STATUE_STONE,'Statue Stone',{h:3});db(B.BRONZE,'Bronze Block',{h:2.5});db(B.METAL_PANEL,'Metal Panel',{h:2});db(B.GLASS_TOWER,'Tower Glass',{h:.5,t:1});db(B.NEON_BLK,'Neon Block',{h:1});db(B.CITY_RUBBLE,'City Rubble',{h:1});db(B.SHIP_TIMBER,'Ship Timber',{h:1.5});db(B.BARNACLE_WOOD,'Barnacle Wood',{h:1.5});db(B.SAIL_BLK,'Sail Block',{h:.3});db(B.MARBLE,'Marble',{h:2});db(B.SEA_MARBLE,'Sea Marble',{h:2});db(B.COLUMN_BLK,'Column Block',{h:2.5});db(B.TEMPLE_STONE,'Temple Stone',{h:2});db(B.NICSHADE_LOG,'Nicshade Log',{h:2});db(B.NICSHADE_LVS,'Nicshade Leaves',{h:.2,t:1});db(B.GLOW_FLOWER,'Glow Flower',{h:.2,t:1});db(B.VINE_STONE,'Vine Stone',{h:1.5});db(B.CANYON_STONE,'Canyon Stone',{h:2});db(B.MONUMENT_STN,'Monument Stone',{h:3});db(B.RUSTED_METAL,'Rusted Metal',{h:2});db(B.GLOW_CRYSTAL,'Glow Crystal',{h:1,t:1});db(B.DARK_PANEL,'Dark Panel',{h:2});db(B.SIGNAL_STONE,'Signal Stone',{h:2});db(B.RAIL_BLK,'Rail',{h:.5});db(B.RAIL_TIE,'Rail Tie',{h:1});db(B.PLATFORM_BLK,'Platform',{h:1.5});db(B.SCHOOL_WALL,'School Wall',{h:1.5});db(B.LOCKER_BLK,'Locker',{h:1});db(B.GYM_FLOOR,'Gym Floor',{h:1});db(B.BOARDWALK,'Boardwalk',{h:1});db(B.RESORT_WALL,'Resort Wall',{h:1.5});db(B.POOL_TILE,'Pool Tile',{h:1});db(B.CABIN_WALL,'Cabin Wall',{h:1.5});db(B.TRAIL_STONE,'Trail Stone',{h:1});db(B.CHAPEL_STONE,'Chapel Stone',{h:2});db(B.SIDING,'House Siding',{h:1.5});db(B.SHINGLE,'Roof Shingle',{h:1});db(B.FENCE_BLK,'Fence',{h:1});db(B.DRIVEWAY,'Driveway',{h:1});db(B.WATCHER_SAND,'Watcher Sand',{h:.5});db(B.TOWER_BRICK,'Tower Brick',{h:2});db(B.ANCIENT_METAL,'Ancient Metal',{h:2.5});db(B.PIRATE_PLNK,'Pirate Planks',{h:1.5});
 db(B.CORAL_PINK,'Pink Coral',{h:.3});db(B.CORAL_BLUE,'Blue Coral',{h:.3});db(B.CORAL_YELLOW,'Yellow Coral',{h:.3});db(B.KELP,'Kelp',{h:.2,t:1,s:0});db(B.SEA_LANTERN,'Sea Lantern',{h:1});db(B.RAIL_IRON,'Iron Rail',{h:.5,s:0,t:1});db(B.RAIL_POWERED,'Powered Rail',{h:.5,s:0,t:1});db(B.RAIL_BED,'Rail Bed',{h:1,s:0,t:1});
+db(B.TALL_GRASS,'Tall Grass',{h:.1,s:0,t:1});db(B.FLOWER_RED,'Red Flower',{h:.1,s:0,t:1});db(B.FLOWER_BLUE,'Blue Flower',{h:.1,s:0,t:1});db(B.FLOWER_YELLOW,'Yellow Flower',{h:.1,s:0,t:1});db(B.SHRUB,'Shrub',{h:.2,s:0,t:1});db(B.REED,'Reed',{h:.2,s:0,t:1});db(B.FERN,'Fern',{h:.1,s:0,t:1});
 
 // RECIPES
 const RCP=[];function addR(g,r,n){RCP.push({g,r,n:n||1})}
@@ -157,7 +158,7 @@ mt('gs',c=>{nf(c,'#8B6B3A','#9A7848',.5);for(let x=0;x<16;x++){px(c,x,0,'#3E9B2F
 mt('dt',c=>{nf(c,'#8B6B3A','#9A7848',.6)});
 mt('st',c=>{nf(c,'#787878','#959595',.5);for(let y=0;y<16;y+=4){const v=68+fl(tRng.n()*22);c.fillStyle=`rgb(${v},${v},${v+2})`;c.fillRect(0,y,16,3)}for(let i=0;i<16;i++){const v=60+fl(tRng.n()*40);c.fillStyle=`rgb(${v},${v},${v})`;const sx=fl(tRng.n()*14),sy=fl(tRng.n()*14);c.fillRect(sx,sy,1+fl(tRng.n()*2),1+fl(tRng.n()*2))}c.fillStyle='rgba(0,0,0,0.08)';for(let i=0;i<3;i++)c.fillRect(fl(tRng.n()*12),fl(tRng.n()*14),3+fl(tRng.n()*3),1)});
 mt('sa',c=>{nf(c,'#DBC882','#E8D8A0',.5)});
-mt('wa',c=>{nf(c,'#1a5090','#2870AA',.4);c.fillStyle='rgba(60,140,220,0.25)';for(let y=0;y<16;y+=3)c.fillRect(0,y,16,1);c.fillStyle='rgba(100,180,240,0.2)';c.fillRect(3,2,6,1);c.fillRect(8,8,5,1);c.fillRect(1,13,4,1);c.fillStyle='rgba(255,255,255,0.08)';c.fillRect(4,5,3,1);c.fillRect(10,11,4,1)});
+mt('wa',c=>{nf(c,'#1a5090','#2870AA',.4);c.fillStyle='rgba(40,100,180,0.3)';for(let y=0;y<16;y+=2)c.fillRect(0,y,16,1);c.fillStyle='rgba(60,140,220,0.25)';c.fillRect(2,1,8,1);c.fillRect(6,5,7,1);c.fillRect(1,9,6,1);c.fillRect(8,13,5,1);c.fillStyle='rgba(100,180,240,0.2)';c.fillRect(3,3,5,1);c.fillRect(10,7,4,1);c.fillRect(1,11,3,1);c.fillStyle='rgba(255,255,255,0.12)';c.fillRect(4,2,4,1);c.fillRect(9,6,3,1);c.fillRect(2,10,5,1);c.fillRect(11,14,3,1)});
 mt('be',c=>{nf(c,'#222222','#444444',.7)});
 mt('ol',c=>{nf(c,'#6B4826','#7D5838',.5);for(let y=0;y<16;y+=4){for(let x=0;x<16;x++)if(tRng.n()>.5)px(c,x,y,'#5A3818')}});
 mt('olt',c=>{nf(c,'#9E7E4E','#B0906E',.4);c.strokeStyle='#6B4826';c.lineWidth=1;c.beginPath();c.arc(8,8,5,0,TAU);c.stroke();c.beginPath();c.arc(8,8,2,0,TAU);c.stroke()});
@@ -169,7 +170,7 @@ mt('sn',c=>{nf(c,'#EEF4F8','#FFFFFF',.2)});
 mt('co',c=>{nf(c,'#727272','#8A8A8A',.4);const rs=[[0,0,5,4],[5,0,6,5],[11,0,5,4],[0,4,4,4],[4,4,7,4],[11,4,5,5],[0,8,6,4],[6,8,5,4],[11,9,5,4],[0,12,5,4],[5,12,6,4],[11,12,5,4]];for(const[rx,ry,rw,rh]of rs){const v=60+fl(tRng.n()*30);c.fillStyle=`rgb(${v},${v},${v})`;c.fillRect(rx,ry,rw,rh);c.strokeStyle=`rgb(${v-15},${v-15},${v-15})`;c.strokeRect(rx+.5,ry+.5,rw-1,rh-1)}});
 mt('ss',c=>{nf(c,'#C4AA6A','#D4BA7A',.4);c.fillStyle='#B49A5A';c.fillRect(0,4,16,1);c.fillRect(0,8,16,1);c.fillRect(0,12,16,1)});
 mt('pk',c=>{nf(c,'#B08848','#C89858',.35);c.fillStyle='#987030';c.fillRect(4,0,1,16);c.fillRect(8,0,1,16);c.fillRect(12,0,1,16);for(let i=0;i<8;i++){const v=150+fl(tRng.n()*30);c.fillStyle=`rgba(${v},${v-40},${v-70},0.15)`;c.fillRect(fl(tRng.n()*14),fl(tRng.n()*14),2,1)}c.fillStyle='rgba(80,50,20,0.1)';c.fillRect(2,0,1,16);c.fillRect(10,0,1,16)});
-mt('gl',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(160,210,245,0.18)';c.fillRect(0,0,16,16);c.fillStyle='rgba(200,230,255,0.12)';c.fillRect(0,0,16,16);c.strokeStyle='rgba(120,180,220,0.4)';c.lineWidth=1;c.strokeRect(.5,.5,15,15);c.fillStyle='rgba(255,255,255,0.25)';c.fillRect(1,1,2,2);c.fillStyle='rgba(255,255,255,0.15)';c.fillRect(12,3,3,1);c.fillStyle='rgba(200,230,255,0.08)';c.fillRect(2,4,12,10)});
+mt('gl',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(180,220,250,0.12)';c.fillRect(0,0,16,16);c.strokeStyle='rgba(100,160,210,0.35)';c.lineWidth=1;c.strokeRect(.5,.5,15,15);c.fillStyle='rgba(255,255,255,0.3)';c.fillRect(1,1,3,3);c.fillStyle='rgba(255,255,255,0.15)';c.fillRect(11,2,3,1);c.fillRect(2,12,2,1);c.fillStyle='rgba(200,230,255,0.06)';c.fillRect(0,0,16,16)});
 mt('gv',c=>{nf(c,'#6A6A6A','#8A8A8A',.6)});mt('cl',c=>{nf(c,'#9098A8','#A0A8B8',.4)});
 mt('rs',c=>{nf(c,'#C47030','#D88040',.5)});mt('mu',c=>{nf(c,'#4A3828','#5A4838',.5)});
 mt('ca',c=>{nf(c,'#2A7A2A','#3A9A3A',.5);c.fillStyle='#1A5A1A';c.fillRect(0,0,1,16);c.fillRect(15,0,1,16)});
@@ -249,6 +250,13 @@ mt('slnt',c=>{nf(c,'#88CCDD','#AAEEFF',.3);c.fillStyle='#BBDDEE';c.fillRect(4,4,
 mt('rli',c=>{nf(c,'#707070','#888888',.3);c.fillStyle='#555';c.fillRect(3,0,2,16);c.fillRect(11,0,2,16);c.fillStyle='#8B6914';c.fillRect(0,4,16,2);c.fillRect(0,10,16,2)});
 mt('rlp',c=>{nf(c,'#AA7030','#CC8840',.3);c.fillStyle='#FF4422';c.fillRect(3,0,2,16);c.fillRect(11,0,2,16);c.fillStyle='#8B6914';c.fillRect(0,4,16,2);c.fillRect(0,10,16,2)});
 mt('rlb',c=>{nf(c,'#6B4826','#7D5838',.5);c.fillStyle='#555';c.fillRect(4,0,8,16)});
+mt('tgrss',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(60,140,40,0.7)';c.fillRect(3,0,2,16);c.fillRect(7,2,2,14);c.fillRect(11,1,2,15);c.fillStyle='rgba(80,160,50,0.5)';c.fillRect(5,4,1,12);c.fillRect(9,6,1,10)});
+mt('flrd',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,30,0.6)';c.fillRect(6,8,4,8);c.fillStyle='rgba(220,40,40,0.9)';c.fillRect(5,3,6,5);c.fillStyle='rgba(255,80,80,0.7)';c.fillRect(6,4,4,3);c.fillStyle='rgba(180,30,30,0.8)';c.fillRect(7,2,2,2)});
+mt('flbl',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,30,0.6)';c.fillRect(6,8,4,8);c.fillStyle='rgba(60,80,200,0.9)';c.fillRect(5,3,6,5);c.fillStyle='rgba(100,120,240,0.7)';c.fillRect(6,4,4,3);c.fillStyle='rgba(40,60,180,0.8)';c.fillRect(7,2,2,2)});
+mt('flyl',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,30,0.6)';c.fillRect(6,8,4,8);c.fillStyle='rgba(230,200,40,0.9)';c.fillRect(5,3,6,5);c.fillStyle='rgba(255,230,80,0.7)';c.fillRect(6,4,4,3);c.fillStyle='rgba(200,170,30,0.8)';c.fillRect(7,2,2,2)});
+mt('shrb',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(50,100,30,0.8)';c.fillRect(2,6,12,10);c.fillStyle='rgba(70,130,40,0.7)';c.fillRect(4,4,8,8);c.fillStyle='rgba(40,80,25,0.6)';c.fillRect(3,8,10,6)});
+mt('reed',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(100,140,60,0.7)';c.fillRect(4,0,2,16);c.fillRect(10,2,2,14);c.fillStyle='rgba(120,160,70,0.6)';c.fillRect(7,4,2,12)});
+mt('fern',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,40,0.7)';c.fillRect(2,8,12,8);c.fillStyle='rgba(50,140,45,0.6)';c.fillRect(4,5,3,8);c.fillRect(9,5,3,8);c.fillStyle='rgba(60,150,50,0.5)';c.fillRect(6,3,4,6)});
 // Tool/item icons
 mt('stick_i',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#8A6C3A';c.fillRect(7,2,2,12)});
 mt('coal_ii',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#333';c.fillRect(5,4,6,8);c.fillRect(4,5,8,6)});
@@ -264,6 +272,7 @@ bf(B.GRASS,'gt','gs','dt');bf(B.DIRT,'dt');bf(B.STONE,'st');bf(B.SAND,'sa');bf(B
 // VC World block faces
 bf(B.ASPHALT,'asph');bf(B.SIDEWALK,'sdwk');bf(B.CONCRETE,'conc');bf(B.STUCCO,'stuc');bf(B.CONDO_WALL,'cndw');bf(B.ROOF_TILE,'roof');bf(B.DRY_GRASS,'dgrss');bf(B.CRACK_PAVE,'cpave');bf(B.STATUE_STONE,'stst');bf(B.BRONZE,'brnz');bf(B.METAL_PANEL,'mpnl');bf(B.GLASS_TOWER,'gtwr');bf(B.NEON_BLK,'neon');bf(B.CITY_RUBBLE,'crub');bf(B.SHIP_TIMBER,'stim');bf(B.BARNACLE_WOOD,'barw');bf(B.SAIL_BLK,'sail');bf(B.MARBLE,'mrbl');bf(B.SEA_MARBLE,'smrb');bf(B.COLUMN_BLK,'colm');bf(B.TEMPLE_STONE,'tmpl');bf(B.NICSHADE_LOG,'nlog');bf(B.NICSHADE_LVS,'nlvs');bf(B.GLOW_FLOWER,'glfl');bf(B.VINE_STONE,'vnst');bf(B.CANYON_STONE,'cyst');bf(B.MONUMENT_STN,'mnst');bf(B.RUSTED_METAL,'rstm');bf(B.GLOW_CRYSTAL,'glcr');bf(B.DARK_PANEL,'dkpn');bf(B.SIGNAL_STONE,'sgst');bf(B.RAIL_BLK,'rail');bf(B.RAIL_TIE,'rtie');bf(B.PLATFORM_BLK,'plat');bf(B.SCHOOL_WALL,'schl');bf(B.LOCKER_BLK,'lock');bf(B.GYM_FLOOR,'gymf');bf(B.BOARDWALK,'bdwk');bf(B.RESORT_WALL,'rsrt');bf(B.POOL_TILE,'pool');bf(B.CABIN_WALL,'cabn');bf(B.TRAIL_STONE,'trst');bf(B.CHAPEL_STONE,'chpl');bf(B.SIDING,'sidg');bf(B.SHINGLE,'shng');bf(B.FENCE_BLK,'fnce');bf(B.DRIVEWAY,'drwy');bf(B.WATCHER_SAND,'wsnd');bf(B.TOWER_BRICK,'twbk');bf(B.ANCIENT_METAL,'amtl');bf(B.PIRATE_PLNK,'pplk');
 bf(B.CORAL_PINK,'crpk');bf(B.CORAL_BLUE,'crbl');bf(B.CORAL_YELLOW,'cryl');bf(B.KELP,'kelp');bf(B.SEA_LANTERN,'slnt');bf(B.RAIL_IRON,'rli');bf(B.RAIL_POWERED,'rlp');bf(B.RAIL_BED,'rlb');
+bf(B.TALL_GRASS,'tgrss');bf(B.FLOWER_RED,'flrd');bf(B.FLOWER_BLUE,'flbl');bf(B.FLOWER_YELLOW,'flyl');bf(B.SHRUB,'shrb');bf(B.REED,'reed');bf(B.FERN,'fern');
 
 const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPICK]:'wpick_i',[B.SPICK]:'spick_i',[B.WSWD]:'wswd_i'};
 
@@ -1318,6 +1327,27 @@ deco(){
     if(bi2===BI.DISCORD_DEEP){if(h<40&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)this.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)this.S(x,h+1,z,B.NEON_BLK)}
     if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.02&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.008)this.S(x,h,z,B.VINE_STONE);if(dh01(wx+260,wz+260)<.003)this.S(x,h,z,B.MOSS);if(dh01(wx+270,wz+270)<.002&&this.G(x,h+1,z)===B.AIR){this.S(x,h+1,z,B.VINE_STONE);this.S(x,h+2,z,B.VINE_STONE)}}
     if(bi2===BI.CAMGROVE){if(dh01(wx+350,wz+350)<.01)this.S(x,h,z,B.TRAIL_STONE);if(dh01(wx+360,wz+360)<.002)this.S(x,h,z,B.CABIN_WALL);if(dh01(wx+370,wz+370)<.003)this.S(x,h,z,B.COB)}
+    // General foliage - all biomes get flora
+    if(this.G(x,h+1,z)===B.AIR&&h>WL){
+      const fr=dh01(wx+1000,wz+1000);
+      if(bi2===BI.NICSHADE||bi2===BI.CAMGROVE||bi2===BI.RIO_LAGOON){
+        if(fr<.04)this.S(x,h+1,z,B.TALL_GRASS);
+        else if(fr<.055)this.S(x,h+1,z,B.FERN);
+        else if(fr<.06)this.S(x,h+1,z,B.SHRUB);
+        else if(fr<.065)this.S(x,h+1,z,fr<.0625?B.FLOWER_RED:B.FLOWER_BLUE);
+      }else if(bi2===BI.SA_PLAINS||bi2===BI.VC_SUBURB){
+        if(fr<.02)this.S(x,h+1,z,B.TALL_GRASS);
+        else if(fr<.025)this.S(x,h+1,z,B.FLOWER_YELLOW);
+      }else if(bi2===BI.TAIGA||bi2===BI.SNOWY){
+        if(fr<.015)this.S(x,h+1,z,B.FERN);
+      }else if(bi2===BI.MO){
+        if(fr<.01)this.S(x,h+1,z,B.SHRUB);
+      }
+      // Reeds near water
+      if(bi2===BI.RIO_LAGOON||bi2===BI.DRY_COAST||bi2===BI.BE){
+        if(fr<.03&&h<=WL+2){const rh=1+fl(dh01(wx+2000,wz+2000)*3);for(let dy=0;dy<rh;dy++)this.S(x,h+1+dy,z,B.REED)}
+      }
+    }
   }
   // ═══ CAVE DECORATION PASS ═══
   for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
@@ -1353,18 +1383,48 @@ deco(){
 tree(x,y,z,t,r2){
   const T={oak:[B.OLOG,B.OLVS],birch:[B.BLOG,B.BLVS],spruce:[B.SLOG,B.SLVS],dark:[B.DLOG,B.DLVS],jungle:[B.JLOG,B.JLVS],acacia:[B.ALOG,B.ALVS],nicshade:[B.NICSHADE_LOG,B.NICSHADE_LVS]};
   const[lg,lf]=T[t]||T.oak;
-  if(t==='spruce'){const h=5+fl(r2*3);for(let i=0;i<h;i++)this.S(x,y+i,z,lg);for(let ly=2;ly<h;ly++){const r=ly<h-1?(ly%2===0?2:1):0;for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++){if(!dx&&!dz&&ly<h-1)continue;if(abs(dx)+abs(dz)<=r+1&&this.G(x+dx,y+ly,z+dz)===B.AIR)this.S(x+dx,y+ly,z+dz,lf)}}this.S(x,y+h,z,lf)}
-  else if(t==='nicshade'){
-    // Taller, more dramatic purple-tinted trees
-    const h=6+fl(r2*3);for(let i=0;i<h;i++)this.S(x,y+i,z,lg);
-    for(let dy=-2;dy<=2;dy++)for(let dx=-3;dx<=3;dx++)for(let dz=-3;dz<=3;dz++){
-      if(abs(dx)+abs(dz)>4)continue;
+  const big=r2>.75; // 25% chance of being a large tree
+  if(t==='spruce'){
+    const h=big?8+fl(r2*4):5+fl(r2*3);
+    for(let i=0;i<h;i++)this.S(x,y+i,z,lg);
+    if(big){this.S(x+1,y,z,lg);this.S(x-1,y,z,lg);this.S(x,y,z+1,lg);this.S(x,y,z-1,lg)} // thick base
+    for(let ly=2;ly<h;ly++){const r=ly<h-1?(ly%2===0?(big?3:2):(big?2:1)):0;
+      for(let dx=-r;dx<=r;dx++)for(let dz=-r;dz<=r;dz++){if(!dx&&!dz&&ly<h-1)continue;if(abs(dx)+abs(dz)<=r+1&&this.G(x+dx,y+ly,z+dz)===B.AIR)this.S(x+dx,y+ly,z+dz,lf)}}
+    this.S(x,y+h,z,lf);
+  }else if(t==='nicshade'){
+    const h=big?9+fl(r2*3):6+fl(r2*3);
+    for(let i=0;i<h;i++)this.S(x,y+i,z,lg);
+    if(big){for(let i=0;i<3;i++){this.S(x+1,y+i,z,lg);this.S(x-1,y+i,z,lg);this.S(x,y+i,z+1,lg);this.S(x,y+i,z-1,lg)}}
+    const cr=big?4:3;
+    for(let dy=-2;dy<=2;dy++)for(let dx=-cr;dx<=cr;dx++)for(let dz=-cr;dz<=cr;dz++){
+      if(abs(dx)+abs(dz)>cr+1)continue;
       if(this.G(x+dx,y+h+dy,z+dz)===B.AIR)this.S(x+dx,y+h+dy,z+dz,lf);
     }
-    // Occasional glow flowers at base
     if(dh01(x*50,z*50)<.3&&this.G(x+1,y,z)===B.AIR)this.S(x+1,y,z,B.GLOW_FLOWER);
+  }else if(t==='jungle'){
+    const h=big?10+fl(r2*4):5+fl(r2*3);
+    for(let i=0;i<h;i++)this.S(x,y+i,z,lg);
+    if(big){for(let i=0;i<4;i++){this.S(x+1,y+i,z,lg);this.S(x-1,y+i,z,lg);this.S(x,y+i,z+1,lg);this.S(x,y+i,z-1,lg)}
+      // Buttress roots
+      this.S(x+1,y,z+1,lg);this.S(x-1,y,z-1,lg);
+    }
+    const cr=big?4:2;
+    for(let dy=-1;dy<=3;dy++)for(let dx=-cr;dx<=cr;dx++)for(let dz=-cr;dz<=cr;dz++){
+      if(abs(dx)+abs(dz)>cr+1)continue;if(abs(dx)===cr&&abs(dz)===cr&&dh01(x+dx*100,z+dz*100)>.4)continue;
+      if(this.G(x+dx,y+h+dy,z+dz)===B.AIR)this.S(x+dx,y+h+dy,z+dz,lf);
+    }
+    // Hanging vines on big jungle trees
+    if(big)for(let dx=-cr;dx<=cr;dx+=cr*2)for(let dz=-1;dz<=1;dz++){const vh=1+fl(dh01(x+dx,z+dz)*3);for(let dy=0;dy<vh;dy++){if(this.G(x+dx,y+h-1-dy,z+dz)===B.AIR)this.S(x+dx,y+h-1-dy,z+dz,B.JLVS)}}
+  }else{
+    const h=big?7+fl(r2*3):4+fl(r2*2);
+    for(let i=0;i<h;i++)this.S(x,y+i,z,lg);
+    if(big){this.S(x+1,y,z,lg);this.S(x-1,y,z,lg)} // wider trunk
+    const cr=big?3:2;
+    for(let dy=-1;dy<=2;dy++)for(let dx=-cr;dx<=cr;dx++)for(let dz=-cr;dz<=cr;dz++){
+      if(abs(dx)===cr&&abs(dz)===cr&&dh01(x+dx*100,z+dz*100)>.5)continue;
+      if(this.G(x+dx,y+h+dy,z+dz)===B.AIR)this.S(x+dx,y+h+dy,z+dz,lf);
+    }
   }
-  else{const h=4+fl(r2*2);for(let i=0;i<h;i++)this.S(x,y+i,z,lg);for(let dy=-1;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++){if(abs(dx)===2&&abs(dz)===2&&dh01(x+dx*100,z+dz*100)>.5)continue;if(this.G(x+dx,y+h+dy,z+dz)===B.AIR)this.S(x+dx,y+h+dy,z+dz,lf)}}
 }
 buildMesh(gB){
   const P=[],N=[],U=[],IX=[];const WP=[],WN=[],WU=[],WI2=[];let vi=0,wvi=0;const ox=this.cx*CS,oz=this.cz*CS;

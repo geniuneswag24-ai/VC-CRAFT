@@ -88,7 +88,7 @@
 <div class="btn" onclick="cheat('heal')" style="width:280px;font-size:8px">Full Heal</div>
 <div class="btn" onclick="cheat('fly')" style="width:280px;font-size:8px">Toggle Fly</div>
 <div style="height:6px"></div>
-<div style="font-size:7px;color:#888;margin:4px 0">TELEPORT TO BIOME:</div>
+<div style="font-size:7px;color:#888;margin:4px 0">TELEPORT:</div>
 <div id="cheatBiomes"></div>
 <div style="height:6px"></div>
 <div class="btn" onclick="closeCheat()" style="width:280px;font-size:8px">Close</div>
@@ -285,20 +285,20 @@ const BI={OC:0,BE:1,SA_PLAINS:2,NICSHADE:3,CAMGROVE:4,WATCHER:5,VC_SUBURB:6,VC_B
 const BDt={
 [BI.OC]:{n:'Ocean',bH:15,a:8,sf:B.SAND,su:B.SAND},
 [BI.BE]:{n:'Beach',bH:34,a:2,sf:B.SAND,su:B.SAND},
-[BI.SA_PLAINS]:{n:'San Antonio Plains',bH:40,a:5,sf:B.DRY_GRASS,su:B.DIRT,tr:'acacia',tc:.003,structs:['condo','statue','waffle','broken_tower','house']},
+[BI.SA_PLAINS]:{n:'San Antonio Plains',bH:40,a:5,sf:B.DRY_GRASS,su:B.DIRT,tr:'acacia',tc:.003,structs:['condo','statue','waffle','broken_tower','house','restaurant','stadium']},
 [BI.NICSHADE]:{n:'Nicshade Forest',bH:43,a:6,sf:B.GRASS,su:B.DIRT,tr:'nicshade',tc:.055,structs:['shrine','cabin','watchtower']},
-[BI.CAMGROVE]:{n:'Camgrove',bH:45,a:7,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.04,structs:['cabin','watchtower','chapel','shrine']},
-[BI.WATCHER]:{n:'Watcher Desert',bH:42,a:6,sf:B.WATCHER_SAND,su:B.SSTON,ca:.003,structs:['tower_ruin','broken_tower','shrine','monument']},
-[BI.VC_SUBURB]:{n:'VC Suburbia',bH:40,a:3,sf:B.GRASS,su:B.DIRT,structs:['house','house','house','school','waffle']},
+[BI.CAMGROVE]:{n:'Camgrove',bH:45,a:7,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.04,structs:['cabin','watchtower','chapel','shrine','temple']},
+[BI.WATCHER]:{n:'Watcher Desert',bH:42,a:6,sf:B.WATCHER_SAND,su:B.SSTON,ca:.003,structs:['tower_ruin','broken_tower','shrine','monument','temple']},
+[BI.VC_SUBURB]:{n:'VC Suburbia',bH:40,a:3,sf:B.GRASS,su:B.DIRT,structs:['house','house','school','waffle','restaurant','mall','arcade']},
 [BI.VC_BADLANDS]:{n:'VC Badlands',bH:48,a:18,sf:B.CANYON_STONE,su:B.RSAND,structs:['monument','broken_tower','shrine','tower_ruin']},
 [BI.MO]:{n:'Mountains',bH:54,a:22,sf:B.STONE,su:B.STONE,tr:'spruce',tc:.005},
-[BI.DRY_COAST]:{n:'Dry Coast',bH:36,a:3,sf:B.SAND,su:B.SSTON,structs:['boardwalk','condo']},
+[BI.DRY_COAST]:{n:'Dry Coast',bH:36,a:3,sf:B.SAND,su:B.SSTON,structs:['boardwalk','condo','restaurant']},
 [BI.RIO_LAGOON]:{n:'Rio Lagoon',bH:31,a:2,sf:B.SAND,su:B.MUD,tr:'jungle',tc:.03,structs:['boardwalk']},
 [BI.GARFBOT_CITY]:{n:'Garfbot City',bH:40,a:2,sf:B.ASPHALT,su:B.CONCRETE,structs:['tower','gomp']},
 [BI.DISCORD_DEEP]:{n:'Discord Depths',bH:25,a:2,sf:B.DARK_PANEL,su:B.DEEP},
 [BI.TAIGA]:{n:'Taiga',bH:44,a:8,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.035},
 [BI.SNOWY]:{n:'Snowy Plains',bH:40,a:3,sf:B.SNOW,su:B.DIRT,tr:'spruce',tc:.004},
-[BI.PROPS_ISLAND]:{n:'Props Island',bH:36,a:4,sf:B.SAND,su:B.SAND,tr:'jungle',tc:.02,structs:['boardwalk','shrine']},
+[BI.PROPS_ISLAND]:{n:'Props Island',bH:36,a:4,sf:B.SAND,su:B.SAND,tr:'jungle',tc:.02,structs:['boardwalk','shrine','arcade']},
 [BI.VCLANTIS]:{n:'VCLANTIS',bH:8,a:3,sf:B.MARBLE,su:B.SEA_MARBLE}
 };
 
@@ -360,6 +360,8 @@ function htA(x,z,b){
 // ══════════ STRUCTURE GENERATION ══════════
 // Track which chunks already have structures to prevent overlapping
 const _structChunks=new Set();
+const _structRegistry={};
+function regStruct(nm,x,y,z){if(!_structRegistry[nm])_structRegistry[nm]=[];_structRegistry[nm].push({x,y,z})}
 function genStructure(chunk,ox,oz,wx,wz,h,bi){
   const bd=BDt[bi];if(!bd.structs)return;
   // Only ONE structure per chunk, checked at chunk center
@@ -379,22 +381,28 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
   const type=bd.structs[fl(dh01(chunk.cx+999,chunk.cz+999)*bd.structs.length)];
   const lx=8,lz=8; // always center of chunk
   const r=dh01(chunk.cx+50,chunk.cz+50);
+  const wx2=chunk.cx*CS+lx,wz2=chunk.cz*CS+lz;
   switch(type){
-    case 'condo':genCondo(chunk,lx,h+1,lz,r);break;
-    case 'statue':genStatue(chunk,lx,h+1,lz,fl(dh01(chunk.cx+77,chunk.cz+77)*3));break;
-    case 'house':genHouse(chunk,lx,h+1,lz,r);break;
-    case 'cabin':genCabin(chunk,lx,h+1,lz);break;
-    case 'tower_ruin':genTowerRuin(chunk,lx,h+1,lz,r);break;
-    case 'shrine':genShrine(chunk,lx,h+1,lz);break;
-    case 'watchtower':genWatchtower(chunk,lx,h+1,lz);break;
-    case 'tower':genCityTower(chunk,lx,h+1,lz,r);break;
-    case 'broken_tower':genBrokenTower(chunk,lx,h+1,lz);break;
-    case 'waffle':genWaffle(chunk,lx,h+1,lz);break;
-    case 'school':genSchool(chunk,lx,h+1,lz,r);break;
-    case 'gomp':genGomp(chunk,lx,h+1,lz,r);break;
-    case 'boardwalk':genBoardwalk(chunk,lx,h,lz);break;
-    case 'chapel':genChapel(chunk,lx,h+1,lz);break;
-    case 'monument':genMonument(chunk,lx,h+1,lz,r);break;
+    case 'condo':genCondo(chunk,lx,h+1,lz,r);regStruct('Condo Complex',wx2,h+1,wz2);break;
+    case 'statue':genStatue(chunk,lx,h+1,lz,fl(dh01(chunk.cx+77,chunk.cz+77)*3));regStruct('Statue',wx2,h+1,wz2);break;
+    case 'house':genHouse(chunk,lx,h+1,lz,r);regStruct('House',wx2,h+1,wz2);break;
+    case 'cabin':genCabin(chunk,lx,h+1,lz);regStruct('Abandoned Cabin',wx2,h+1,wz2);break;
+    case 'tower_ruin':genTowerRuin(chunk,lx,h+1,lz,r);regStruct('Tower Ruin',wx2,h+1,wz2);break;
+    case 'shrine':genShrine(chunk,lx,h+1,lz);regStruct('Shrine',wx2,h+1,wz2);break;
+    case 'watchtower':genWatchtower(chunk,lx,h+1,lz);regStruct('Watchtower',wx2,h+1,wz2);break;
+    case 'tower':genCityTower(chunk,lx,h+1,lz,r);regStruct('City Tower',wx2,h+1,wz2);break;
+    case 'broken_tower':genBrokenTower(chunk,lx,h+1,lz);regStruct('Broken Tower',wx2,h+1,wz2);break;
+    case 'waffle':genWaffle(chunk,lx,h+1,lz);regStruct('Waffle House',wx2,h+1,wz2);break;
+    case 'school':genSchool(chunk,lx,h+1,lz,r);regStruct('Sweetwater High',wx2,h+1,wz2);break;
+    case 'gomp':genGomp(chunk,lx,h+1,lz,r);regStruct('Gomp Industries Tower',wx2,h+1,wz2);break;
+    case 'boardwalk':genBoardwalk(chunk,lx,h,lz);regStruct('Boardwalk Ruins',wx2,h,wz2);break;
+    case 'chapel':genChapel(chunk,lx,h+1,lz);regStruct('Chapel',wx2,h+1,wz2);break;
+    case 'monument':genMonument(chunk,lx,h+1,lz,r);regStruct('Monument',wx2,h+1,wz2);break;
+    case 'stadium':genStadium(chunk,lx,h+1,lz,r);regStruct('Football Stadium',wx2,h+1,wz2);break;
+    case 'restaurant':genRestaurant(chunk,lx,h+1,lz);regStruct('VC Restaurant',wx2,h+1,wz2);break;
+    case 'arcade':genArcade(chunk,lx,h+1,lz);regStruct('Props Arcade',wx2,h+1,wz2);break;
+    case 'mall':genMall(chunk,lx,h+1,lz,r);regStruct('VC Mall',wx2,h+1,wz2);break;
+    case 'temple':genTemple(chunk,lx,h+1,lz);regStruct('Temple',wx2,h+1,wz2);break;
   }
   // Mark this chunk as having a structure so trees won't spawn on it
   chunk._hasStruct=true;
@@ -741,6 +749,157 @@ function genMonument(ck,x,y,z,r){
   for(let dx=-2;dx<=2;dx++)for(let dz=-1;dz<=1;dz++)for(let dy=h2-4;dy<h2;dy++){
     if(abs(dx)>1&&abs(dz)>0)continue;
     ss(ck,x+dx,y+dy,z+dz,mat);
+  }
+}
+
+// FOOTBALL STADIUM: large open-air arena
+function genStadium(ck,x,y,z,r){
+  const w=14,d=12,h2=8;
+  // Field floor
+  for(let dx=0;dx<w;dx++)for(let dz=0;dz<d;dz++)ss(ck,x+dx,y,z+dz,B.GYM_FLOOR);
+  // Field markings
+  for(let dx=0;dx<w;dx++){ss(ck,x+dx,y,z,B.SIDEWALK);ss(ck,x+dx,y,z+d-1,B.SIDEWALK)}
+  for(let dz=0;dz<d;dz++){ss(ck,x,y,z+dz,B.SIDEWALK);ss(ck,x+w-1,y,z+dz,B.SIDEWALK)}
+  for(let dx=0;dx<w;dx++)ss(ck,x+dx,y,z+fl(d/2),B.SIDEWALK);
+  // Bleachers on two sides (stepped seating)
+  for(let tier=0;tier<4;tier++){
+    for(let dx=0;dx<w;dx++){
+      ss(ck,x+dx,y+tier+1,z-1-tier,B.COB);ss(ck,x+dx,y+tier+1,z+d+tier,B.COB);
+    }
+  }
+  // Corner towers with lights
+  for(const[cx2,cz2]of[[0,0],[w-1,0],[0,d-1],[w-1,d-1]]){
+    for(let dy=1;dy<h2+2;dy++)ss(ck,x+cx2,y+dy,z+cz2,B.CONCRETE);
+    ss(ck,x+cx2,y+h2+2,z+cz2,B.NEON_BLK);
+  }
+  // Press box
+  buildRoom(ck,x+4,y+5,z-3,6,3,3,B.CONCRETE,B.METAL_PANEL,B.METAL_PANEL,true);
+  for(let dx=5;dx<9;dx++)ss(ck,x+dx,y+6,z-3,B.GLASS);
+  // Entrance gates
+  ss(ck,x+fl(w/2),y+1,z-4,B.AIR);ss(ck,x+fl(w/2),y+2,z-4,B.AIR);
+  for(let dx=fl(w/2)-1;dx<=fl(w/2)+1;dx++)ss(ck,x+dx,y,z-4,B.CONCRETE);
+  // Goal posts
+  for(let dy=1;dy<5;dy++){ss(ck,x+3,y+dy,z+1,B.METAL_PANEL);ss(ck,x+w-4,y+dy,z+1,B.METAL_PANEL)}
+  ss(ck,x+3,y+5,z+1,B.METAL_PANEL);ss(ck,x+4,y+5,z+1,B.METAL_PANEL);ss(ck,x+w-4,y+5,z+1,B.METAL_PANEL);ss(ck,x+w-5,y+5,z+1,B.METAL_PANEL);
+  // Scoreboard
+  for(let dx=5;dx<9;dx++)for(let dy=h2;dy<h2+3;dy++)ss(ck,x+dx,y+dy,z+d+3,B.DARK_PANEL);
+  ss(ck,x+6,y+h2+1,z+d+3,B.NEON_BLK);ss(ck,x+7,y+h2+1,z+d+3,B.NEON_BLK);
+}
+// VC RESTAURANT: full sit-down restaurant with kitchen, dining, patio
+function genRestaurant(ck,x,y,z){
+  const w=10,d=8;
+  buildRoom(ck,x,y,z,w,d,5,B.BRK,B.CONCRETE,B.CONCRETE,true);
+  // Large front windows
+  for(let dx=2;dx<w-2;dx++){ss(ck,x+dx,y+2,z,B.GLASS);ss(ck,x+dx,y+3,z,B.GLASS)}
+  // Front door
+  ss(ck,x+fl(w/2),y+1,z,B.AIR);ss(ck,x+fl(w/2),y+2,z,B.AIR);
+  // Dining tables with chairs
+  for(let dx=2;dx<w-2;dx+=3)for(let dz=2;dz<5;dz+=2){ss(ck,x+dx,y+1,z+dz,B.PLNK);ss(ck,x+dx-1,y+1,z+dz,B.COB);ss(ck,x+dx+1,y+1,z+dz,B.COB)}
+  // Kitchen wall
+  for(let dy=1;dy<4;dy++)for(let dx=1;dx<w-1;dx++)ss(ck,x+dx,y+dy,z+5,B.STUCCO);
+  ss(ck,x+3,y+1,z+5,B.AIR);ss(ck,x+3,y+2,z+5,B.AIR); // kitchen door
+  // Kitchen equipment
+  for(let dx=1;dx<w-1;dx++)ss(ck,x+dx,y+1,z+d-2,B.METAL_PANEL);
+  ss(ck,x+2,y+1,z+6,B.FURN);ss(ck,x+w-3,y+1,z+6,B.FURN);
+  // Bar/counter
+  for(let dx=1;dx<5;dx++)ss(ck,x+dx,y+1,z+4,B.CONCRETE);
+  // Neon sign
+  ss(ck,x+fl(w/2),y+5,z,B.NEON_BLK);ss(ck,x+fl(w/2)+1,y+5,z,B.NEON_BLK);
+  // Outdoor patio
+  for(let dx=-2;dx<0;dx++)for(let dz=1;dz<5;dz++){ss(ck,x+dx,y,z+dz,B.BOARDWALK);if(dz===1||dz===4)ss(ck,x+dx,y+1,z+dz,B.FENCE_BLK)}
+  // Roof
+  for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d;dz++)ss(ck,x+dx,y+5,z+dz,B.ROOF_TILE);
+}
+// PROPS ARCADE: game arcade with machines, neon lights, prize area
+function genArcade(ck,x,y,z){
+  const w=9,d=8;
+  buildRoom(ck,x,y,z,w,d,5,B.DARK_PANEL,B.CONCRETE,B.DARK_PANEL,false);
+  // Neon exterior walls
+  for(let dx=0;dx<w;dx++){ss(ck,x+dx,y+3,z,B.NEON_BLK);ss(ck,x+dx,y+4,z,B.NEON_BLK)}
+  // Front door
+  ss(ck,x+fl(w/2),y+1,z,B.AIR);ss(ck,x+fl(w/2),y+2,z,B.AIR);
+  // Arcade cabinets (rows of machines)
+  for(let dx=1;dx<w-1;dx+=2){
+    ss(ck,x+dx,y+1,z+2,B.DARK_PANEL);ss(ck,x+dx,y+2,z+2,B.GLASS);
+    ss(ck,x+dx,y+1,z+5,B.DARK_PANEL);ss(ck,x+dx,y+2,z+5,B.GLASS);
+  }
+  // Central prize counter
+  for(let dx=2;dx<w-2;dx++)ss(ck,x+dx,y+1,z+d-2,B.NEON_BLK);
+  // Glow floor accents
+  for(let dx=1;dx<w-1;dx+=2)ss(ck,x+dx,y,z+4,B.GLOW_CRYSTAL);
+  // Neon ceiling lights
+  ss(ck,x+2,y+4,z+3,B.NEON_BLK);ss(ck,x+w-3,y+4,z+3,B.NEON_BLK);
+  // Sign
+  ss(ck,x+fl(w/2)-1,y+5,z,B.NEON_BLK);ss(ck,x+fl(w/2),y+5,z,B.NEON_BLK);ss(ck,x+fl(w/2)+1,y+5,z,B.NEON_BLK);
+}
+// VC MALL: large shopping complex with multiple stores, food court, atrium
+function genMall(ck,x,y,z,r){
+  const w=14,d=12,floors=2,fh=5;
+  for(let f=0;f<floors;f++){
+    const fy=y+f*fh;
+    buildRoom(ck,x,fy,z,w,d,fh,B.CONCRETE,f===0?B.CONCRETE:B.PLNK,B.CONCRETE,true);
+    // Central atrium/hallway
+    for(let dz=1;dz<d-1;dz++)for(let dy=1;dy<fh-1;dy++){ss(ck,x+fl(w/2),fy+dy,z+dz,B.AIR);ss(ck,x+fl(w/2)-1,fy+dy,z+dz,B.AIR)}
+    // Store partitions on each side
+    for(let store=0;store<3;store++){
+      const sz=1+store*3;
+      for(let dy=1;dy<fh-1;dy++){ss(ck,x+2,fy+dy,z+sz+2,B.GLASS);ss(ck,x+w-3,fy+dy,z+sz+2,B.GLASS)}
+      // Store entrance
+      ss(ck,x+fl(w/2)+1,fy+1,z+sz+1,B.AIR);ss(ck,x+fl(w/2)+1,fy+2,z+sz+1,B.AIR);
+      ss(ck,x+fl(w/2)-2,fy+1,z+sz+1,B.AIR);ss(ck,x+fl(w/2)-2,fy+2,z+sz+1,B.AIR);
+      // Display shelves
+      ss(ck,x+1,fy+1,z+sz,B.PLNK);ss(ck,x+w-2,fy+1,z+sz,B.PLNK);
+    }
+    // Escalator/stairs
+    if(f<floors-1){for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.COB);ss(ck,x+w-2,fy+dy,z+1,B.COB)}}
+  }
+  // Main entrance
+  for(let dx=fl(w/2)-2;dx<=fl(w/2)+1;dx++){ss(ck,x+dx,y+1,z,B.AIR);ss(ck,x+dx,y+2,z,B.AIR);ss(ck,x+dx,y+3,z,B.AIR)}
+  // Food court on top floor
+  const ftY=y+(floors-1)*fh;
+  for(let dx=2;dx<w-2;dx+=3)ss(ck,x+dx,ftY+1,z+d-3,B.METAL_PANEL);
+  // Atrium skylight
+  for(let dx=fl(w/2)-2;dx<=fl(w/2)+1;dx++)for(let dz=2;dz<d-2;dz++)ss(ck,x+dx,y+floors*fh,z+dz,B.GLASS_TOWER);
+  // Roof
+  for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d;dz++)ss(ck,x+dx,y+floors*fh,z+dz,B.CONCRETE);
+  // Parking lot
+  for(let dx=-2;dx<w+2;dx++)for(let dz=-4;dz<0;dz++)ss(ck,x+dx,y-1,z+dz,B.ASPHALT);
+  // Mall sign
+  for(let dx=4;dx<10;dx++){ss(ck,x+dx,y+floors*fh+1,z,B.NEON_BLK);ss(ck,x+dx,y+floors*fh+2,z,B.NEON_BLK)}
+}
+// TEMPLE: large ancient temple with multiple rooms, columns, and altar
+function genTemple(ck,x,y,z){
+  const w=12,d=10,h2=8;
+  // Grand platform base (3 stepped layers)
+  for(let step=0;step<3;step++){
+    const inset=step;
+    for(let dx=-1+inset;dx<w+1-inset;dx++)for(let dz=-1+inset;dz<d+1-inset;dz++)ss(ck,x+dx,y+step,z+dz,B.TEMPLE_STONE);
+  }
+  // Main chamber walls
+  for(let dy=3;dy<h2;dy++)for(let dx=0;dx<w;dx++)for(let dz=0;dz<d;dz++){
+    const isWall=dx===0||dx===w-1||dz===0||dz===d-1;
+    if(isWall)ss(ck,x+dx,y+dy,z+dz,B.TEMPLE_STONE);
+    if(dy===h2-1)ss(ck,x+dx,y+dy,z+dz,B.TEMPLE_STONE);
+  }
+  // Interior columns (8 grand pillars)
+  for(const[cx2,cz2]of[[2,2],[w-3,2],[2,d-3],[w-3,d-3],[fl(w/2)-1,2],[fl(w/2),d-3],[2,fl(d/2)],[w-3,fl(d/2)]])
+    for(let dy=3;dy<h2;dy++)ss(ck,x+cx2,y+dy,z+cz2,B.COLUMN_BLK);
+  // Grand entrance
+  for(let dx=fl(w/2)-1;dx<=fl(w/2)+1;dx++)for(let dy=3;dy<h2-1;dy++)ss(ck,x+dx,y+dy,z,B.AIR);
+  // Entrance steps  
+  for(let step=0;step<3;step++)for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++)ss(ck,x+dx,y+step,z-1-step,B.TEMPLE_STONE);
+  // Central altar room
+  for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++)for(let dz=fl(d/2)-1;dz<=fl(d/2)+1;dz++)ss(ck,x+dx,y+3,z+dz,B.MARBLE);
+  ss(ck,x+fl(w/2),y+4,z+fl(d/2),B.STATUE_STONE);ss(ck,x+fl(w/2),y+5,z+fl(d/2),B.STATUE_STONE);ss(ck,x+fl(w/2),y+6,z+fl(d/2),B.BRONZE);
+  // Treasure chests
+  ss(ck,x+1,y+4,z+d-2,B.CHST);ss(ck,x+w-2,y+4,z+d-2,B.CHST);
+  // Torch pillars outside entrance
+  for(let dy=0;dy<6;dy++){ss(ck,x+fl(w/2)-3,y+dy,z-1,B.TEMPLE_STONE);ss(ck,x+fl(w/2)+3,y+dy,z-1,B.TEMPLE_STONE)}
+  ss(ck,x+fl(w/2)-3,y+6,z-1,B.GLOW_CRYSTAL);ss(ck,x+fl(w/2)+3,y+6,z-1,B.GLOW_CRYSTAL);
+  // Peaked roof
+  for(let dz=0;dz<d;dz++)for(let dx=0;dx<w;dx++){
+    const dist=mn(abs(dx-fl(w/2)),abs(w-1-dx-fl(w/2)));
+    if(dist<=2)ss(ck,x+dx,y+h2+fl(dist/2),z+dz,B.TEMPLE_STONE);
   }
 }
 
@@ -1134,6 +1293,68 @@ an(dt){
   this.hd.rotation.z=Math.sin(this.aT*1.5)*.04;
 }}
 
+// TRAIN - moving entity that rides along rails
+class Train{
+constructor(x,y,z,dirX,dirZ){
+  this.pos=new THREE.Vector3(x,y+.2,z);this.dirX=dirX||1;this.dirZ=dirZ||0;this.spd=5;this.grp=new THREE.Group();
+  this.alive=true;this.pauseT=0;
+  const body=new THREE.MeshLambertMaterial({color:0xcc2222});const metal=new THREE.MeshLambertMaterial({color:0x444444});
+  const frame=new THREE.MeshLambertMaterial({color:0x222222});const glass=new THREE.MeshLambertMaterial({color:0x88bbdd,transparent:true,opacity:.6});
+  // Locomotive body
+  this.grp.add(mkM(new THREE.BoxGeometry(2.4,1.6,1.6),body,0,.8,0));
+  // Roof
+  this.grp.add(mkM(new THREE.BoxGeometry(2.6,.2,1.8),metal,0,1.7,0));
+  // Front cowcatcher
+  this.grp.add(mkM(new THREE.BoxGeometry(.3,.4,1.2),frame,1.3,.2,0));
+  // Smokestack
+  this.grp.add(mkM(new THREE.BoxGeometry(.4,.6,.4),metal,.6,2,0));
+  // Windows
+  this.grp.add(mkM(new THREE.BoxGeometry(.05,.5,.4),glass,1.2,1.1,.4));
+  this.grp.add(mkM(new THREE.BoxGeometry(.05,.5,.4),glass,1.2,1.1,-.4));
+  // Wheels (4 pairs)
+  for(const wx of[-.6,.6]){
+    this.grp.add(mkM(new THREE.BoxGeometry(.3,.3,.3),frame,wx,.15,.7));
+    this.grp.add(mkM(new THREE.BoxGeometry(.3,.3,.3),frame,wx,.15,-.7));
+  }
+  // Headlight
+  this.grp.add(mkM(new THREE.BoxGeometry(.1,.2,.2),new THREE.MeshBasicMaterial({color:0xffffaa,emissive:0xffff88}),1.25,.9,0));
+  if(W.sc)W.sc.add(this.grp);
+}
+tick(dt){
+  if(!this.alive)return false;
+  if(this.pauseT>0){this.pauseT-=dt;return true}
+  // Move along current direction
+  const nx=this.pos.x+this.dirX*this.spd*dt;
+  const nz=this.pos.z+this.dirZ*this.spd*dt;
+  // Check if there's rail ahead
+  const checkX=fl(nx+this.dirX*1.5),checkZ=fl(nz+this.dirZ*1.5);
+  let hasRail=false;
+  for(let dy=3;dy>=-2;dy--){
+    const b=W.gB(checkX,fl(this.pos.y)+dy,checkZ);
+    if(b===B.RAIL_IRON||b===B.RAIL_POWERED){hasRail=true;break}
+  }
+  if(hasRail){
+    this.pos.x=nx;this.pos.z=nz;
+    // Adjust height to follow terrain
+    for(let dy=3;dy>=-2;dy--){
+      const testY=fl(this.pos.y)+dy;
+      const b=W.gB(fl(this.pos.x),testY,fl(this.pos.z));
+      if(b===B.RAIL_IRON||b===B.RAIL_POWERED){this.pos.y=testY+.2;break}
+    }
+  }else{
+    // Reverse direction and pause briefly at end of line
+    this.dirX=-this.dirX;this.dirZ=-this.dirZ;this.pauseT=3;
+  }
+  // Station detection - pause at platforms
+  const belowBlock=W.gB(fl(this.pos.x),fl(this.pos.y)-1,fl(this.pos.z));
+  if(belowBlock===B.PLATFORM_BLK&&this.pauseT<=0)this.pauseT=5;
+  this.grp.position.copy(this.pos);
+  this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ);
+  return true;
+}
+rm(){if(this.grp&&W.sc){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}})}catch(e){}}this.alive=false}
+}
+
 // MULTIPLAYER
 class Net{constructor(){this.peer=null;this.conns=[];this.rp={};this.intv=null;this.nm='P';this.wSeed=0}
 async host(nm,seed){this.nm=nm;this.wSeed=seed;return new Promise((res,rej)=>{this.peer=new Peer();this.peer.on('open',id=>{$('mps').textContent='Room: '+id+' (copied!)';$('mpcd').value=id;try{navigator.clipboard.writeText(id)}catch(e){}this.peer.on('connection',c=>{this.setup(c);c.on('open',()=>c.send({t:'seed',s:this.wSeed}))});res(id)});this.peer.on('error',e=>{$('mps').textContent='Error: '+e.type;rej(e)})})}
@@ -1273,13 +1494,16 @@ function rebI(){
 }
 
 // WORLD
-const W={st:'menu',ch:{},mobs:[],drops:[],pl:null,inp:new Inp(),sc:null,cam:null,ren:null,bMat:null,wMat:null,hl:null,seed:42,dT:.3,fps:0,mT:0,net:null,hand:null,brkS:-1,brkOvl:null,pendSeed:0,curW:null,gMode:'survival',
+const W={st:'menu',ch:{},mobs:[],drops:[],trains:[],pl:null,inp:new Inp(),sc:null,cam:null,ren:null,bMat:null,wMat:null,hl:null,seed:42,dT:.3,fps:0,mT:0,net:null,hand:null,brkS:-1,brkOvl:null,pendSeed:0,curW:null,gMode:'survival',_stations:[],
 gB(x,y,z){if(y<0||y>=CH)return B.AIR;const cx=fl(x/CS),cz=fl(z/CS),c=this.ch[cx+','+cz];return c?c.G(((x%CS)+CS)%CS,y,((z%CS)+CS)%CS):B.AIR},
 sB(x,y,z,v,rem){const cx=fl(x/CS),cz=fl(z/CS),c=this.ch[cx+','+cz];if(!c)return;c.S(((x%CS)+CS)%CS,y,((z%CS)+CS)%CS,v);c.dirty=true;const lx=((x%CS)+CS)%CS,lz=((z%CS)+CS)%CS;if(lx===0){const n=this.ch[(cx-1)+','+cz];if(n)n.dirty=true}if(lx===CS-1){const n=this.ch[(cx+1)+','+cz];if(n)n.dirty=true}if(lz===0){const n=this.ch[cx+','+(cz-1)];if(n)n.dirty=true}if(lz===CS-1){const n=this.ch[cx+','+(cz+1)];if(n)n.dirty=true}if(!rem&&this.net)this.net.sendBlk(x,y,z,v)},
 async start(seed,mode,ld){try{
   this.st='load';hideAll();$('ld').style.display='flex';$('lbi').style.width='0%';$('ltx').textContent='Init...';
   // CRITICAL: Clean up previous world data
   _structChunks.clear();
+  for(const k in _structRegistry)delete _structRegistry[k];
+  this._stations=[];
+  if(this.trains)this.trains.forEach(t=>t.rm());this.trains=[];
   for(const k in this.ch){this.ch[k].disp()}this.ch={};
   this.mobs.forEach(m=>m.rm());this.mobs=[];
   if(this.drops)this.drops.forEach(d=>d.rm());this.drops=[];
@@ -1385,6 +1609,21 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     else this.mobs.push(new CowMob(mx2+.5,h+2,mz+.5))}
     else if(b3===BI.OC&&dh01(fl(now/150),2)>.4)this.mobs.push(new FishMob(mx2+.5,WL-3,mz+.5))}
     this.mobs=this.mobs.filter(m=>{if(m.pos.distanceTo(this.pl.pos)>RD*CS){m.rm();return false}return m.tick(dt)});
+    // Tick trains - spawn near player on rail corridors
+    if(this.trains.length<3&&this.mT>8){
+      const px2=fl(this.pl.pos.x/CS),pz2=fl(this.pl.pos.z/CS);
+      for(let dx=-RD;dx<=RD&&this.trains.length<3;dx++)for(let dz=-RD;dz<=RD&&this.trains.length<3;dz++){
+        const cx2=px2+dx,cz2=pz2+dz;
+        const isEW=(((cz2%8)+8)%8===0),isNS=(((cx2%12)+12)%12===0);
+        if(!isEW&&!isNS)continue;
+        const tKey=cx2+','+cz2;if(this.trains.some(t=>fl(t.pos.x/CS)===cx2&&fl(t.pos.z/CS)===cz2))continue;
+        const bi2=bio(cx2*CS+8,cz2*CS+8);if(bi2===BI.OC||bi2===BI.VCLANTIS)continue;
+        const th=htA(cx2*CS+8,cz2*CS+8,bi2);if(th<=WL)continue;
+        const tDir=isEW?{x:1,z:0}:{x:0,z:1};
+        this.trains.push(new Train(cx2*CS+8,th+1,cz2*CS+8,tDir.x,tDir.z));break;
+      }
+    }
+    this.trains=this.trains.filter(t=>{if(t.pos.distanceTo(this.pl.pos)>RD*CS*2){t.rm();return false}return t.tick(dt)});
     this.drops=this.drops.filter(d2=>d2.tick(dt));
     if(this.brkS>=0&&this.pl.bt){this.brkOvl.visible=true;this.brkOvl.position.set(this.pl.bt.x+.5,this.pl.bt.y+.5,this.pl.bt.z+.5);
       const stage=this.brkS/5;this.brkOvl.material.opacity=.1+stage*.45;this.brkOvl.material.color.setRGB(stage*.3,0,0);
@@ -1420,30 +1659,49 @@ function doResp(){W.st='play';$('deathUI').style.display='none';W.pl.rsp();W.ren
 // ═══ CHEAT SYSTEM (Creative Mode) ═══
 function openCheat(){
   W.st='cheat';$('cheatUI').style.display='flex';document.exitPointerLock();
-  // Populate biome teleport buttons
   const bc=$('cheatBiomes');bc.innerHTML='';
+  // ─── Biome teleports ───
+  const bHead=document.createElement('div');bHead.style.cssText='font-size:7px;color:#888;margin:4px 0';bHead.textContent='BIOMES:';bc.appendChild(bHead);
   for(const k in BI){
     const id=BI[k],nm=BDt[id]?.n||k;
     const btn=document.createElement('div');btn.className='btn';btn.style.cssText='width:280px;font-size:7px;margin:2px 0';
     btn.textContent='→ '+nm;btn.onclick=()=>cheatTP(id);bc.appendChild(btn);
   }
+  // ─── Structure teleports ───
+  const sHead=document.createElement('div');sHead.style.cssText='font-size:7px;color:#888;margin:8px 0 4px';sHead.textContent='STRUCTURES:';bc.appendChild(sHead);
+  const structNames=['Sweetwater High','Football Stadium','VC Restaurant','Props Arcade','VC Mall','Gomp Industries Tower','Waffle House','Train Station','Abandoned Cabin','Watchtower','Temple','Shrine','Broken Tower','Condo Complex','Boardwalk Ruins','Chapel','Monument','City Tower','Statue'];
+  for(const sn of structNames){
+    const btn=document.createElement('div');btn.className='btn';btn.style.cssText='width:280px;font-size:6px;margin:1px 0;background:linear-gradient(180deg,#556 0%,#556 48%,#445 52%,#445 100%)';
+    btn.textContent='⚑ '+sn;btn.onclick=()=>cheatTPStruct(sn);bc.appendChild(btn);
+  }
+  // ─── Station teleport ───
+  if(W._stations&&W._stations.length>0){
+    const stHead=document.createElement('div');stHead.style.cssText='font-size:7px;color:#888;margin:8px 0 4px';stHead.textContent='TRAIN STATIONS:';bc.appendChild(stHead);
+    W._stations.forEach((s,i)=>{
+      const btn=document.createElement('div');btn.className='btn';btn.style.cssText='width:280px;font-size:6px;margin:1px 0;background:linear-gradient(180deg,#565 0%,#565 48%,#454 52%,#454 100%)';
+      btn.textContent='🚂 Station #'+(i+1)+' ('+s.x+', '+s.z+')';btn.onclick=()=>{W.pl.pos.set(s.x+.5,s.y+2,s.z+.5);W.pl.vel.set(0,0,0);closeCheat()};bc.appendChild(btn);
+    });
+  }
 }
 function closeCheat(){W.st='play';$('cheatUI').style.display='none';if(W.ren)W.ren.domElement.requestPointerLock()}
 function cheat(cmd){
-  if(cmd==='day'){W.dT=.25}// noon
-  else if(cmd==='night'){W.dT=.75}// midnight
+  if(cmd==='day'){W.dT=.25}
+  else if(cmd==='night'){W.dT=.75}
   else if(cmd==='heal'){if(W.pl){W.pl.hp=20;W.pl.hunger=20}}
   else if(cmd==='fly'){if(W.pl){W.pl.flying=!W.pl.flying}}
   closeCheat();
 }
 function cheatTP(biomeId){
-  const px=fl(W.pl.pos.x),pz=fl(W.pl.pos.z);
-  for(let r=16;r<3000;r+=16){
-    for(let a=0;a<12;a++){
-      const tx=px+fl(Math.cos(a*PI/6)*r),tz=pz+fl(Math.sin(a*PI/6)*r);
+  const px2=fl(W.pl.pos.x),pz2=fl(W.pl.pos.z);
+  // Extended search for rare biomes (Garfbot City, Discord Depths, VCLANTIS)
+  const maxR=(biomeId===BI.GARFBOT_CITY||biomeId===BI.DISCORD_DEEP||biomeId===BI.VCLANTIS||biomeId===BI.PROPS_ISLAND)?12000:5000;
+  const step=(biomeId===BI.GARFBOT_CITY||biomeId===BI.DISCORD_DEEP)?8:16;
+  for(let r=16;r<maxR;r+=step){
+    const angles=r<2000?24:12; // more angles for closer search
+    for(let a=0;a<angles;a++){
+      const tx=px2+fl(Math.cos(a*TAU/angles)*r),tz=pz2+fl(Math.sin(a*TAU/angles)*r);
       if(bio(tx,tz)===biomeId){
         const h=htA(tx,tz,biomeId);
-        // Handle special biome types
         if(biomeId===BI.DISCORD_DEEP)W.pl.pos.set(tx+.5,mn(h+3,28),tz+.5);
         else if(biomeId===BI.VCLANTIS)W.pl.pos.set(tx+.5,15,tz+.5);
         else if(biomeId===BI.OC||biomeId===BI.PROPS_ISLAND)W.pl.pos.set(tx+.5,WL+2,tz+.5);
@@ -1451,6 +1709,45 @@ function cheatTP(biomeId){
         W.pl.vel.set(0,0,0);closeCheat();return;
       }
     }
+  }
+  // Fallback: force-search specific coordinates for very rare biomes
+  if(biomeId===BI.GARFBOT_CITY){
+    for(let gx=-2000;gx<2000;gx+=32)for(let gz=-2000;gz<2000;gz+=32){
+      if(bio(gx,gz)===BI.GARFBOT_CITY){const h=htA(gx,gz,biomeId);W.pl.pos.set(gx+.5,mx(h+3,WL+3),gz+.5);W.pl.vel.set(0,0,0);closeCheat();return}
+    }
+  }
+  if(biomeId===BI.DISCORD_DEEP){
+    for(let gx=-2000;gx<2000;gx+=32)for(let gz=-2000;gz<2000;gz+=32){
+      if(bio(gx,gz)===BI.DISCORD_DEEP){W.pl.pos.set(gx+.5,20,gz+.5);W.pl.vel.set(0,0,0);closeCheat();return}
+    }
+  }
+  closeCheat();
+}
+function cheatTPStruct(name){
+  // First check registry for generated instances
+  if(_structRegistry[name]&&_structRegistry[name].length>0){
+    const s=_structRegistry[name][0];
+    W.pl.pos.set(s.x+.5,s.y+3,s.z+.5);W.pl.vel.set(0,0,0);closeCheat();return;
+  }
+  // If not yet generated, search for a biome that would contain this structure and teleport there
+  // then the chunk generation will create the structure
+  const structBiomeMap={
+    'Sweetwater High':[BI.VC_SUBURB],'Football Stadium':[BI.SA_PLAINS,BI.VC_SUBURB],
+    'VC Restaurant':[BI.SA_PLAINS,BI.VC_SUBURB,BI.DRY_COAST],'Props Arcade':[BI.VC_SUBURB,BI.PROPS_ISLAND],
+    'VC Mall':[BI.VC_SUBURB],'Gomp Industries Tower':[BI.GARFBOT_CITY],
+    'Waffle House':[BI.SA_PLAINS,BI.VC_SUBURB],'Train Station':[],
+    'Abandoned Cabin':[BI.NICSHADE,BI.CAMGROVE],'Watchtower':[BI.NICSHADE,BI.CAMGROVE],
+    'Temple':[BI.WATCHER,BI.CAMGROVE],'Shrine':[BI.NICSHADE,BI.CAMGROVE,BI.WATCHER],
+    'Broken Tower':[BI.SA_PLAINS,BI.WATCHER,BI.VC_BADLANDS],'Condo Complex':[BI.SA_PLAINS,BI.DRY_COAST],
+    'Boardwalk Ruins':[BI.DRY_COAST,BI.RIO_LAGOON,BI.PROPS_ISLAND],
+    'Chapel':[BI.CAMGROVE],'Monument':[BI.WATCHER,BI.VC_BADLANDS],
+    'City Tower':[BI.GARFBOT_CITY],'Statue':[BI.SA_PLAINS]
+  };
+  const biomes=structBiomeMap[name]||[];
+  if(biomes.length>0){cheatTP(biomes[0]);return}
+  // Train station - teleport to nearest station
+  if(name==='Train Station'&&W._stations&&W._stations.length>0){
+    const s=W._stations[0];W.pl.pos.set(s.x+.5,s.y+2,s.z+.5);W.pl.vel.set(0,0,0);closeCheat();return;
   }
   closeCheat();
 }

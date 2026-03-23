@@ -214,12 +214,12 @@ mt('colm',c=>{nf(c,'#D8D4CC','#E8E4DC',.2);c.fillStyle='#C0BCB4';c.fillRect(2,0,
 mt('tmpl',c=>{nf(c,'#A8A098','#B8B0A8',.3);c.fillStyle='#989088';c.fillRect(0,4,16,1);c.fillRect(0,12,16,1)});
 mt('nlog',c=>{nf(c,'#3A2848','#4A3858',.5);for(let y=0;y<16;y+=4)for(let x=0;x<16;x++)if(tRng.n()>.5)px(c,x,y,'#2A1838')});
 mt('nlvs',c=>{nf(c,'#1A4848','#2A6868',.7);for(let i=0;i<6;i++)px(c,fl(tRng.n()*16),fl(tRng.n()*16),'#0A3838')});
-mt('glfl',c=>{nf(c,'#2A4848','#3A6868',.4);c.fillStyle='#44AAAA';c.fillRect(5,5,6,6);c.fillStyle='#66CCCC';c.fillRect(6,6,4,4)});
+mt('glfl',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(30,80,60,0.6)';c.fillRect(7,8,2,8);c.fillStyle='rgba(60,220,200,0.8)';c.fillRect(4,3,8,6);c.fillStyle='rgba(80,240,220,0.9)';c.fillRect(5,4,6,4);c.fillStyle='rgba(120,255,240,0.7)';c.fillRect(6,5,4,2);c.fillStyle='rgba(200,255,250,0.5)';c.fillRect(7,5,2,1);c.fillStyle='rgba(40,180,160,0.6)';c.fillRect(3,4,2,3);c.fillRect(11,4,2,3);c.fillStyle='rgba(50,200,180,0.5)';c.fillRect(6,2,4,2);c.fillRect(6,8,4,2)});
 mt('vnst',c=>{nf(c,'#607060','#708070',.5);c.fillStyle='#3A6030';c.fillRect(0,0,3,16);c.fillRect(12,0,4,16)});
 mt('cyst',c=>{const bands=['#9A6848','#8A5838','#A07050','#7A4830','#B08060','#8A5540','#9A6545'];for(let y=0;y<16;y++){const bi=fl(y/2.3)%bands.length;c.fillStyle=bands[bi];c.fillRect(0,y,16,1);for(let x=0;x<16;x++)if(tRng.n()>.7){const v=parseInt(bands[bi].slice(1),16);const r2=(v>>16)+fl(tRng.n()*20-10),g=(v>>8&0xff)+fl(tRng.n()*15-7),b2=(v&0xff)+fl(tRng.n()*15-7);px(c,x,y,`rgb(${r2},${g},${b2})`)}}});
 mt('mnst',c=>{nf(c,'#A8A098','#B8B0A8',.3);c.fillStyle='#888078';c.fillRect(2,2,12,12);c.fillStyle='#989088';c.fillRect(4,4,8,8)});
 mt('rstm',c=>{nf(c,'#8A5530','#9A6540',.5);for(let i=0;i<6;i++)px(c,fl(tRng.n()*16),fl(tRng.n()*16),'#6A3520')});
-mt('glcr',c=>{nf(c,'#3080A0','#50A0C8',.4);c.fillStyle='#60C8EE';c.fillRect(3,2,10,12);c.fillStyle='#80DDFF';c.fillRect(5,4,6,8);c.fillStyle='#AAEEFF';c.fillRect(6,5,4,6);c.fillStyle='#CCFFFF';c.fillRect(7,6,2,4);c.fillStyle='rgba(150,240,255,0.3)';c.fillRect(2,1,12,14);c.fillStyle='rgba(255,255,255,0.2)';c.fillRect(4,3,2,1);c.fillRect(9,10,2,1)});
+mt('glcr',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,140,180,0.3)';c.fillRect(0,0,16,16);c.fillStyle='rgba(80,200,240,0.7)';c.fillRect(3,1,10,14);c.fillStyle='rgba(100,220,255,0.8)';c.fillRect(4,2,8,12);c.fillStyle='rgba(140,240,255,0.9)';c.fillRect(5,3,6,10);c.fillStyle='rgba(200,255,255,0.8)';c.fillRect(6,4,4,8);c.fillStyle='rgba(255,255,255,0.5)';c.fillRect(7,5,2,6);c.fillStyle='rgba(60,180,220,0.4)';c.fillRect(2,6,2,4);c.fillRect(12,3,2,6)});
 mt('dkpn',c=>{nf(c,'#141420','#242434',.45);c.fillStyle='#0a0a16';c.fillRect(0,7,16,2);c.fillRect(7,0,2,16);c.fillStyle='rgba(40,50,80,0.3)';c.fillRect(1,1,6,6);c.fillRect(9,9,6,6);c.fillStyle='rgba(60,80,120,0.15)';c.fillRect(3,3,2,2);c.fillRect(11,11,2,2);c.fillStyle='rgba(80,100,160,0.08)';c.fillRect(0,0,16,16)});
 mt('sgst',c=>{nf(c,'#505060','#606070',.4);c.fillStyle='#4488AA';c.fillRect(4,4,8,8)});
 mt('rail',c=>{nf(c,'#707070','#888888',.3);c.fillStyle='#555';c.fillRect(2,0,2,16);c.fillRect(12,0,2,16);c.fillStyle='#6B4826';c.fillRect(0,3,16,2);c.fillRect(0,10,16,2)});
@@ -437,21 +437,35 @@ function buildRoom(ck,x,y,z,w,d,h2,wallB,floorB,ceilB,hasWindow){
 }
 // CONDO: 3-floor building with rooms per floor
 function genCondo(ck,x,y,z,r){
-  const w=8+fl(r*4),d=7+fl(r*3),floors=2+fl(r*2),fh=4;
+  const w=10+fl(r*3),d=8+fl(r*3),floors=3+fl(r*2),fh=4;
   for(let f=0;f<floors;f++){
     const fy=y+f*fh;
     buildRoom(ck,x,fy,z,w,d,fh,B.STUCCO,f===0?B.CONCRETE:B.PLNK,B.CONCRETE,true);
-    // Interior partition wall
+    // Interior partition wall (2 units per floor)
     for(let dy=1;dy<fh-1;dy++)for(let dz=1;dz<d-1;dz++)ss(ck,x+fl(w/2),fy+dy,z+dz,B.CONDO_WALL);
-    // Door in partition
     ss(ck,x+fl(w/2),fy+1,z+fl(d/2),B.AIR);ss(ck,x+fl(w/2),fy+2,z+fl(d/2),B.AIR);
+    // Cross-partition for 4 units
+    for(let dy=1;dy<fh-1;dy++)for(let dx=1;dx<fl(w/2);dx++)ss(ck,x+dx,fy+dy,z+fl(d/2),B.CONDO_WALL);
+    for(let dy=1;dy<fh-1;dy++)for(let dx=fl(w/2)+1;dx<w-1;dx++)ss(ck,x+dx,fy+dy,z+fl(d/2),B.CONDO_WALL);
+    ss(ck,x+fl(w/4),fy+1,z+fl(d/2),B.AIR);ss(ck,x+fl(w/4),fy+2,z+fl(d/2),B.AIR);
+    ss(ck,x+fl(w*3/4),fy+1,z+fl(d/2),B.AIR);ss(ck,x+fl(w*3/4),fy+2,z+fl(d/2),B.AIR);
+    // Balconies on back
+    for(let dx=2;dx<w-2;dx++){ss(ck,x+dx,fy,z+d,B.CONCRETE);ss(ck,x+dx,fy+1,z+d,B.FENCE_BLK)}
     // Stairs
-    if(f<floors-1){for(let dy=0;dy<fh;dy++)ss(ck,x+1,fy+dy,z+1,B.COB);ss(ck,x+1,fy+fh,z+1,B.AIR)}
+    if(f<floors-1){for(let dy=0;dy<fh;dy++)ss(ck,x+1,fy+dy,z+1,B.COB)}
+    // Unit furnishings
+    ss(ck,x+2,fy+1,z+2,B.PLNK);ss(ck,x+w-3,fy+1,z+d-3,B.PLNK); // beds
+    ss(ck,x+fl(w/2)-2,fy+1,z+2,B.FURN);ss(ck,x+fl(w/2)+2,fy+1,z+d-3,B.FURN); // kitchen
   }
-  // Roof
-  for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d;dz++)ss(ck,x+dx,y+floors*fh,z+dz,B.ROOF_TILE);
-  // Front door
+  // Roof with railing
+  for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d+1;dz++)ss(ck,x+dx,y+floors*fh,z+dz,B.ROOF_TILE);
+  for(let dx=0;dx<w;dx++){ss(ck,x+dx,y+floors*fh+1,z,B.FENCE_BLK);ss(ck,x+dx,y+floors*fh+1,z+d,B.FENCE_BLK)}
+  // Front entrance
   ss(ck,x+fl(w/2),y+1,z,B.AIR);ss(ck,x+fl(w/2),y+2,z,B.AIR);
+  // Courtyard / parking in front
+  for(let dx=-1;dx<=w;dx++)for(let dz=-3;dz<0;dz++)ss(ck,x+dx,y-1,z+dz,B.ASPHALT);
+  // Mailboxes
+  ss(ck,x+fl(w/2)-1,y+1,z-1,B.METAL_PANEL);ss(ck,x+fl(w/2)+1,y+1,z-1,B.METAL_PANEL);
 }
 // STATUE: VC member monuments
 function genStatue(ck,x,y,z,member){
@@ -802,24 +816,32 @@ function genGomp(ck,x,y,z,r){
 }
 // BOARDWALK: coastal/island walkway
 function genBoardwalk(ck,x,y,z){
-  const len=10+fl(dh01(x*31,z*17)*6);
-  // Main walkway - wider
+  const len=12+fl(dh01(x*31,z*17)*6);
+  // Main walkway - wider with varied width
   for(let dx=0;dx<len;dx++){
-    for(let dz=0;dz<3;dz++)ss(ck,x+dx,y,z+dz,B.BOARDWALK);
-    ss(ck,x+dx,y+1,z-1,B.FENCE_BLK);ss(ck,x+dx,y+1,z+3,B.FENCE_BLK);
-    // Support posts - weathered
-    if(dx%3===0){for(let dy=-3;dy<0;dy++){ss(ck,x+dx,y+dy,z,B.SLOG);ss(ck,x+dx,y+dy,z+2,B.SLOG)}}
-    // Some broken sections
-    if(dh01(x+dx*50,z*50)>.85)ss(ck,x+dx,y,z+1,B.AIR);
+    const wid=dx>fl(len/3)&&dx<fl(len*2/3)?4:3;
+    for(let dz=0;dz<wid;dz++)ss(ck,x+dx,y,z+dz,B.BOARDWALK);
+    ss(ck,x+dx,y+1,z-1,B.FENCE_BLK);ss(ck,x+dx,y+1,z+wid,B.FENCE_BLK);
+    // Support posts - weathered, reaching into water/ground
+    if(dx%3===0){for(let dy=-4;dy<0;dy++){ss(ck,x+dx,y+dy,z,B.SLOG);ss(ck,x+dx,y+dy,z+wid-1,B.SLOG)}}
+    // Broken sections add variety
+    if(dh01(x+dx*50,z*50)>.88)ss(ck,x+dx,y,z+1,B.AIR);
   }
-  // Scenic overlook / pavilion at midpoint
+  // Scenic overlook / pavilion at midpoint (wider)
   const mid=fl(len/2);
-  for(let dx=mid-2;dx<=mid+2;dx++)for(let dz=-2;dz<5;dz++)ss(ck,x+dx,y,z+dz,B.BOARDWALK);
+  for(let dx=mid-3;dx<=mid+3;dx++)for(let dz=-3;dz<6;dz++)ss(ck,x+dx,y,z+dz,B.BOARDWALK);
   // Pavilion posts and roof
-  for(let dy=1;dy<4;dy++){ss(ck,x+mid-2,y+dy,z-2,B.SLOG);ss(ck,x+mid+2,y+dy,z-2,B.SLOG);ss(ck,x+mid-2,y+dy,z+4,B.SLOG);ss(ck,x+mid+2,y+dy,z+4,B.SLOG)}
-  for(let dx=mid-2;dx<=mid+2;dx++)for(let dz=-2;dz<=4;dz++)ss(ck,x+dx,y+4,z+dz,B.PLNK);
-  // Bench
-  ss(ck,x+mid,y+1,z-1,B.PLNK);ss(ck,x+mid+1,y+1,z-1,B.PLNK);
+  for(let dy=1;dy<5;dy++){ss(ck,x+mid-3,y+dy,z-3,B.SLOG);ss(ck,x+mid+3,y+dy,z-3,B.SLOG);ss(ck,x+mid-3,y+dy,z+5,B.SLOG);ss(ck,x+mid+3,y+dy,z+5,B.SLOG)}
+  for(let dx=mid-3;dx<=mid+3;dx++)for(let dz=-3;dz<=5;dz++)ss(ck,x+dx,y+5,z+dz,B.PLNK);
+  // Benches
+  for(let dx=mid-2;dx<=mid+2;dx+=4){ss(ck,x+dx,y+1,z-2,B.PLNK);ss(ck,x+dx,y+1,z+4,B.PLNK)}
+  // Lookout point at end
+  for(let dz=-2;dz<=4;dz++){ss(ck,x+len-1,y,z+dz,B.BOARDWALK);ss(ck,x+len,y,z+dz,B.BOARDWALK)}
+  for(let dz=-2;dz<=4;dz++){ss(ck,x+len,y+1,z+dz,B.FENCE_BLK)}
+  // Collapsed hut remnant near start
+  for(let dx=0;dx<3;dx++)for(let dz=-2;dz<0;dz++){ss(ck,x+dx,y,z+dz,B.BOARDWALK);ss(ck,x+dx,y+1,z+dz,dh01(dx*11,dz*17)>.3?B.CABIN_WALL:B.AIR)}
+  // Stairs down to water/beach at start
+  for(let dy=-2;dy<=0;dy++)ss(ck,x,y+dy,z+1,B.COB);
 }
 // CHAPEL: forested stone chapel
 function genChapel(ck,x,y,z){
@@ -1926,7 +1948,7 @@ async start(seed,mode,ld){try{
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.1});
-  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.5,side:THREE.DoubleSide,depthWrite:false,shininess:30,specular:0x336688});
+  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.55,side:THREE.DoubleSide,depthWrite:false,shininess:60,specular:0x448899,color:0xbbddee});
   // Hemisphere light (sky blue above, ground brown below)
   this.hemiLight=new THREE.HemisphereLight(0x88bbff,0x554433,.45);this.sc.add(this.hemiLight);
   this.amb=new THREE.AmbientLight(0x404050,.3);this.sc.add(this.amb);

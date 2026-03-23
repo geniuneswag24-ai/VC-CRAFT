@@ -1009,8 +1009,8 @@ deco(){
       const bw=10+fl(dh01(this.cx*11,this.cz*13)*4),bd2=10+fl(dh01(this.cx*17,this.cz*19)*4);
       const ox2=fl((CS-bw)/2),oz2=fl((CS-bd2)/2);
       for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){const h=this.sY(x,z);if(h>WL)this.S(x,h,z,B.SIDEWALK)}
-      if(bSeed<.8){
-        const floors=bSeed<.5?(8+fl(bSeed*12)):(4+fl(bSeed*5)),fh=4;
+      if(bSeed<.85){
+        const floors=bSeed<.5?(10+fl(bSeed*16)):(5+fl(bSeed*6)),fh=4;
         for(let f=0;f<floors;f++){
           const fy=bh+1+f*fh;
           for(let dy=0;dy<fh;dy++)for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++){
@@ -1027,6 +1027,14 @@ deco(){
         for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++)this.S(ox2+dx,ry,oz2+dz,B.CONCRETE);
       }else{
         buildRoom(this,ox2,bh+1,oz2,bw,bd2,7,B.METAL_PANEL,B.CONCRETE,B.METAL_PANEL,true);
+      }
+      // Street furniture: streetlights, trash, rubble
+      if(gridX===0||gridZ===0){
+        if(dh01(this.cx*333,this.cz*555)>.6){
+          for(let dy=1;dy<5;dy++)this.S(3,bh+1+dy,3,B.METAL_PANEL);
+          this.S(3,bh+6,3,B.NEON_BLK);
+        }
+        if(dh01(this.cx*444,this.cz*666)>.7)this.S(12,bh+1,12,B.CITY_RUBBLE);
       }
     }
     return;
@@ -1740,9 +1748,18 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     else if(tw>.05){const t2=(tw-.05)/.25;skyCol=new THREE.Color(.15,.1,.2).lerp(new THREE.Color(.9,.5,.3),t2)}
     else{skyCol=new THREE.Color(.03,.03,.12)}
     this.sc.background=skyCol;this.sc.fog.color=skyCol;
-    // Underwater fog override
+    // Underwater fog override + biome atmosphere
     if(this.pl.headInWater){this.sc.fog.density=.08;this.sc.fog.color.set(0x1a4080);this.sc.background.set(0x1a4080)}
-    else{this.sc.fog.density=.012}
+    else{
+      const pBio=bio(fl(this.pl.pos.x),fl(this.pl.pos.z));
+      let fogD=.009;
+      if(pBio===BI.DISCORD_DEEP){fogD=.025;this.sc.fog.color.lerp(new THREE.Color(.06,.06,.12),.3)}
+      else if(pBio===BI.NICSHADE){fogD=.014;this.sc.fog.color.lerp(new THREE.Color(.2,.35,.25),.15)}
+      else if(pBio===BI.WATCHER){fogD=.007;this.sc.fog.color.lerp(new THREE.Color(.55,.45,.35),.1)}
+      else if(pBio===BI.GARFBOT_CITY){fogD=.011;this.sc.fog.color.lerp(new THREE.Color(.3,.35,.4),.1)}
+      else if(pBio===BI.CAMGROVE){fogD=.012;this.sc.fog.color.lerp(new THREE.Color(.3,.4,.35),.08)}
+      this.sc.fog.density=fogD;
+    }
     this.sun.intensity=mx(.02,tw*.95);this.amb.intensity=.05+tw*.35;
     this.hemiLight.intensity=.1+tw*.45;
     this.sun.color.set(tw<.4?0xff8844:0xffeedd);

@@ -126,7 +126,7 @@ DARK_PANEL:76,SIGNAL_STONE:77,RAIL_BLK:78,RAIL_TIE:79,PLATFORM_BLK:80,
 SCHOOL_WALL:81,LOCKER_BLK:82,GYM_FLOOR:83,BOARDWALK:84,RESORT_WALL:85,
 POOL_TILE:86,CABIN_WALL:87,TRAIL_STONE:88,CHAPEL_STONE:89,SIDING:90,
 SHINGLE:91,FENCE_BLK:92,DRIVEWAY:93,WATCHER_SAND:94,TOWER_BRICK:95,
-ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112,LAVA:113};
+ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112,LAVA:113,STAIR_COB:114,STAIR_PLNK:115,STAIR_BRK:116,STAIR_SBK:117,STAIR_STONE:118,STAIR_MARBLE:119};
 const BD={};function db(id,nm,o={}){BD[id]={nm,sol:o.s!==0,tr:!!o.t,liq:!!o.l,hd:o.h||1,dr:o.d!==undefined?o.d:id,st:o.st||64}}
 db(B.AIR,'Air',{s:0,t:1});db(B.GRASS,'Grass Block',{h:.6});db(B.DIRT,'Dirt',{h:.5});db(B.STONE,'Stone',{h:1.5,d:B.COB});db(B.SAND,'Sand',{h:.5});db(B.WATER,'Water',{s:0,t:1,l:1,h:-1});db(B.BED,'Bedrock',{h:-1});db(B.OLOG,'Oak Log',{h:2});db(B.OLVS,'Oak Leaves',{h:.2,t:1});db(B.BLOG,'Birch Log',{h:2});db(B.BLVS,'Birch Leaves',{h:.2,t:1});db(B.SLOG,'Spruce Log',{h:2});db(B.SLVS,'Spruce Leaves',{h:.2,t:1});db(B.SNOW,'Snow',{h:.3});db(B.COB,'Cobblestone',{h:1.5});db(B.SSTON,'Sandstone',{h:1.2});db(B.PLNK,'Oak Planks',{h:1.5});db(B.GLASS,'Glass',{h:.3,t:1,d:B.AIR});db(B.GRAV,'Gravel',{h:.6});db(B.CLAY,'Clay',{h:.6});db(B.RSAND,'Red Sand',{h:.5});db(B.MUD,'Mud',{h:.5});db(B.CACT,'Cactus',{h:.4});db(B.DEEP,'Deepslate',{h:2});db(B.COAL,'Coal Ore',{h:1.8,d:B.COAL_I});db(B.IRON,'Iron Ore',{h:2.2});db(B.GOLD,'Gold Ore',{h:2.5});db(B.DIAM,'Diamond Ore',{h:3});db(B.MOSS,'Mossy Stone',{h:1.5});db(B.BRK,'Bricks',{h:2});db(B.SBK,'Stone Bricks',{h:1.5});db(B.DLOG,'Dark Oak Log',{h:2});db(B.DLVS,'Dark Leaves',{h:.2,t:1});db(B.JLOG,'Jungle Log',{h:2});db(B.JLVS,'Jungle Leaves',{h:.2,t:1});db(B.ALOG,'Acacia Log',{h:2});db(B.ALVS,'Acacia Leaves',{h:.2,t:1});db(B.CRFT,'Crafting Table',{h:1.5});db(B.FURN,'Furnace',{h:2});db(B.CHST,'Chest',{h:1.5});db(B.ICE,'Ice',{h:.5,t:1});db(B.STICK,'Stick',{s:0,t:1,st:64});db(B.COAL_I,'Coal',{s:0,t:1,st:64});db(B.IRON_I,'Iron Ingot',{s:0,t:1,st:64});db(B.WPICK,'Wood Pickaxe',{s:0,t:1,st:1});db(B.SPICK,'Stone Pickaxe',{s:0,t:1,st:1});db(B.WSWD,'Wood Sword',{s:0,t:1,st:1});
 // VC World block defs
@@ -134,6 +134,7 @@ db(B.ASPHALT,'Asphalt',{h:1.5});db(B.SIDEWALK,'Sidewalk',{h:1.2});db(B.CONCRETE,
 db(B.CORAL_PINK,'Pink Coral',{h:.3});db(B.CORAL_BLUE,'Blue Coral',{h:.3});db(B.CORAL_YELLOW,'Yellow Coral',{h:.3});db(B.KELP,'Kelp',{h:.2,t:1,s:0});db(B.SEA_LANTERN,'Sea Lantern',{h:1});db(B.RAIL_IRON,'Iron Rail',{h:.5,s:0,t:1});db(B.RAIL_POWERED,'Powered Rail',{h:.5,s:0,t:1});db(B.RAIL_BED,'Rail Bed',{h:1,s:0,t:1});
 db(B.TALL_GRASS,'Tall Grass',{h:.1,s:0,t:1});db(B.FLOWER_RED,'Red Flower',{h:.1,s:0,t:1});db(B.FLOWER_BLUE,'Blue Flower',{h:.1,s:0,t:1});db(B.FLOWER_YELLOW,'Yellow Flower',{h:.1,s:0,t:1});db(B.SHRUB,'Shrub',{h:.2,s:0,t:1});db(B.REED,'Reed',{h:.2,s:0,t:1});db(B.FERN,'Fern',{h:.1,s:0,t:1});
 db(B.LAVA,'Lava',{s:0,t:1,l:1,h:-1});
+db(B.STAIR_COB,'Cobblestone Stairs',{h:1.5});db(B.STAIR_PLNK,'Oak Plank Stairs',{h:1});db(B.STAIR_BRK,'Brick Stairs',{h:2});db(B.STAIR_SBK,'Stone Brick Stairs',{h:1.5});db(B.STAIR_STONE,'Stone Stairs',{h:1.5});db(B.STAIR_MARBLE,'Marble Stairs',{h:2});
 
 // RECIPES
 const RCP=[];function addR(g,r,n){RCP.push({g,r,n:n||1})}
@@ -144,6 +145,7 @@ addR([[B.COB,B.COB,B.COB],[0,B.STICK,0],[0,B.STICK,0]],B.SPICK,1);
 addR([[0,B.PLNK,0],[0,B.STICK,0],[0,B.STICK,0]],B.WSWD,1);
 addR([[B.COB,B.COB,B.COB],[B.COB,0,B.COB],[B.COB,B.COB,B.COB]],B.FURN,1);
 addR([[B.PLNK,B.PLNK,B.PLNK],[B.PLNK,0,B.PLNK],[B.PLNK,B.PLNK,B.PLNK]],B.CHST,1);
+addR([[B.COB,0,0],[B.COB,B.COB,0],[B.COB,B.COB,B.COB]],B.STAIR_COB,4);addR([[B.PLNK,0,0],[B.PLNK,B.PLNK,0],[B.PLNK,B.PLNK,B.PLNK]],B.STAIR_PLNK,4);addR([[B.BRK,0,0],[B.BRK,B.BRK,0],[B.BRK,B.BRK,B.BRK]],B.STAIR_BRK,4);addR([[B.SBK,0,0],[B.SBK,B.SBK,0],[B.SBK,B.SBK,B.SBK]],B.STAIR_SBK,4);addR([[B.STONE,0,0],[B.STONE,B.STONE,0],[B.STONE,B.STONE,B.STONE]],B.STAIR_STONE,4);addR([[B.MARBLE,0,0],[B.MARBLE,B.MARBLE,0],[B.MARBLE,B.MARBLE,B.MARBLE]],B.STAIR_MARBLE,4);
 function chkR(grid,sz){for(const r of RCP){const rH=r.g.length,rW=r.g[0].length;if(rW>sz||rH>sz)continue;for(let oy=0;oy<=sz-rH;oy++)for(let ox=0;ox<=sz-rW;ox++){let ok=true;for(let y=0;y<sz&&ok;y++)for(let x=0;x<sz&&ok;x++){const gv=grid[y]?.[x]||0,ry=y-oy,rx=x-ox;const rv=(ry>=0&&ry<rH&&rx>=0&&rx<rW)?r.g[ry][rx]||0:0;if(gv!==rv)ok=false}if(ok)return{id:r.r,n:r.n}}}return null}
 
 // TEXTURES - using seeded RNG, all opaque (no transparency issues)
@@ -275,6 +277,7 @@ bf(B.GRASS,'gt','gs','dt');bf(B.DIRT,'dt');bf(B.STONE,'st');bf(B.SAND,'sa');bf(B
 bf(B.ASPHALT,'asph');bf(B.SIDEWALK,'sdwk');bf(B.CONCRETE,'conc');bf(B.STUCCO,'stuc');bf(B.CONDO_WALL,'cndw');bf(B.ROOF_TILE,'roof');bf(B.DRY_GRASS,'dgrss');bf(B.CRACK_PAVE,'cpave');bf(B.STATUE_STONE,'stst');bf(B.BRONZE,'brnz');bf(B.METAL_PANEL,'mpnl');bf(B.GLASS_TOWER,'gtwr');bf(B.NEON_BLK,'neon');bf(B.CITY_RUBBLE,'crub');bf(B.SHIP_TIMBER,'stim');bf(B.BARNACLE_WOOD,'barw');bf(B.SAIL_BLK,'sail');bf(B.MARBLE,'mrbl');bf(B.SEA_MARBLE,'smrb');bf(B.COLUMN_BLK,'colm');bf(B.TEMPLE_STONE,'tmpl');bf(B.NICSHADE_LOG,'nlog');bf(B.NICSHADE_LVS,'nlvs');bf(B.GLOW_FLOWER,'glfl');bf(B.VINE_STONE,'vnst');bf(B.CANYON_STONE,'cyst');bf(B.MONUMENT_STN,'mnst');bf(B.RUSTED_METAL,'rstm');bf(B.GLOW_CRYSTAL,'glcr');bf(B.DARK_PANEL,'dkpn');bf(B.SIGNAL_STONE,'sgst');bf(B.RAIL_BLK,'rail');bf(B.RAIL_TIE,'rtie');bf(B.PLATFORM_BLK,'plat');bf(B.SCHOOL_WALL,'schl');bf(B.LOCKER_BLK,'lock');bf(B.GYM_FLOOR,'gymf');bf(B.BOARDWALK,'bdwk');bf(B.RESORT_WALL,'rsrt');bf(B.POOL_TILE,'pool');bf(B.CABIN_WALL,'cabn');bf(B.TRAIL_STONE,'trst');bf(B.CHAPEL_STONE,'chpl');bf(B.SIDING,'sidg');bf(B.SHINGLE,'shng');bf(B.FENCE_BLK,'fnce');bf(B.DRIVEWAY,'drwy');bf(B.WATCHER_SAND,'wsnd');bf(B.TOWER_BRICK,'twbk');bf(B.ANCIENT_METAL,'amtl');bf(B.PIRATE_PLNK,'pplk');
 bf(B.CORAL_PINK,'crpk');bf(B.CORAL_BLUE,'crbl');bf(B.CORAL_YELLOW,'cryl');bf(B.KELP,'kelp');bf(B.SEA_LANTERN,'slnt');bf(B.RAIL_IRON,'rli');bf(B.RAIL_POWERED,'rlp');bf(B.RAIL_BED,'rlb');
 bf(B.TALL_GRASS,'tgrss');bf(B.FLOWER_RED,'flrd');bf(B.FLOWER_BLUE,'flbl');bf(B.FLOWER_YELLOW,'flyl');bf(B.SHRUB,'shrb');bf(B.REED,'reed');bf(B.FERN,'fern');bf(B.LAVA,'lava');
+bf(B.STAIR_COB,'co');bf(B.STAIR_PLNK,'pk');bf(B.STAIR_BRK,'bk');bf(B.STAIR_SBK,'sb');bf(B.STAIR_STONE,'st');bf(B.STAIR_MARBLE,'mrbl');
 
 const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPICK]:'wpick_i',[B.SPICK]:'spick_i',[B.WSWD]:'wswd_i'};
 
@@ -294,7 +297,7 @@ function buildAtlas(){
 // VC BIOMES - unique themed biome roster
 const BI={OC:0,BE:1,SA_PLAINS:2,NICSHADE:3,CAMGROVE:4,WATCHER:5,VC_SUBURB:6,VC_BADLANDS:7,MO:8,DRY_COAST:9,RIO_LAGOON:10,GARFBOT_CITY:11,DISCORD_DEEP:12,TAIGA:13,SNOWY:14,PROPS_ISLAND:15,VCLANTIS:16};
 const BDt={
-[BI.OC]:{n:'Ocean',bH:30,a:16,sf:B.SAND,su:B.SAND},
+[BI.OC]:{n:'Ocean',bH:22,a:20,sf:B.SAND,su:B.SAND},
 [BI.BE]:{n:'Beach',bH:68,a:4,sf:B.SAND,su:B.SAND},
 [BI.SA_PLAINS]:{n:'San Antonio Plains',bH:80,a:10,sf:B.DRY_GRASS,su:B.DIRT,tr:'acacia',tc:.003,structs:['condo','statue','waffle','broken_tower','house','restaurant','stadium']},
 [BI.NICSHADE]:{n:'Nicshade Forest',bH:86,a:12,sf:B.GRASS,su:B.DIRT,tr:'nicshade',tc:.055,structs:['shrine','cabin','watchtower']},
@@ -336,7 +339,7 @@ function bio(x,z){
   // Mountains - large ranges
   if(e>.5)return BI.MO;
   // Rare Discord Depths - underground deep zone
-  if(s<-.55&&m<-.05&&abs(t)<.4)return BI.DISCORD_DEEP;
+  if(s<-.6&&m<-.1&&abs(t)<.35&&c>-.15&&e<.3)return BI.DISCORD_DEEP;
   // Rare Garfbot City - very specific, isolated
   if(s>.75&&abs(t)<.15&&abs(m)<.2)return BI.GARFBOT_CITY;
   // Hot biomes (t > 0.25)
@@ -363,7 +366,8 @@ function htA(x,z,b){
   const d=BDt[b];
   let h=d.bH+nE.n2(x*.008,z*.008)*d.a+nD.n2(x*.03,z*.03)*(d.a*.3)+nD.n2(x*.06,z*.06)*(d.a*.1);
   // Flatten terrain for suburban/city biomes
-  if(b===BI.VC_SUBURB||b===BI.GARFBOT_CITY)h=d.bH+nD.n2(x*.02,z*.02)*(d.a*.15);
+  if(b===BI.GARFBOT_CITY)h=d.bH+nD.n2(x*.02,z*.02)*(d.a*.15);
+  if(b===BI.VC_SUBURB)h=d.bH+nD.n2(x*.015,z*.015)*(d.a*.5)+nE.n2(x*.04,z*.04)*(d.a*.2);
   // Mountain ridge/peak enhancement
   if(b===BI.MO){
     const ridge=abs(nR.n2(x*.012,z*.012));
@@ -452,6 +456,7 @@ function buildRoom(ck,x,y,z,w,d,h2,wallB,floorB,ceilB,hasWindow){
     // Interior is AIR (already default)
   }
 }
+function isNaturalSurface(b){return b===B.GRASS||b===B.DIRT||b===B.SAND||b===B.DRY_GRASS||b===B.SNOW||b===B.MUD||b===B.RSAND||b===B.CLAY||b===B.WATCHER_SAND}
 // CONDO: 3-floor building with rooms per floor
 function genCondo(ck,x,y,z,r){
   const w=10+fl(r*3),d=8+fl(r*3),floors=3+fl(r*2),fh=4;
@@ -747,9 +752,16 @@ function genSchool(ck,x,y,z,r){
       ss(ck,ox+bx,fy+1,oz+3,B.AIR);ss(ck,ox+bx,fy+2,oz+3,B.AIR);
     }
   }
-  // ── 2 stairwells ──
-  for(const sx of [1,mainW-2])
-    for(let dy=0;dy<fh*2;dy++){ss(ck,ox+sx,y+dy,oz+1,B.COB);ss(ck,ox+sx,y+dy,oz+mainD-2,B.COB)}
+  // ── 2 stairwells with proper stairs ──
+  for(const sx of [1,mainW-2]){
+    for(let f=0;f<2;f++){
+      const fy=y+f*fh;
+      for(let step=0;step<fh;step++){
+        ss(ck,ox+sx,fy+step,oz+1+step%3,B.STAIR_COB);
+        ss(ck,ox+sx,fy+step,oz+mainD-2-step%3,B.STAIR_COB);
+      }
+    }
+  }
   // ── Wide front entrance (5 blocks wide, 3 tall) ──
   for(let dx=fl(mainW/2)-2;dx<=fl(mainW/2)+2;dx++)
     for(let dy=1;dy<=3;dy++)ss(ck,ox+dx,y+dy,oz,B.AIR);
@@ -814,7 +826,7 @@ function genGomp(ck,x,y,z,r){
       else if(isWall)ss(ck,x+dx,fy+dy,z+dz,dy===fh-1?B.CONCRETE:B.GLASS_TOWER);
     }
     // Stairwell core (always present)
-    for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.CONCRETE);ss(ck,x+2,fy+dy,z+1,B.CONCRETE);ss(ck,x+1,fy+dy,z+2,B.CONCRETE)}
+    for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.CONCRETE);ss(ck,x+2,fy+dy,z+1,B.STAIR_STONE);ss(ck,x+1,fy+dy,z+2,B.CONCRETE)}
     // Elevator shaft
     for(let dy=0;dy<fh;dy++)ss(ck,x+w-2,fy+dy,z+1,B.METAL_PANEL);
     // Floor type varies:
@@ -939,8 +951,8 @@ function genStadium(ck,x,y,z,r){
   for(let dz=0;dz<fd;dz+=5){ss(ck,ox+5,y,oz+dz,B.SIDEWALK);ss(ck,ox+fw-6,y,oz+dz,B.SIDEWALK)} // yard markers
   // ── 6-tier stepped bleachers on all 4 sides ──
   for(let tier=0;tier<6;tier++){
-    for(let dx=0;dx<fw;dx++){ss(ck,ox+dx,y+tier+1,oz-1-tier,B.COB);ss(ck,ox+dx,y+tier+1,oz+fd+tier,B.COB)}
-    for(let dz=-tier;dz<fd+tier;dz++){ss(ck,ox-1-tier,y+tier+1,oz+dz,B.COB);ss(ck,ox+fw+tier,y+tier+1,oz+dz,B.COB)}
+    for(let dx=0;dx<fw;dx++){ss(ck,ox+dx,y+tier+1,oz-1-tier,B.STAIR_COB);ss(ck,ox+dx,y+tier+1,oz+fd+tier,B.STAIR_COB)}
+    for(let dz=-tier;dz<fd+tier;dz++){ss(ck,ox-1-tier,y+tier+1,oz+dz,B.STAIR_COB);ss(ck,ox+fw+tier,y+tier+1,oz+dz,B.STAIR_COB)}
   }
   // ── Under-bleacher tunnels (walkable corridors) on 2 long sides ──
   for(let dz=2;dz<fd-2;dz++)for(let dy=1;dy<=3;dy++){
@@ -1135,10 +1147,10 @@ function genMall(ck,x,y,z,r){
     // ── Escalator/stairs at both ends ──
     if(f<floors-1){
       for(let dy=0;dy<fh;dy++){
-        ss(ck,ox+2,fy+dy,oz+1,B.COB);ss(ck,ox+3,fy+dy,oz+1,B.COB);
-        ss(ck,ox+w-3,fy+dy,oz+1,B.COB);ss(ck,ox+w-4,fy+dy,oz+1,B.COB);
-        ss(ck,ox+2,fy+dy,oz+d-2,B.COB);ss(ck,ox+3,fy+dy,oz+d-2,B.COB);
-        ss(ck,ox+w-3,fy+dy,oz+d-2,B.COB);ss(ck,ox+w-4,fy+dy,oz+d-2,B.COB);
+        ss(ck,ox+2,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+3,fy+dy,oz+1,B.STAIR_STONE);
+        ss(ck,ox+w-3,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+w-4,fy+dy,oz+1,B.STAIR_STONE);
+        ss(ck,ox+2,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+3,fy+dy,oz+d-2,B.STAIR_STONE);
+        ss(ck,ox+w-3,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+w-4,fy+dy,oz+d-2,B.STAIR_STONE);
       }
     }
     // Neon signage in atrium
@@ -1196,7 +1208,7 @@ function genTemple(ck,x,y,z){
   // Grand entrance
   for(let dx=fl(w/2)-1;dx<=fl(w/2)+1;dx++)for(let dy=3;dy<h2-1;dy++)ss(ck,x+dx,y+dy,z,B.AIR);
   // Entrance steps  
-  for(let step=0;step<3;step++)for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++)ss(ck,x+dx,y+step,z-1-step,B.TEMPLE_STONE);
+  for(let step=0;step<3;step++)for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++)ss(ck,x+dx,y+step,z-1-step,B.STAIR_MARBLE);
   // Central altar room
   for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++)for(let dz=fl(d/2)-1;dz<=fl(d/2)+1;dz++)ss(ck,x+dx,y+3,z+dz,B.MARBLE);
   ss(ck,x+fl(w/2),y+4,z+fl(d/2),B.STATUE_STONE);ss(ck,x+fl(w/2),y+5,z+fl(d/2),B.STATUE_STONE);ss(ck,x+fl(w/2),y+6,z+fl(d/2),B.BRONZE);
@@ -1236,7 +1248,10 @@ gen(){
           // Deep cavern layer below y=30
           if(y<30){const deepCave=nC.n3(wx*.04,y*.04,wz*.04);if(deepCave>.42){this.blk[this.I(x,y,z)]=(y<20&&dh01(wx*333+y,wz*444)<.06)?B.LAVA:B.AIR;continue}}
           const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
-          if(ravine<.02&&y>5&&y<100){this.blk[this.I(x,y,z)]=(y<20&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}}
+          if(ravine<.02&&y>5&&y<100){this.blk[this.I(x,y,z)]=(y<20&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
+          // Worm tunnels - longer connected cave passages
+          const worm1=nC.n3(wx*.025,y*.03,wz*.025),worm2=nC.n3(wx*.025+100,y*.03+100,wz*.025+100);
+          if(worm1*worm1+worm2*worm2<.006&&y>5&&y<80){this.blk[this.I(x,y,z)]=(y<15&&dh01(wx*333+y,wz*444)<.05)?B.LAVA:B.AIR;continue}}
         if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>140?B.SNOW:bd.sf;
         else if(y>h-4)b=bd.su;
         else if(y<16)b=B.DEEP;
@@ -1425,16 +1440,72 @@ deco(){
   }
   // ═══ VCLANTIS ═══
   if(chunkBio===BI.VCLANTIS){
-    const vy=5;
-    for(let dx=1;dx<15;dx++)for(let dz=1;dz<15;dz++){this.S(dx,vy,dz,B.MARBLE);this.S(dx,vy+9,dz,B.TEMPLE_STONE)}
-    for(const[cx3,cz3]of[[3,3],[12,3],[3,12],[12,12],[7,7],[3,7],[12,7],[7,3],[7,12]])for(let dy=1;dy<9;dy++)this.S(cx3,vy+dy,cz3,B.COLUMN_BLK);
-    for(let dy=1;dy<9;dy++){for(let d2=1;d2<15;d2++){if(d2>5&&d2<10)continue;this.S(d2,vy+dy,1,B.SEA_MARBLE);this.S(d2,vy+dy,14,B.SEA_MARBLE);this.S(1,vy+dy,d2,B.SEA_MARBLE);this.S(14,vy+dy,d2,B.SEA_MARBLE)}}
-    for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)for(let dy=1;dy<3;dy++)this.S(7+dx,vy+dy,7+dz,B.MARBLE);
-    for(let dy=3;dy<7;dy++){this.S(7,vy+dy,7,B.STATUE_STONE);this.S(8,vy+dy,7,B.STATUE_STONE)}
-    this.S(7,vy+7,7,B.BRONZE);this.S(8,vy+7,7,B.BRONZE);this.S(7,vy+8,7,B.BRONZE);
-    for(const[bx,bz,mat]of[[4,4,B.STATUE_STONE],[11,4,B.MARBLE],[7,11,B.BRONZE]]){this.S(bx,vy+1,bz,B.MARBLE);this.S(bx,vy+2,bz,mat);this.S(bx,vy+3,bz,mat)}
-    for(let dx=3;dx<12;dx++)for(let dz=3;dz<12;dz++)for(let dy=1;dy<9;dy++)if(this.G(dx,vy+dy,dz)===B.WATER)this.S(dx,vy+dy,dz,B.AIR);
-    this.S(5,vy+8,5,B.SEA_LANTERN);this.S(10,vy+8,5,B.SEA_LANTERN);this.S(5,vy+8,10,B.SEA_LANTERN);this.S(10,vy+8,10,B.SEA_LANTERN);
+    const vy=5,vr=dh01(this.cx*13,this.cz*17);
+    // ── Grand Floor + Ceiling ──
+    for(let dx=0;dx<CS;dx++)for(let dz=0;dz<CS;dz++){
+      this.S(dx,vy,dz,B.MARBLE);this.S(dx,vy+14,dz,B.TEMPLE_STONE);
+      // Clear interior water
+      for(let dy=1;dy<14;dy++)if(this.G(dx,vy+dy,dz)===B.WATER)this.S(dx,vy+dy,dz,B.AIR);
+    }
+    // ── Massive Columns (12 grand pillars) ──
+    for(const[cx3,cz3]of[[2,2],[7,2],[13,2],[2,7],[7,7],[13,7],[2,13],[7,13],[13,13],[4,4],[10,10],[10,4]]){
+      for(let dy=1;dy<14;dy++)this.S(cx3,vy+dy,cz3,B.COLUMN_BLK);
+      // Column base and capital
+      for(let dx2=-1;dx2<=1;dx2++)for(let dz2=-1;dz2<=1;dz2++){
+        if(cx3+dx2>=0&&cx3+dx2<CS&&cz3+dz2>=0&&cz3+dz2<CS){
+          this.S(cx3+dx2,vy+1,cz3+dz2,B.MARBLE);this.S(cx3+dx2,vy+13,cz3+dz2,B.MARBLE);
+        }
+      }
+    }
+    // ── Perimeter Walls with archways ──
+    for(let dy=1;dy<14;dy++){
+      for(let d2=0;d2<CS;d2++){
+        const isArch=(d2>5&&d2<10)&&(dy>1&&dy<8);
+        if(!isArch){this.S(d2,vy+dy,0,B.SEA_MARBLE);this.S(d2,vy+dy,15,B.SEA_MARBLE);this.S(0,vy+dy,d2,B.SEA_MARBLE);this.S(15,vy+dy,d2,B.SEA_MARBLE)}
+      }
+    }
+    // ── Central Monument: VC Statue ──
+    for(let dx2=-2;dx2<=2;dx2++)for(let dz2=-2;dz2<=2;dz2++)this.S(7+dx2,vy+1,7+dz2,B.MARBLE);
+    for(let dy=2;dy<9;dy++){this.S(7,vy+dy,7,B.STATUE_STONE);this.S(8,vy+dy,7,B.STATUE_STONE);this.S(7,vy+dy,8,B.STATUE_STONE)}
+    this.S(7,vy+9,7,B.BRONZE);this.S(8,vy+9,7,B.BRONZE);this.S(7,vy+9,8,B.BRONZE);this.S(7,vy+10,7,B.BRONZE);
+    // ── Grand Stairways (stepped marble) ──
+    for(let step=0;step<4;step++){
+      for(let dx2=2;dx2<6;dx2++){this.S(dx2,vy+1+step,1+step,B.STAIR_MARBLE);}
+      for(let dx2=10;dx2<14;dx2++){this.S(dx2,vy+1+step,14-step,B.STAIR_MARBLE);}
+    }
+    // ── Side Chambers (branching rooms) ──
+    // West chamber
+    for(let dy=1;dy<8;dy++)for(let dx2=1;dx2<5;dx2++)for(let dz2=10;dz2<15;dz2++){
+      const isW2=dx2===1||dx2===4||dz2===10||dz2===14;
+      if(isW2)this.S(dx2,vy+dy,dz2,B.SEA_MARBLE);
+      else if(this.G(dx2,vy+dy,dz2)===B.WATER)this.S(dx2,vy+dy,dz2,B.AIR);
+    }
+    this.S(2,vy+1,10,B.AIR);this.S(2,vy+2,10,B.AIR);this.S(3,vy+1,10,B.AIR);this.S(3,vy+2,10,B.AIR);
+    this.S(2,vy+1,12,B.CHST);this.S(3,vy+1,12,B.MARBLE);
+    // East chamber
+    for(let dy=1;dy<8;dy++)for(let dx2=11;dx2<15;dx2++)for(let dz2=1;dz2<6;dz2++){
+      const isW2=dx2===11||dx2===14||dz2===1||dz2===5;
+      if(isW2)this.S(dx2,vy+dy,dz2,B.SEA_MARBLE);
+      else if(this.G(dx2,vy+dy,dz2)===B.WATER)this.S(dx2,vy+dy,dz2,B.AIR);
+    }
+    this.S(12,vy+1,1,B.AIR);this.S(12,vy+2,1,B.AIR);this.S(13,vy+1,1,B.AIR);this.S(13,vy+2,1,B.AIR);
+    this.S(12,vy+1,3,B.STATUE_STONE);this.S(12,vy+2,3,B.STATUE_STONE);this.S(12,vy+3,3,B.BRONZE);
+    // ── Collapsed sections (ruined atmosphere) ──
+    if(vr>.5){for(let dx2=9;dx2<12;dx2++)for(let dz2=9;dz2<12;dz2++){this.S(dx2,vy+14,dz2,B.AIR);for(let dy=10;dy<14;dy++)if(dh01(dx2*10+dy,dz2*10)>.4)this.S(dx2,vy+dy,dz2,B.AIR)}}
+    // ── Air pockets (partial seal chambers for exploration) ──
+    for(let dx2=4;dx2<7;dx2++)for(let dz2=4;dz2<7;dz2++)for(let dy=8;dy<12;dy++)this.S(dx2,vy+dy,dz2,B.AIR);
+    // ── Sea lantern lighting ──
+    for(const[lx,lz]of[[3,3],[12,3],[3,12],[12,12],[7,3],[7,12],[3,7],[12,7]]){
+      this.S(lx,vy+1,lz,B.SEA_LANTERN);this.S(lx,vy+13,lz,B.SEA_LANTERN);
+    }
+    // ── Submerged courtyard in front (external) ──
+    for(let dx2=3;dx2<13;dx2++)for(let dz2=-4;dz2<0;dz2++){
+      const wdz=dz2+16;if(wdz>=0&&wdz<CS){
+        this.S(dx2,vy-1,wdz,B.MARBLE);
+        if(dx2===3||dx2===12)for(let dy=0;dy<4;dy++)this.S(dx2,vy+dy,wdz,B.COLUMN_BLK);
+      }
+    }
+    regStruct('VCLANTIS',ox+8,vy+2,oz+8);
     return;
   }
   // ═══ DISCORD DEPTHS: underground mega-region ═══
@@ -1446,13 +1517,13 @@ deco(){
       const caveN=nC.n3((ox+x)*.04,15*.06,(oz+z)*.04);
       // Large cave chambers from surface down
       if(caveN>.15){
-        for(let y=mn(h,80);y>10;y--){
+        for(let y=mn(h,60);y>5;y--){
           const caveR=nC.n3((ox+x)*.06,y*.08,(oz+z)*.06);
           if(caveR>.1)this.S(x,y,z,B.AIR);
         }
       }
       // Floor detail
-      const baseY=10+fl(abs(nD.n2((ox+x)*.03,(oz+z)*.03))*5);
+      const baseY=6+fl(abs(nD.n2((ox+x)*.03,(oz+z)*.03))*4);
       if(this.G(x,baseY,z)!==B.AIR){
         // Glow crystal stalagmites
         if(dh01(ox+x+300,oz+z+300)<.04){
@@ -1497,15 +1568,19 @@ deco(){
       let lastH=-1;
       for(let x=0;x<CS;x++){
         let h=this.sY(x,rz);
-        // Bridge over water/gaps
-        if(h<=WL&&lastH>WL){h=lastH} // extend bridge from last solid
+        if(h<=WL&&lastH>WL){h=lastH}
         else if(h<=WL){
-          // Check ahead for land to bridge to
           let ahead=-1;for(let ax=x+1;ax<CS&&ax<x+8;ax++){const ah=this.sY(ax,rz);if(ah>WL){ahead=ah;break}}
-          if(ahead>0){h=lastH>WL?lastH:ahead;
-            // Build bridge support
-            for(let by=WL;by<=h;by++)this.S(x,by,rz,B.COB);
-          }else continue;
+          if(ahead>0){h=lastH>WL?lastH:ahead;for(let by=WL;by<=h;by++)this.S(x,by,rz,B.COB)}else continue;
+        }
+        // Ramp logic: if height changes, build stepped ramp
+        if(lastH>0&&abs(h-lastH)>0&&abs(h-lastH)<=3){
+          const dir=h>lastH?1:-1;
+          for(let step=0;step<abs(h-lastH);step++){
+            const ry=mn(h,lastH)+step+1;
+            this.S(x,ry,rz,B.COB);this.S(x,ry,rz-1,B.GRAV);this.S(x,ry,rz+1,B.GRAV);
+            this.S(x,ry+1,rz,B.RAIL_IRON);
+          }
         }
         lastH=h;
         this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
@@ -1523,9 +1598,16 @@ deco(){
         if(h<=WL&&lastH>WL){h=lastH}
         else if(h<=WL){
           let ahead=-1;for(let az=z+1;az<CS&&az<z+8;az++){const ah=this.sY(rx,az);if(ah>WL){ahead=ah;break}}
-          if(ahead>0){h=lastH>WL?lastH:ahead;
-            for(let by=WL;by<=h;by++)this.S(rx,by,z,B.COB);
-          }else continue;
+          if(ahead>0){h=lastH>WL?lastH:ahead;for(let by=WL;by<=h;by++)this.S(rx,by,z,B.COB)}else continue;
+        }
+        // Ramp logic
+        if(lastH>0&&abs(h-lastH)>0&&abs(h-lastH)<=3){
+          const dir=h>lastH?1:-1;
+          for(let step=0;step<abs(h-lastH);step++){
+            const ry=mn(h,lastH)+step+1;
+            this.S(rx,ry,z,B.COB);this.S(rx-1,ry,z,B.GRAV);this.S(rx+1,ry,z,B.GRAV);
+            this.S(rx,ry+1,z,B.RAIL_IRON);
+          }
         }
         lastH=h;
         this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
@@ -1578,7 +1660,7 @@ deco(){
   if(this._hasStruct)return;
   for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
     const wx=ox+x,wz=oz+z,bi2=bio(wx,wz),bd=BDt[bi2],h=this.sY(x,z);
-    if(h<=WL||h>=CH-10||this.G(x,h,z)===B.WATER||this.G(x,h,z)===B.AIR)continue;
+    if(h<=WL||h>=CH-10||this.G(x,h,z)===B.WATER||this.G(x,h,z)===B.AIR||!isNaturalSurface(this.G(x,h,z)))continue;
     const r=dh01(wx,wz);
     if(bd.tc&&r<bd.tc&&this.G(x,h+1,z)===B.AIR)this.tree(x,h+1,z,bd.tr,dh01(wx+999,wz+999));
     else if(bd.ca&&r<bd.ca&&this.G(x,h+1,z)===B.AIR){const ch2=1+fl(dh01(wx+50,wz+50)*3);for(let i=0;i<ch2;i++)this.S(x,h+1+i,z,B.CACT)}
@@ -1623,22 +1705,42 @@ deco(){
       if(floorB===B.WATER||floorB===B.AIR)continue;
       const cr=dh01(wx*111+y,wz*222);
       const caveBiome=nC.n3(wx*.008,y*.01,wz*.008);
+      const deepNoise=nC.n3(wx*.012,y*.015,wz*.012);
       // Lush cave: moss, glow flowers, vines
       if(caveBiome>.3){
         if(cr<.06)this.S(x,y,z,B.GLOW_FLOWER);
         else if(cr<.12)this.S(x,y-1,z,B.MOSS);
+        else if(cr<.14)this.S(x,y,z,B.FERN);
       }
       // Crystal cave: glow crystals, sea lanterns
       else if(caveBiome<-.3){
         if(cr<.04){const gh=1+fl(dh01(wx+y,wz)*3);for(let dy=0;dy<gh;dy++)this.S(x,y+dy,z,B.GLOW_CRYSTAL)}
         else if(cr<.06)this.S(x,y,z,B.SEA_LANTERN);
       }
+      // Dripstone cave: spikes from floor and ceiling
+      else if(deepNoise>.4&&y>20){
+        if(cr<.05)this.S(x,y,z,B.COB);
+        if(cr>.95&&this.G(x,y+1,z)===B.AIR)this.S(x,y+1,z,B.COB);
+      }
+      // Dark deep cave: darker blocks, more oppressive
+      else if(y<25&&deepNoise<-.3){
+        if(cr<.04)this.S(x,y-1,z,B.DEEP);
+        else if(cr<.06)this.S(x,y,z,B.DARK_PANEL);
+      }
+      // Lava-rich deep zone
+      else if(y<18&&deepNoise>.2){
+        if(cr<.03)this.S(x,y,z,B.LAVA);
+        else if(cr<.05)this.S(x,y-1,z,B.DEEP);
+      }
       // Dripstone/stalactite: from ceiling
-      if(this.G(x,y+1,z)===B.AIR&&this.G(x,y+2,z)!==B.AIR&&dh01(wx+500+y,wz+500)<.03){
-        this.S(x,y+1,z,B.COB);
+      if(this.G(x,y+1,z)===B.AIR&&this.G(x,y+2,z)!==B.AIR&&dh01(wx+500+y,wz+500)<.04){
+        const stalLen=1+fl(dh01(wx+501+y,wz+501)*3);
+        for(let dy=0;dy<stalLen;dy++){if(this.G(x,y+1+dy,z)!==B.AIR)break;this.S(x,y+1+dy,z,B.COB)}
       }
       // Stalagmites from floor
       if(cr>.97)this.S(x,y,z,B.COB);
+      // Lava pools in deep zones
+      if(y<15&&cr>.93)this.S(x,y,z,B.LAVA);
       // Underground ore veins exposed in cave walls
       if(y<40&&cr>.95)this.S(x,y,z,y<24?B.GOLD:B.IRON);
     }
@@ -1705,10 +1807,11 @@ buildMesh(gB){
       if(!show)continue;if(isW&&nd.liq)continue;
       const uv=uvL[bf2[f.f]];if(!uv)continue;
       const p=isW?WP:P,n=isW?WN:N,u=isW?WU:U,idx=isW?WI2:IX,base=isW?wvi:vi;
+      const isStair = b>=B.STAIR_COB&&b<=B.STAIR_MARBLE;
       const isRail = b===B.RAIL_IRON||b===B.RAIL_POWERED||b===B.RAIL_BED;
-      const thinH = isRail ? 0.125 : 1;
+      const thinH = isRail ? 0.125 : isStair ? 0.5 : 1;
       for(const c of f.v){
-        let vy = isRail ? c[1] * thinH : c[1];
+        let vy = (isRail||isStair) ? c[1] * thinH : c[1];
         p.push(ox+x+c[0], y+vy-(isW&&f.f===0?.12:0), oz+z+c[2]);
         n.push(f.n[0],f.n[1],f.n[2]);
       }
@@ -2321,7 +2424,8 @@ function cheatTPStruct(name){
     'Broken Tower':[BI.SA_PLAINS,BI.WATCHER,BI.VC_BADLANDS],'Condo Complex':[BI.SA_PLAINS,BI.DRY_COAST],
     'Boardwalk Ruins':[BI.DRY_COAST,BI.RIO_LAGOON,BI.PROPS_ISLAND],
     'Chapel':[BI.CAMGROVE],'Monument':[BI.WATCHER,BI.VC_BADLANDS],
-    'City Tower':[BI.GARFBOT_CITY],'Statue':[BI.SA_PLAINS]
+    'City Tower':[BI.GARFBOT_CITY],'Statue':[BI.SA_PLAINS],
+    'VCLANTIS':[BI.VCLANTIS],'Discord Depths Cave':[BI.DISCORD_DEEP]
   };
   const biomes=structBiomeMap[name]||[];
   if(biomes.length>0){

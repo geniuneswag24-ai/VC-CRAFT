@@ -1193,14 +1193,15 @@ deco(){
     const r=dh01(wx,wz);
     if(bd.tc&&r<bd.tc&&this.G(x,h+1,z)===B.AIR)this.tree(x,h+1,z,bd.tr,dh01(wx+999,wz+999));
     else if(bd.ca&&r<bd.ca&&this.G(x,h+1,z)===B.AIR){const ch2=1+fl(dh01(wx+50,wz+50)*3);for(let i=0;i<ch2;i++)this.S(x,h+1+i,z,B.CACT)}
+    if(bi2===BI.VC_BADLANDS){if(dh01(wx+440,wz+440)<.005)this.S(x,h,z,B.MONUMENT_STN);if(dh01(wx+450,wz+450)<.003){this.S(x,h+1,z,B.CANYON_STONE);if(dh01(wx+451,wz+451)<.4)this.S(x,h+2,z,B.CANYON_STONE)}if(dh01(wx+460,wz+460)<.002)this.S(x,h,z,B.RSAND)}
     if(bi2===BI.RIO_LAGOON){if(dh01(wx+700,wz+700)<.012)this.S(x,h,z,B.BOARDWALK);if(dh01(wx+800,wz+800)<.004){this.S(x,h+1,z,B.RESORT_WALL);if(dh01(wx+801,wz+801)<.5)this.S(x,h+2,z,B.RESORT_WALL)}if(dh01(wx+900,wz+900)<.006)this.S(x,h,z,B.PIRATE_PLNK);if(dh01(wx+950,wz+950)<.003)this.S(x,h,z,B.POOL_TILE);if(dh01(wx+150,wz+150)<.02&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER)}
-    if(bi2===BI.VC_SUBURB){if(wz%20<2)this.S(x,h,z,B.ASPHALT);else if(wz%20===2||wz%20===19)this.S(x,h,z,B.SIDEWALK);if(wx%24<2&&wz%20>=3)this.S(x,h,z,B.ASPHALT)}
-    if(bi2===BI.SA_PLAINS&&dh01(wx+200,wz+200)<.008)this.S(x,h,z,B.CRACK_PAVE);
-    if(bi2===BI.WATCHER&&dh01(wx+400,wz+400)<.006)this.S(x,h,z,B.TOWER_BRICK);
-    if(bi2===BI.DRY_COAST&&dh01(wx+800,wz+800)<.006)this.S(x,h,z,B.BOARDWALK);
+    if(bi2===BI.VC_SUBURB){if(wz%20<2)this.S(x,h,z,B.ASPHALT);else if(wz%20===2||wz%20===19)this.S(x,h,z,B.SIDEWALK);if(wx%24<2&&wz%20>=3)this.S(x,h,z,B.ASPHALT);if(wz%20===10&&wx%6<2)this.S(x,h,z,B.DRIVEWAY);if(dh01(wx+100,wz+100)<.002)this.S(x,h+1,z,B.FENCE_BLK)}
+    if(bi2===BI.SA_PLAINS){if(dh01(wx+200,wz+200)<.012)this.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+210,wz+210)<.005)this.S(x,h,z,B.ASPHALT);if(dh01(wx+220,wz+220)<.003)this.S(x,h,z,B.SIDEWALK);if(dh01(wx+230,wz+230)<.002)this.S(x,h+1,z,B.FENCE_BLK)}
+    if(bi2===BI.WATCHER){if(dh01(wx+400,wz+400)<.01)this.S(x,h,z,B.TOWER_BRICK);if(dh01(wx+410,wz+410)<.004)this.S(x,h,z,B.ANCIENT_METAL);if(dh01(wx+420,wz+420)<.003){this.S(x,h,z,B.TEMPLE_STONE);if(dh01(wx+421,wz+421)<.5)this.S(x,h+1,z,B.TEMPLE_STONE)}}
+    if(bi2===BI.DRY_COAST){if(dh01(wx+800,wz+800)<.008)this.S(x,h,z,B.BOARDWALK);if(dh01(wx+810,wz+810)<.003)this.S(x,h,z,B.POOL_TILE);if(dh01(wx+820,wz+820)<.004)this.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+830,wz+830)<.002)this.S(x,h+1,z,B.RESORT_WALL)}
     if(bi2===BI.DISCORD_DEEP){if(h<40&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)this.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)this.S(x,h+1,z,B.NEON_BLK)}
-    if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.015&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.004)this.S(x,h,z,B.VINE_STONE)}
-    if(bi2===BI.CAMGROVE&&dh01(wx+350,wz+350)<.006)this.S(x,h,z,B.TRAIL_STONE);
+    if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.02&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.008)this.S(x,h,z,B.VINE_STONE);if(dh01(wx+260,wz+260)<.003)this.S(x,h,z,B.MOSS);if(dh01(wx+270,wz+270)<.002&&this.G(x,h+1,z)===B.AIR){this.S(x,h+1,z,B.VINE_STONE);this.S(x,h+2,z,B.VINE_STONE)}}
+    if(bi2===BI.CAMGROVE){if(dh01(wx+350,wz+350)<.01)this.S(x,h,z,B.TRAIL_STONE);if(dh01(wx+360,wz+360)<.002)this.S(x,h,z,B.CABIN_WALL);if(dh01(wx+370,wz+370)<.003)this.S(x,h,z,B.COB)}
   }
 }
 tree(x,y,z,t,r2){

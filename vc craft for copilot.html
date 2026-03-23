@@ -112,7 +112,7 @@ class Noise{constructor(s){const p=new Uint8Array(256);for(let i=0;i<256;i++)p[i
 n2(x,y){const F=.366025,G2=.211325,s=(x+y)*F;let i=fl(x+s),j=fl(y+s);const t=(i+j)*G2,x0=x-(i-t),y0=y-(j-t);let i1=0,j1=1;if(x0>y0){i1=1;j1=0}const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;i&=255;j&=255;const g=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];const gi0=this.p[i+this.p[j]]%12,gi1=this.p[i+i1+this.p[j+j1]]%12,gi2=this.p[i+1+this.p[j+1]]%12;let n0=0,n1=0,n2=0,t0=.5-x0*x0-y0*y0;if(t0>0){t0*=t0;n0=t0*t0*(g[gi0][0]*x0+g[gi0][1]*y0)}let t1=.5-x1*x1-y1*y1;if(t1>0){t1*=t1;n1=t1*t1*(g[gi1][0]*x1+g[gi1][1]*y1)}let t2=.5-x2*x2-y2*y2;if(t2>0){t2*=t2;n2=t2*t2*(g[gi2][0]*x2+g[gi2][1]*y2)}return 70*(n0+n1+n2)}
 n3(x,y,z){const F=1/3,G=1/6,s=(x+y+z)*F;let i=fl(x+s),j=fl(y+s),k=fl(z+s);const t=(i+j+k)*G,x0=x-(i-t),y0=y-(j-t),z0=z-(k-t);let o;if(x0>=y0)o=y0>=z0?[1,0,0,1,1,0]:x0>=z0?[1,0,0,1,0,1]:[0,0,1,1,0,1];else o=y0<z0?[0,0,1,0,1,1]:x0<z0?[0,1,0,0,1,1]:[0,1,0,1,1,0];const[i1,j1,k1,i2,j2,k2]=o,x1=x0-i1+G,y1=y0-j1+G,z1=z0-k1+G,x2=x0-i2+2*G,y2=y0-j2+2*G,z2=z0-k2+2*G,x3=x0-1+.5,y3=y0-1+.5,z3=z0-1+.5;i&=255;j&=255;k&=255;const g=[[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];const p=this.p,gi0=p[i+p[j+p[k]]]%12,gi1=p[i+i1+p[j+j1+p[k+k1]]]%12,gi2=p[i+i2+p[j+j2+p[k+k2]]]%12,gi3=p[i+1+p[j+1+p[k+1]]]%12;let n0=0,n1=0,n2=0,n3=0,t0=.6-x0*x0-y0*y0-z0*z0;if(t0>0){t0*=t0;n0=t0*t0*(g[gi0][0]*x0+g[gi0][1]*y0+g[gi0][2]*z0)}let t1=.6-x1*x1-y1*y1-z1*z1;if(t1>0){t1*=t1;n1=t1*t1*(g[gi1][0]*x1+g[gi1][1]*y1+g[gi1][2]*z1)}let t2=.6-x2*x2-y2*y2-z2*z2;if(t2>0){t2*=t2;n2=t2*t2*(g[gi2][0]*x2+g[gi2][1]*y2+g[gi2][2]*z2)}let t3=.6-x3*x3-y3*y3-z3*z3;if(t3>0){t3*=t3;n3=t3*t3*(g[gi3][0]*x3+g[gi3][1]*y3+g[gi3][2]*z3)}return 32*(n0+n1+n2+n3)}}
 
-const CS=16,CH=80,WL=30,RD=5,TS=16;
+const CS=16,CH=256,WL=64,RD=5,TS=16;
 
 // BLOCKS - Simplified, no cross-mesh plants initially to ensure clean rendering
 const B={AIR:0,GRASS:1,DIRT:2,STONE:3,SAND:4,WATER:5,BED:6,OLOG:7,OLVS:8,BLOG:9,BLVS:10,SLOG:11,SLVS:12,SNOW:13,COB:14,SSTON:15,PLNK:16,GLASS:17,GRAV:18,CLAY:19,RSAND:20,MUD:21,CACT:22,DEEP:23,COAL:24,IRON:25,GOLD:26,DIAM:27,MOSS:28,BRK:29,SBK:30,DLOG:31,DLVS:32,JLOG:33,JLVS:34,ALOG:35,ALVS:36,CRFT:37,FURN:38,CHST:39,ICE:40,STICK:41,COAL_I:42,IRON_I:43,WPICK:44,SPICK:45,WSWD:46,
@@ -126,13 +126,14 @@ DARK_PANEL:76,SIGNAL_STONE:77,RAIL_BLK:78,RAIL_TIE:79,PLATFORM_BLK:80,
 SCHOOL_WALL:81,LOCKER_BLK:82,GYM_FLOOR:83,BOARDWALK:84,RESORT_WALL:85,
 POOL_TILE:86,CABIN_WALL:87,TRAIL_STONE:88,CHAPEL_STONE:89,SIDING:90,
 SHINGLE:91,FENCE_BLK:92,DRIVEWAY:93,WATCHER_SAND:94,TOWER_BRICK:95,
-ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112};
+ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112,LAVA:113};
 const BD={};function db(id,nm,o={}){BD[id]={nm,sol:o.s!==0,tr:!!o.t,liq:!!o.l,hd:o.h||1,dr:o.d!==undefined?o.d:id,st:o.st||64}}
 db(B.AIR,'Air',{s:0,t:1});db(B.GRASS,'Grass Block',{h:.6});db(B.DIRT,'Dirt',{h:.5});db(B.STONE,'Stone',{h:1.5,d:B.COB});db(B.SAND,'Sand',{h:.5});db(B.WATER,'Water',{s:0,t:1,l:1,h:-1});db(B.BED,'Bedrock',{h:-1});db(B.OLOG,'Oak Log',{h:2});db(B.OLVS,'Oak Leaves',{h:.2,t:1});db(B.BLOG,'Birch Log',{h:2});db(B.BLVS,'Birch Leaves',{h:.2,t:1});db(B.SLOG,'Spruce Log',{h:2});db(B.SLVS,'Spruce Leaves',{h:.2,t:1});db(B.SNOW,'Snow',{h:.3});db(B.COB,'Cobblestone',{h:1.5});db(B.SSTON,'Sandstone',{h:1.2});db(B.PLNK,'Oak Planks',{h:1.5});db(B.GLASS,'Glass',{h:.3,t:1,d:B.AIR});db(B.GRAV,'Gravel',{h:.6});db(B.CLAY,'Clay',{h:.6});db(B.RSAND,'Red Sand',{h:.5});db(B.MUD,'Mud',{h:.5});db(B.CACT,'Cactus',{h:.4});db(B.DEEP,'Deepslate',{h:2});db(B.COAL,'Coal Ore',{h:1.8,d:B.COAL_I});db(B.IRON,'Iron Ore',{h:2.2});db(B.GOLD,'Gold Ore',{h:2.5});db(B.DIAM,'Diamond Ore',{h:3});db(B.MOSS,'Mossy Stone',{h:1.5});db(B.BRK,'Bricks',{h:2});db(B.SBK,'Stone Bricks',{h:1.5});db(B.DLOG,'Dark Oak Log',{h:2});db(B.DLVS,'Dark Leaves',{h:.2,t:1});db(B.JLOG,'Jungle Log',{h:2});db(B.JLVS,'Jungle Leaves',{h:.2,t:1});db(B.ALOG,'Acacia Log',{h:2});db(B.ALVS,'Acacia Leaves',{h:.2,t:1});db(B.CRFT,'Crafting Table',{h:1.5});db(B.FURN,'Furnace',{h:2});db(B.CHST,'Chest',{h:1.5});db(B.ICE,'Ice',{h:.5,t:1});db(B.STICK,'Stick',{s:0,t:1,st:64});db(B.COAL_I,'Coal',{s:0,t:1,st:64});db(B.IRON_I,'Iron Ingot',{s:0,t:1,st:64});db(B.WPICK,'Wood Pickaxe',{s:0,t:1,st:1});db(B.SPICK,'Stone Pickaxe',{s:0,t:1,st:1});db(B.WSWD,'Wood Sword',{s:0,t:1,st:1});
 // VC World block defs
 db(B.ASPHALT,'Asphalt',{h:1.5});db(B.SIDEWALK,'Sidewalk',{h:1.2});db(B.CONCRETE,'Concrete',{h:2});db(B.STUCCO,'Stucco Wall',{h:1.5});db(B.CONDO_WALL,'Condo Wall',{h:1.5});db(B.ROOF_TILE,'Roof Tile',{h:1});db(B.DRY_GRASS,'Dry Grass',{h:.5});db(B.CRACK_PAVE,'Cracked Pavement',{h:1});db(B.STATUE_STONE,'Statue Stone',{h:3});db(B.BRONZE,'Bronze Block',{h:2.5});db(B.METAL_PANEL,'Metal Panel',{h:2});db(B.GLASS_TOWER,'Tower Glass',{h:.5,t:1});db(B.NEON_BLK,'Neon Block',{h:1});db(B.CITY_RUBBLE,'City Rubble',{h:1});db(B.SHIP_TIMBER,'Ship Timber',{h:1.5});db(B.BARNACLE_WOOD,'Barnacle Wood',{h:1.5});db(B.SAIL_BLK,'Sail Block',{h:.3});db(B.MARBLE,'Marble',{h:2});db(B.SEA_MARBLE,'Sea Marble',{h:2});db(B.COLUMN_BLK,'Column Block',{h:2.5});db(B.TEMPLE_STONE,'Temple Stone',{h:2});db(B.NICSHADE_LOG,'Nicshade Log',{h:2});db(B.NICSHADE_LVS,'Nicshade Leaves',{h:.2,t:1});db(B.GLOW_FLOWER,'Glow Flower',{h:.2,t:1});db(B.VINE_STONE,'Vine Stone',{h:1.5});db(B.CANYON_STONE,'Canyon Stone',{h:2});db(B.MONUMENT_STN,'Monument Stone',{h:3});db(B.RUSTED_METAL,'Rusted Metal',{h:2});db(B.GLOW_CRYSTAL,'Glow Crystal',{h:1,t:1});db(B.DARK_PANEL,'Dark Panel',{h:2});db(B.SIGNAL_STONE,'Signal Stone',{h:2});db(B.RAIL_BLK,'Rail',{h:.5});db(B.RAIL_TIE,'Rail Tie',{h:1});db(B.PLATFORM_BLK,'Platform',{h:1.5});db(B.SCHOOL_WALL,'School Wall',{h:1.5});db(B.LOCKER_BLK,'Locker',{h:1});db(B.GYM_FLOOR,'Gym Floor',{h:1});db(B.BOARDWALK,'Boardwalk',{h:1});db(B.RESORT_WALL,'Resort Wall',{h:1.5});db(B.POOL_TILE,'Pool Tile',{h:1});db(B.CABIN_WALL,'Cabin Wall',{h:1.5});db(B.TRAIL_STONE,'Trail Stone',{h:1});db(B.CHAPEL_STONE,'Chapel Stone',{h:2});db(B.SIDING,'House Siding',{h:1.5});db(B.SHINGLE,'Roof Shingle',{h:1});db(B.FENCE_BLK,'Fence',{h:1});db(B.DRIVEWAY,'Driveway',{h:1});db(B.WATCHER_SAND,'Watcher Sand',{h:.5});db(B.TOWER_BRICK,'Tower Brick',{h:2});db(B.ANCIENT_METAL,'Ancient Metal',{h:2.5});db(B.PIRATE_PLNK,'Pirate Planks',{h:1.5});
 db(B.CORAL_PINK,'Pink Coral',{h:.3});db(B.CORAL_BLUE,'Blue Coral',{h:.3});db(B.CORAL_YELLOW,'Yellow Coral',{h:.3});db(B.KELP,'Kelp',{h:.2,t:1,s:0});db(B.SEA_LANTERN,'Sea Lantern',{h:1});db(B.RAIL_IRON,'Iron Rail',{h:.5,s:0,t:1});db(B.RAIL_POWERED,'Powered Rail',{h:.5,s:0,t:1});db(B.RAIL_BED,'Rail Bed',{h:1,s:0,t:1});
 db(B.TALL_GRASS,'Tall Grass',{h:.1,s:0,t:1});db(B.FLOWER_RED,'Red Flower',{h:.1,s:0,t:1});db(B.FLOWER_BLUE,'Blue Flower',{h:.1,s:0,t:1});db(B.FLOWER_YELLOW,'Yellow Flower',{h:.1,s:0,t:1});db(B.SHRUB,'Shrub',{h:.2,s:0,t:1});db(B.REED,'Reed',{h:.2,s:0,t:1});db(B.FERN,'Fern',{h:.1,s:0,t:1});
+db(B.LAVA,'Lava',{s:0,t:1,l:1,h:-1});
 
 // RECIPES
 const RCP=[];function addR(g,r,n){RCP.push({g,r,n:n||1})}
@@ -257,6 +258,7 @@ mt('flyl',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,30,0.6)';c.fillRec
 mt('shrb',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(50,100,30,0.8)';c.fillRect(2,6,12,10);c.fillStyle='rgba(70,130,40,0.7)';c.fillRect(4,4,8,8);c.fillStyle='rgba(40,80,25,0.6)';c.fillRect(3,8,10,6)});
 mt('reed',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(100,140,60,0.7)';c.fillRect(4,0,2,16);c.fillRect(10,2,2,14);c.fillStyle='rgba(120,160,70,0.6)';c.fillRect(7,4,2,12)});
 mt('fern',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,40,0.7)';c.fillRect(2,8,12,8);c.fillStyle='rgba(50,140,45,0.6)';c.fillRect(4,5,3,8);c.fillRect(9,5,3,8);c.fillStyle='rgba(60,150,50,0.5)';c.fillRect(6,3,4,6)});
+mt('lava',c=>{nf(c,'#CC3300','#FF6600',.6);c.fillStyle='rgba(255,200,50,0.5)';c.fillRect(2,3,5,4);c.fillRect(8,7,6,5);c.fillStyle='rgba(255,100,20,0.4)';c.fillRect(4,9,8,4);c.fillStyle='rgba(255,255,100,0.3)';c.fillRect(6,5,4,2)});
 // Tool/item icons
 mt('stick_i',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#8A6C3A';c.fillRect(7,2,2,12)});
 mt('coal_ii',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#333';c.fillRect(5,4,6,8);c.fillRect(4,5,8,6)});
@@ -272,7 +274,7 @@ bf(B.GRASS,'gt','gs','dt');bf(B.DIRT,'dt');bf(B.STONE,'st');bf(B.SAND,'sa');bf(B
 // VC World block faces
 bf(B.ASPHALT,'asph');bf(B.SIDEWALK,'sdwk');bf(B.CONCRETE,'conc');bf(B.STUCCO,'stuc');bf(B.CONDO_WALL,'cndw');bf(B.ROOF_TILE,'roof');bf(B.DRY_GRASS,'dgrss');bf(B.CRACK_PAVE,'cpave');bf(B.STATUE_STONE,'stst');bf(B.BRONZE,'brnz');bf(B.METAL_PANEL,'mpnl');bf(B.GLASS_TOWER,'gtwr');bf(B.NEON_BLK,'neon');bf(B.CITY_RUBBLE,'crub');bf(B.SHIP_TIMBER,'stim');bf(B.BARNACLE_WOOD,'barw');bf(B.SAIL_BLK,'sail');bf(B.MARBLE,'mrbl');bf(B.SEA_MARBLE,'smrb');bf(B.COLUMN_BLK,'colm');bf(B.TEMPLE_STONE,'tmpl');bf(B.NICSHADE_LOG,'nlog');bf(B.NICSHADE_LVS,'nlvs');bf(B.GLOW_FLOWER,'glfl');bf(B.VINE_STONE,'vnst');bf(B.CANYON_STONE,'cyst');bf(B.MONUMENT_STN,'mnst');bf(B.RUSTED_METAL,'rstm');bf(B.GLOW_CRYSTAL,'glcr');bf(B.DARK_PANEL,'dkpn');bf(B.SIGNAL_STONE,'sgst');bf(B.RAIL_BLK,'rail');bf(B.RAIL_TIE,'rtie');bf(B.PLATFORM_BLK,'plat');bf(B.SCHOOL_WALL,'schl');bf(B.LOCKER_BLK,'lock');bf(B.GYM_FLOOR,'gymf');bf(B.BOARDWALK,'bdwk');bf(B.RESORT_WALL,'rsrt');bf(B.POOL_TILE,'pool');bf(B.CABIN_WALL,'cabn');bf(B.TRAIL_STONE,'trst');bf(B.CHAPEL_STONE,'chpl');bf(B.SIDING,'sidg');bf(B.SHINGLE,'shng');bf(B.FENCE_BLK,'fnce');bf(B.DRIVEWAY,'drwy');bf(B.WATCHER_SAND,'wsnd');bf(B.TOWER_BRICK,'twbk');bf(B.ANCIENT_METAL,'amtl');bf(B.PIRATE_PLNK,'pplk');
 bf(B.CORAL_PINK,'crpk');bf(B.CORAL_BLUE,'crbl');bf(B.CORAL_YELLOW,'cryl');bf(B.KELP,'kelp');bf(B.SEA_LANTERN,'slnt');bf(B.RAIL_IRON,'rli');bf(B.RAIL_POWERED,'rlp');bf(B.RAIL_BED,'rlb');
-bf(B.TALL_GRASS,'tgrss');bf(B.FLOWER_RED,'flrd');bf(B.FLOWER_BLUE,'flbl');bf(B.FLOWER_YELLOW,'flyl');bf(B.SHRUB,'shrb');bf(B.REED,'reed');bf(B.FERN,'fern');
+bf(B.TALL_GRASS,'tgrss');bf(B.FLOWER_RED,'flrd');bf(B.FLOWER_BLUE,'flbl');bf(B.FLOWER_YELLOW,'flyl');bf(B.SHRUB,'shrb');bf(B.REED,'reed');bf(B.FERN,'fern');bf(B.LAVA,'lava');
 
 const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPICK]:'wpick_i',[B.SPICK]:'spick_i',[B.WSWD]:'wswd_i'};
 
@@ -292,34 +294,34 @@ function buildAtlas(){
 // VC BIOMES - unique themed biome roster
 const BI={OC:0,BE:1,SA_PLAINS:2,NICSHADE:3,CAMGROVE:4,WATCHER:5,VC_SUBURB:6,VC_BADLANDS:7,MO:8,DRY_COAST:9,RIO_LAGOON:10,GARFBOT_CITY:11,DISCORD_DEEP:12,TAIGA:13,SNOWY:14,PROPS_ISLAND:15,VCLANTIS:16};
 const BDt={
-[BI.OC]:{n:'Ocean',bH:15,a:8,sf:B.SAND,su:B.SAND},
-[BI.BE]:{n:'Beach',bH:34,a:2,sf:B.SAND,su:B.SAND},
-[BI.SA_PLAINS]:{n:'San Antonio Plains',bH:40,a:5,sf:B.DRY_GRASS,su:B.DIRT,tr:'acacia',tc:.003,structs:['condo','statue','waffle','broken_tower','house','restaurant','stadium']},
-[BI.NICSHADE]:{n:'Nicshade Forest',bH:43,a:6,sf:B.GRASS,su:B.DIRT,tr:'nicshade',tc:.055,structs:['shrine','cabin','watchtower']},
-[BI.CAMGROVE]:{n:'Camgrove',bH:45,a:7,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.04,structs:['cabin','watchtower','chapel','shrine','temple']},
-[BI.WATCHER]:{n:'Watcher Desert',bH:42,a:6,sf:B.WATCHER_SAND,su:B.SSTON,ca:.003,structs:['tower_ruin','broken_tower','shrine','monument','temple']},
-[BI.VC_SUBURB]:{n:'VC Suburbia',bH:40,a:3,sf:B.GRASS,su:B.DIRT,structs:['house','house','school','waffle','restaurant','mall','arcade']},
-[BI.VC_BADLANDS]:{n:'VC Badlands',bH:48,a:18,sf:B.CANYON_STONE,su:B.RSAND,structs:['monument','broken_tower','shrine','tower_ruin']},
-[BI.MO]:{n:'Mountains',bH:54,a:22,sf:B.STONE,su:B.STONE,tr:'spruce',tc:.005},
-[BI.DRY_COAST]:{n:'Dry Coast',bH:36,a:3,sf:B.SAND,su:B.SSTON,structs:['boardwalk','condo','restaurant']},
-[BI.RIO_LAGOON]:{n:'Rio Lagoon',bH:31,a:2,sf:B.SAND,su:B.MUD,tr:'jungle',tc:.03,structs:['boardwalk']},
-[BI.GARFBOT_CITY]:{n:'Garfbot City',bH:40,a:2,sf:B.ASPHALT,su:B.CONCRETE,structs:['tower','gomp']},
-[BI.DISCORD_DEEP]:{n:'Discord Depths',bH:28,a:4,sf:B.DARK_PANEL,su:B.DEEP,structs:['shrine','broken_tower']},
-[BI.TAIGA]:{n:'Taiga',bH:44,a:8,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.035},
-[BI.SNOWY]:{n:'Snowy Plains',bH:40,a:3,sf:B.SNOW,su:B.DIRT,tr:'spruce',tc:.004},
-[BI.PROPS_ISLAND]:{n:'Props Island',bH:36,a:4,sf:B.SAND,su:B.SAND,tr:'jungle',tc:.02,structs:['boardwalk','shrine','arcade']},
-[BI.VCLANTIS]:{n:'VCLANTIS',bH:8,a:3,sf:B.MARBLE,su:B.SEA_MARBLE}
+[BI.OC]:{n:'Ocean',bH:30,a:16,sf:B.SAND,su:B.SAND},
+[BI.BE]:{n:'Beach',bH:68,a:4,sf:B.SAND,su:B.SAND},
+[BI.SA_PLAINS]:{n:'San Antonio Plains',bH:80,a:10,sf:B.DRY_GRASS,su:B.DIRT,tr:'acacia',tc:.003,structs:['condo','statue','waffle','broken_tower','house','restaurant','stadium']},
+[BI.NICSHADE]:{n:'Nicshade Forest',bH:86,a:12,sf:B.GRASS,su:B.DIRT,tr:'nicshade',tc:.055,structs:['shrine','cabin','watchtower']},
+[BI.CAMGROVE]:{n:'Camgrove',bH:90,a:14,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.04,structs:['cabin','watchtower','chapel','shrine','temple']},
+[BI.WATCHER]:{n:'Watcher Desert',bH:84,a:12,sf:B.WATCHER_SAND,su:B.SSTON,ca:.003,structs:['tower_ruin','broken_tower','shrine','monument','temple']},
+[BI.VC_SUBURB]:{n:'VC Suburbia',bH:80,a:6,sf:B.GRASS,su:B.DIRT,structs:['house','house','school','waffle','restaurant','mall','arcade']},
+[BI.VC_BADLANDS]:{n:'VC Badlands',bH:100,a:36,sf:B.CANYON_STONE,su:B.RSAND,structs:['monument','broken_tower','shrine','tower_ruin']},
+[BI.MO]:{n:'Mountains',bH:120,a:50,sf:B.STONE,su:B.STONE,tr:'spruce',tc:.005},
+[BI.DRY_COAST]:{n:'Dry Coast',bH:72,a:6,sf:B.SAND,su:B.SSTON,structs:['boardwalk','condo','restaurant']},
+[BI.RIO_LAGOON]:{n:'Rio Lagoon',bH:66,a:4,sf:B.SAND,su:B.MUD,tr:'jungle',tc:.03,structs:['boardwalk']},
+[BI.GARFBOT_CITY]:{n:'Garfbot City',bH:80,a:4,sf:B.ASPHALT,su:B.CONCRETE,structs:['tower','gomp']},
+[BI.DISCORD_DEEP]:{n:'Discord Depths',bH:40,a:8,sf:B.DARK_PANEL,su:B.DEEP,structs:['shrine','broken_tower']},
+[BI.TAIGA]:{n:'Taiga',bH:88,a:16,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.035},
+[BI.SNOWY]:{n:'Snowy Plains',bH:80,a:6,sf:B.SNOW,su:B.DIRT,tr:'spruce',tc:.004},
+[BI.PROPS_ISLAND]:{n:'Props Island',bH:72,a:8,sf:B.SAND,su:B.SAND,tr:'jungle',tc:.02,structs:['boardwalk','shrine','arcade']},
+[BI.VCLANTIS]:{n:'VCLANTIS',bH:16,a:6,sf:B.MARBLE,su:B.SEA_MARBLE}
 };
 
 let nT,nM,nE,nC,nD,nR,nS,nB; // nB = biome boundary noise
 function initN(s){nT=new Noise(s);nM=new Noise(s+1);nE=new Noise(s+2);nC=new Noise(s+3);nD=new Noise(s+4);nR=new Noise(s+5);nS=new Noise(s+6);nB=new Noise(s+7)}
 function bio(x,z){
   // MUCH lower frequencies = MUCH larger biomes that don't merge
-  const t=nT.n2(x*.0008,z*.0008); // temperature - huge scale
-  const m=nM.n2(x*.001+500,z*.001+500); // moisture - huge scale
-  const c=nE.n2(x*.0006,z*.0006); // continent/ocean - huge scale
-  const e=nE.n2(x*.0012,z*.0012); // elevation
-  const s=nS.n2(x*.0004,z*.0004); // special biome noise
+  const t=nT.n2(x*.0004,z*.0004); // temperature - huge scale
+  const m=nM.n2(x*.0005+500,z*.0005+500); // moisture - huge scale
+  const c=nE.n2(x*.0003,z*.0003); // continent/ocean - huge scale
+  const e=nE.n2(x*.0006,z*.0006); // elevation
+  const s=nS.n2(x*.0002,z*.0002); // special biome noise
   // Ocean/coast - large continuous water bodies
   if(c<-.25){
     // Rare Props Island - small island zones in ocean
@@ -382,9 +384,9 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
   if(wx!==ox+8||wz!==oz+8)return; // only check chunk center
   const sr=dh01(chunk.cx*7+13,chunk.cz*11+7);
   // Biome-specific spawn rates
-  let threshold=.97; // default ~3% chance per chunk
-  if(bi===BI.VC_SUBURB)threshold=.88; // suburbs need lots of houses
-  else if(bi===BI.SA_PLAINS)threshold=.93;
+  let threshold=.92; // default ~8% chance per chunk
+  if(bi===BI.VC_SUBURB)threshold=.80; // suburbs need lots of houses
+  else if(bi===BI.SA_PLAINS)threshold=.88;
   else if(bi===BI.GARFBOT_CITY)return; // city handled separately in deco
   else if(bi===BI.OC)return; // ocean handled separately
   if(sr<threshold)return;
@@ -1101,14 +1103,15 @@ gen(){
           const caveVal=c1*c1+c2*c2;
           if(caveVal<.018){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-6)?B.WATER:B.AIR;continue}
           const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
-          if(bigCave>.55&&y>8&&y<55){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-8)?B.WATER:B.AIR;continue}
+          if(bigCave>.55&&y>8&&y<120){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-8)?B.WATER:B.AIR;continue}
           const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
-          if(ravine<.02&&y>5&&y<50){this.blk[this.I(x,y,z)]=B.AIR;continue}}
-        if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>64?B.SNOW:bd.sf;
+          if(ravine<.02&&y>5&&y<100){this.blk[this.I(x,y,z)]=B.AIR;continue}}
+        if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>140?B.SNOW:bd.sf;
         else if(y>h-4)b=bd.su;
-        else if(y<8)b=B.DEEP;
-        else{b=B.STONE;if(y<12&&rv<.004)b=B.DIAM;else if(y<28&&rv<.01)b=B.GOLD;else if(y<50&&rv<.018)b=B.IRON;else if(y<65&&rv<.022)b=B.COAL}
+        else if(y<16)b=B.DEEP;
+        else{b=B.STONE;if(y<24&&rv<.004)b=B.DIAM;else if(y<56&&rv<.01)b=B.GOLD;else if(y<100&&rv<.018)b=B.IRON;else if(y<130&&rv<.022)b=B.COAL}
       }else if(y<=WL)b=B.WATER;
+      if(b===B.AIR&&y<20&&y>3&&dh01(wx*333+y,wz*444)<.02)b=B.LAVA;
       this.blk[this.I(x,y,z)]=b;
     }
   }
@@ -1313,7 +1316,7 @@ deco(){
       const caveN=nC.n3((ox+x)*.04,15*.06,(oz+z)*.04);
       // Large cave chambers from surface down
       if(caveN>.15){
-        for(let y=mn(h,35);y>10;y--){
+        for(let y=mn(h,80);y>10;y--){
           const caveR=nC.n3((ox+x)*.06,y*.08,(oz+z)*.06);
           if(caveR>.1)this.S(x,y,z,B.AIR);
         }
@@ -1338,7 +1341,7 @@ deco(){
         }
       }
       // Ceiling stalactites
-      const ceilY=mn(h,35);
+      const ceilY=mn(h,80);
       if(this.G(x,ceilY,z)!==B.AIR&&dh01(ox+x+400,oz+z+400)<.06){
         const sh=1+fl(dh01(ox+x+401,oz+z+401)*4);
         for(let dy=0;dy<sh;dy++){
@@ -1455,7 +1458,7 @@ deco(){
     if(bi2===BI.SA_PLAINS){if(dh01(wx+200,wz+200)<.012)this.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+210,wz+210)<.005)this.S(x,h,z,B.ASPHALT);if(dh01(wx+220,wz+220)<.003)this.S(x,h,z,B.SIDEWALK);if(dh01(wx+230,wz+230)<.002)this.S(x,h+1,z,B.FENCE_BLK)}
     if(bi2===BI.WATCHER){if(dh01(wx+400,wz+400)<.01)this.S(x,h,z,B.TOWER_BRICK);if(dh01(wx+410,wz+410)<.004)this.S(x,h,z,B.ANCIENT_METAL);if(dh01(wx+420,wz+420)<.003){this.S(x,h,z,B.TEMPLE_STONE);if(dh01(wx+421,wz+421)<.5)this.S(x,h+1,z,B.TEMPLE_STONE)}}
     if(bi2===BI.DRY_COAST){if(dh01(wx+800,wz+800)<.008)this.S(x,h,z,B.BOARDWALK);if(dh01(wx+810,wz+810)<.003)this.S(x,h,z,B.POOL_TILE);if(dh01(wx+820,wz+820)<.004)this.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+830,wz+830)<.002)this.S(x,h+1,z,B.RESORT_WALL)}
-    if(bi2===BI.DISCORD_DEEP){if(h<40&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)this.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)this.S(x,h+1,z,B.NEON_BLK)}
+    if(bi2===BI.DISCORD_DEEP){if(h<80&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)this.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)this.S(x,h+1,z,B.NEON_BLK)}
     if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.02&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.008)this.S(x,h,z,B.VINE_STONE);if(dh01(wx+260,wz+260)<.003)this.S(x,h,z,B.MOSS);if(dh01(wx+270,wz+270)<.002&&this.G(x,h+1,z)===B.AIR){this.S(x,h+1,z,B.VINE_STONE);this.S(x,h+2,z,B.VINE_STONE)}}
     if(bi2===BI.CAMGROVE){if(dh01(wx+350,wz+350)<.01)this.S(x,h,z,B.TRAIL_STONE);if(dh01(wx+360,wz+360)<.002)this.S(x,h,z,B.CABIN_WALL);if(dh01(wx+370,wz+370)<.003)this.S(x,h,z,B.COB)}
     // General foliage - all biomes get flora
@@ -1483,7 +1486,7 @@ deco(){
   // ═══ CAVE DECORATION PASS ═══
   for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
     const wx=ox+x,wz=oz+z,surfH=this.sY(x,z);
-    for(let y=5;y<mn(surfH-2,50);y++){
+    for(let y=5;y<mn(surfH-2,120);y++){
       if(this.G(x,y,z)!==B.AIR)continue;
       if(this.G(x,y-1,z)===B.AIR)continue; // need floor below
       const floorB=this.G(x,y-1,z);
@@ -1507,11 +1510,13 @@ deco(){
       // Stalagmites from floor
       if(cr>.97)this.S(x,y,z,B.COB);
       // Underground ore veins exposed in cave walls
-      if(y<20&&cr>.95)this.S(x,y,z,y<12?B.GOLD:B.IRON);
+      if(y<40&&cr>.95)this.S(x,y,z,y<24?B.GOLD:B.IRON);
     }
   }
 }
 tree(x,y,z,t,r2){
+  // Prevent trees on top of trees
+  if(y>0){const below=this.G(x,y-1,z);if(below===B.OLVS||below===B.BLVS||below===B.SLVS||below===B.DLVS||below===B.JLVS||below===B.ALVS||below===B.NICSHADE_LVS)return}
   const T={oak:[B.OLOG,B.OLVS],birch:[B.BLOG,B.BLVS],spruce:[B.SLOG,B.SLVS],dark:[B.DLOG,B.DLVS],jungle:[B.JLOG,B.JLVS],acacia:[B.ALOG,B.ALVS],nicshade:[B.NICSHADE_LOG,B.NICSHADE_LVS]};
   const[lg,lf]=T[t]||T.oak;
   const big=r2>.75; // 25% chance of being a large tree
@@ -1844,7 +1849,7 @@ tick(dt){if(this.hT>0)this.hT-=dt;this.aT+=dt;const I=W.inp;this.yaw-=I.dx*.002;
     this.fallDist=0}
   if(this.mode==='creative'&&I.spJ){I.spJ=false;const now=Date.now();if(now-this._ls<300)this.flying=!this.flying;this._ls=now}
   W.cam.position.set(this.pos.x,this.pos.y+1.62,this.pos.z);W.cam.quaternion.setFromEuler(new THREE.Euler(this.pitch,this.yaw,0,'YXZ'));
-  this.act(dt);if(this.pos.y<-20&&this.mode==='survival')this.hurt(100);if(this.pos.y<-50)this.pos.y=80}
+  this.act(dt);if(this.pos.y<-20&&this.mode==='survival')this.hurt(100);if(this.pos.y<-50)this.pos.y=160}
 col(dt){const hw=.28,sol=(a,b,c)=>BD[W.gB(a,b,c)]?.sol;let ny=this.pos.y+this.vel.y*dt;if(this.vel.y<0&&(sol(fl(this.pos.x),fl(ny),fl(this.pos.z))||sol(fl(this.pos.x-hw),fl(ny),fl(this.pos.z-hw))||sol(fl(this.pos.x+hw),fl(ny),fl(this.pos.z+hw)))){ny=fl(ny)+1;this.vel.y=0;this.gr=true}else{this.gr=false;if(this.vel.y>0&&sol(fl(this.pos.x),fl(ny+1.7),fl(this.pos.z))){this.vel.y=0;ny=this.pos.y}}this.pos.y=ny;let nx=this.pos.x+this.vel.x*dt;if(sol(fl(nx+hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx+hw),fl(this.pos.y+1),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y+1),fl(this.pos.z)))nx=this.pos.x;this.pos.x=nx;let nz=this.pos.z+this.vel.z*dt;if(sol(fl(this.pos.x),fl(this.pos.y),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y),fl(nz-hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz-hw)))nz=this.pos.z;this.pos.z=nz}
 act(dt){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const hit=this.ray(W.cam.position.clone(),dir,5.5);const bn=$('bn');
   if(hit){W.hl.visible=true;W.hl.position.set(hit.x+.5,hit.y+.5,hit.z+.5);bn.textContent=BD[hit.b]?.nm||'';
@@ -1855,7 +1860,7 @@ act(dt){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);co
 ray(o,d,md){let x=fl(o.x),y=fl(o.y),z=fl(o.z);const sx=d.x>0?1:-1,sy=d.y>0?1:-1,sz=d.z>0?1:-1;let tx=d.x?((d.x>0?x+1:x)-o.x)/d.x:1e9,ty=d.y?((d.y>0?y+1:y)-o.y)/d.y:1e9,tz=d.z?((d.z>0?z+1:z)-o.z)/d.z:1e9;const ddx=d.x?abs(1/d.x):1e9,ddy=d.y?abs(1/d.y):1e9,ddz=d.z?abs(1/d.z):1e9;let n=[0,0,0];for(let i=0;i<fl(md)*3;i++){const b=W.gB(x,y,z);if(b!==B.AIR&&BD[b]?.sol)return{x,y,z,b,n};if(tx<ty){if(tx<tz){x+=sx;tx+=ddx;n=[-sx,0,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}else{if(ty<tz){y+=sy;ty+=ddy;n=[0,-sy,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}if(mn(tx,ty,tz)>md)break}return null}
 addI(id,c){for(let i=0;i<9;i++)if(this.hb[i]?.id===id&&this.hb[i].n<(BD[id]?.st||64)){this.hb[i].n+=c;return true}for(let i=0;i<27;i++)if(this.inv[i]?.id===id&&this.inv[i].n<(BD[id]?.st||64)){this.inv[i].n+=c;return true}for(let i=0;i<9;i++)if(!this.hb[i]){this.hb[i]={id,n:c};return true}for(let i=0;i<27;i++)if(!this.inv[i]){this.inv[i]={id,n:c};return true}return false}
 hurt(a){if(this.mode==='creative'||this.hT>0)return;this.hp-=a;this.hT=.5;if(this.hp<=0){this.hp=0;W.st='dead';$('deathUI').style.display='flex';document.exitPointerLock()}}
-rsp(){this.pos.set(0,60,0);this.vel.set(0,0,0);this.hp=20;this.hunger=20;for(let y=CH-1;y>0;y--)if(BD[W.gB(0,y,0)]?.sol){this.pos.y=y+2;break}}}
+rsp(){this.pos.set(0,120,0);this.vel.set(0,0,0);this.hp=20;this.hunger=20;for(let y=CH-1;y>0;y--)if(BD[W.gB(0,y,0)]?.sol){this.pos.y=y+2;break}}}
 
 // ITEM DROPS
 class ItemDrop{constructor(x,y,z,id){this.pos=new THREE.Vector3(x,y+.5,z);this.id=id;this.age=0;this.vy=3;this.mesh=mkM(new THREE.BoxGeometry(.2,.2,.2),new THREE.MeshLambertMaterial({color:0xeeeeaa}),x,y+.5,z);W.sc.add(this.mesh)}
@@ -1948,7 +1953,7 @@ async start(seed,mode,ld){try{
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.1});
-  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.55,side:THREE.DoubleSide,depthWrite:false,shininess:60,specular:0x448899,color:0xbbddee});
+  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.72,side:THREE.DoubleSide,depthWrite:false,shininess:60,specular:0x448899,color:0x88bbdd});
   // Hemisphere light (sky blue above, ground brown below)
   this.hemiLight=new THREE.HemisphereLight(0x88bbff,0x554433,.45);this.sc.add(this.hemiLight);
   this.amb=new THREE.AmbientLight(0x404050,.3);this.sc.add(this.amb);
@@ -1965,7 +1970,7 @@ async start(seed,mode,ld){try{
   // Clouds - flat white planes at high altitude
   this.clouds=new THREE.Group();
   const cloudMat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7,side:THREE.DoubleSide,fog:false,depthWrite:false});
-  for(let i=0;i<40;i++){const cw=15+dh01(i,999)*25,cd=8+dh01(i+50,999)*15;const cloud=mkM(new THREE.PlaneGeometry(cw,cd),cloudMat,dh01(i,100)*200-100,65+dh01(i,200)*8,dh01(i,300)*200-100);cloud.rotation.x=-PI/2;this.clouds.add(cloud)}
+  for(let i=0;i<40;i++){const cw=15+dh01(i,999)*25,cd=8+dh01(i+50,999)*15;const cloud=mkM(new THREE.PlaneGeometry(cw,cd),cloudMat,dh01(i,100)*200-100,140+dh01(i,200)*8,dh01(i,300)*200-100);cloud.rotation.x=-PI/2;this.clouds.add(cloud)}
   this.sc.add(this.clouds);
   this.hl=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.01,1.01,1.01)),new THREE.LineBasicMaterial({color:0,transparent:true,opacity:.35}));this.hl.visible=false;this.sc.add(this.hl);
   // Block break overlay - textured box with crack stages
@@ -2147,7 +2152,7 @@ function cheatTP(biomeId){
       const tx=px2+fl(Math.cos(a*TAU/angles)*r),tz=pz2+fl(Math.sin(a*TAU/angles)*r);
       if(bio(tx,tz)===biomeId){
         const h=htA(tx,tz,biomeId);
-        if(biomeId===BI.DISCORD_DEEP)W.pl.pos.set(tx+.5,mn(h+3,28),tz+.5);
+        if(biomeId===BI.DISCORD_DEEP)W.pl.pos.set(tx+.5,mn(h+3,50),tz+.5);
         else if(biomeId===BI.VCLANTIS)W.pl.pos.set(tx+.5,15,tz+.5);
         else if(biomeId===BI.OC||biomeId===BI.PROPS_ISLAND)W.pl.pos.set(tx+.5,WL+2,tz+.5);
         else W.pl.pos.set(tx+.5,mx(h+3,WL+3),tz+.5);
@@ -2163,7 +2168,7 @@ function cheatTP(biomeId){
   }
   if(biomeId===BI.DISCORD_DEEP){
     for(let gx=-8000;gx<8000;gx+=8)for(let gz=-8000;gz<8000;gz+=8){
-      if(bio(gx,gz)===BI.DISCORD_DEEP){W.pl.pos.set(gx+.5,28,gz+.5);W.pl.vel.set(0,0,0);closeCheat();return}
+      if(bio(gx,gz)===BI.DISCORD_DEEP){W.pl.pos.set(gx+.5,50,gz+.5);W.pl.vel.set(0,0,0);closeCheat();return}
     }
   }
   closeCheat();
@@ -2174,8 +2179,8 @@ function cheatTPStruct(name){
     const s=_structRegistry[name][0];
     W.pl.pos.set(s.x+.5,s.y+3,s.z+.5);W.pl.vel.set(0,0,0);closeCheat();return;
   }
-  // If not yet generated, search for a biome that would contain this structure and teleport there
-  // then the chunk generation will create the structure
+  // If not yet generated, search for a biome that would contain this structure
+  // and force-generate chunks there to try to create the structure
   const structBiomeMap={
     'Sweetwater High':[BI.VC_SUBURB],'Football Stadium':[BI.SA_PLAINS,BI.VC_SUBURB],
     'VC Restaurant':[BI.SA_PLAINS,BI.VC_SUBURB,BI.DRY_COAST],'Props Arcade':[BI.VC_SUBURB,BI.PROPS_ISLAND],
@@ -2189,7 +2194,31 @@ function cheatTPStruct(name){
     'City Tower':[BI.GARFBOT_CITY],'Statue':[BI.SA_PLAINS]
   };
   const biomes=structBiomeMap[name]||[];
-  if(biomes.length>0){cheatTP(biomes[0]);return}
+  if(biomes.length>0){
+    // Force-generate chunks in the target biome to find/create structures
+    const px2=fl(W.pl.pos.x),pz2=fl(W.pl.pos.z);
+    for(let r=16;r<12000;r+=8){
+      const angles=r<2000?32:16;
+      for(let a=0;a<angles;a++){
+        const tx=px2+fl(Math.cos(a*TAU/angles)*r),tz=pz2+fl(Math.sin(a*TAU/angles)*r);
+        if(biomes.includes(bio(tx,tz))){
+          // Force-generate this chunk and nearby chunks to trigger structure gen
+          const ccx=fl(tx/CS),ccz=fl(tz/CS);
+          for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){
+            const ck=(ccx+dx)+','+(ccz+dz);
+            if(!W.ch[ck]){const c=new Chunk(ccx+dx,ccz+dz);c.gen();W.ch[ck]=c}
+          }
+          // Check if structure was created
+          if(_structRegistry[name]&&_structRegistry[name].length>0){
+            const s=_structRegistry[name][0];
+            W.pl.pos.set(s.x+.5,s.y+3,s.z+.5);W.pl.vel.set(0,0,0);closeCheat();return;
+          }
+        }
+      }
+    }
+    // Fallback: just teleport to the biome
+    cheatTP(biomes[0]);return;
+  }
   // Train station - teleport to nearest station
   if(name==='Train Station'&&W._stations&&W._stations.length>0){
     const s=W._stations[0];W.pl.pos.set(s.x+.5,s.y+2,s.z+.5);W.pl.vel.set(0,0,0);closeCheat();return;

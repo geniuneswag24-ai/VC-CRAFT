@@ -1069,8 +1069,8 @@ deco(){
   const ch=this.sY(8,8);
   if(ch>WL&&ch<CH-10)genStructure(this,ox,oz,ox+8,oz+8,ch,chunkBio);
   // ═══ RAIL SYSTEM - grid-based connected corridors ═══
-  const isEWRail = (((this.cz%8)+8)%8===0); // east-west corridor every 8 chunks
-  const isNSRail = (((this.cx%12)+12)%12===0); // north-south corridor every 12 chunks
+  const isEWRail = (((this.cz%16)+16)%16===0); // east-west corridor every 16 chunks
+  const isNSRail = (((this.cx%20)+20)%20===0); // north-south corridor every 20 chunks
   const skipBiome = chunkBio===BI.OC||chunkBio===BI.VCLANTIS||chunkBio===BI.PROPS_ISLAND;
   if((isEWRail||isNSRail)&&!skipBiome){
     // East-West rail: runs along x-axis at z=8
@@ -1101,7 +1101,7 @@ deco(){
     }
     // ═══ LARGE STATION at intersections or every ~15 chunks ═══
     const isIntersection = isEWRail && isNSRail;
-    const isStationChunk = isIntersection || (isEWRail && (((this.cx%15)+15)%15===0)) || (isNSRail && (((this.cz%15)+15)%15===0));
+    const isStationChunk = isIntersection || (isEWRail && (((this.cx%20)+20)%20===0)) || (isNSRail && (((this.cz%20)+20)%20===0));
     if(isStationChunk){
       const sh=this.sY(8,8);if(sh>WL){
         // ──── LARGE TRAIN STATION ────
@@ -1298,28 +1298,74 @@ an(dt){
 // TRAIN - moving entity that rides along rails
 class Train{
 constructor(x,y,z,dirX,dirZ){
-  this.pos=new THREE.Vector3(x,y+.2,z);this.dirX=dirX||1;this.dirZ=dirZ||0;this.spd=5;this.grp=new THREE.Group();
+  this.pos=new THREE.Vector3(x,y+.2,z);this.dirX=dirX||1;this.dirZ=dirZ||0;this.spd=4;this.grp=new THREE.Group();
   this.alive=true;this.pauseT=0;
-  const body=new THREE.MeshLambertMaterial({color:0xcc2222});const metal=new THREE.MeshLambertMaterial({color:0x444444});
-  const frame=new THREE.MeshLambertMaterial({color:0x222222});const glass=new THREE.MeshLambertMaterial({color:0x88bbdd,transparent:true,opacity:.6});
-  // Locomotive body
-  this.grp.add(mkM(new THREE.BoxGeometry(2.4,1.6,1.6),body,0,.8,0));
+  const body=new THREE.MeshLambertMaterial({color:0xaa1818});const bodyH=new THREE.MeshLambertMaterial({color:0xcc2020});
+  const metal=new THREE.MeshLambertMaterial({color:0x3a3a3a});const frame=new THREE.MeshLambertMaterial({color:0x1a1a1a});
+  const glass=new THREE.MeshLambertMaterial({color:0x88bbdd,transparent:true,opacity:.55});
+  const gold=new THREE.MeshLambertMaterial({color:0xccaa44});const cargo1=new THREE.MeshLambertMaterial({color:0x5a4428});
+  const cargo2=new THREE.MeshLambertMaterial({color:0x446688});
+  // ═══ LOCOMOTIVE ═══
+  // Main body - larger
+  this.grp.add(mkM(new THREE.BoxGeometry(3.2,1.8,1.8),body,0,.9,0));
+  // Upper body ridge
+  this.grp.add(mkM(new THREE.BoxGeometry(2.8,.3,1.4),bodyH,0,1.85,0));
   // Roof
-  this.grp.add(mkM(new THREE.BoxGeometry(2.6,.2,1.8),metal,0,1.7,0));
-  // Front cowcatcher
-  this.grp.add(mkM(new THREE.BoxGeometry(.3,.4,1.2),frame,1.3,.2,0));
+  this.grp.add(mkM(new THREE.BoxGeometry(3.4,.15,2),metal,0,2.05,0));
+  // Front cowcatcher / plow
+  this.grp.add(mkM(new THREE.BoxGeometry(.4,.5,1.6),frame,1.8,.25,0));
+  this.grp.add(mkM(new THREE.BoxGeometry(.2,.3,1.2),metal,2,.15,0));
+  // Boiler front
+  this.grp.add(mkM(new THREE.BoxGeometry(.6,1.2,1.2),metal,1.5,.9,0));
   // Smokestack
-  this.grp.add(mkM(new THREE.BoxGeometry(.4,.6,.4),metal,.6,2,0));
-  // Windows
-  this.grp.add(mkM(new THREE.BoxGeometry(.05,.5,.4),glass,1.2,1.1,.4));
-  this.grp.add(mkM(new THREE.BoxGeometry(.05,.5,.4),glass,1.2,1.1,-.4));
-  // Wheels (4 pairs)
-  for(const wx of[-.6,.6]){
-    this.grp.add(mkM(new THREE.BoxGeometry(.3,.3,.3),frame,wx,.15,.7));
-    this.grp.add(mkM(new THREE.BoxGeometry(.3,.3,.3),frame,wx,.15,-.7));
+  this.grp.add(mkM(new THREE.BoxGeometry(.5,.8,.5),metal,.8,2.4,0));
+  this.grp.add(mkM(new THREE.BoxGeometry(.6,.15,.6),metal,.8,2.85,0));
+  // Cab windows
+  this.grp.add(mkM(new THREE.BoxGeometry(.05,.55,.5),glass,-1.2,1.3,.5));
+  this.grp.add(mkM(new THREE.BoxGeometry(.05,.55,.5),glass,-1.2,1.3,-.5));
+  this.grp.add(mkM(new THREE.BoxGeometry(.8,.55,.05),glass,-.6,1.3,.9));
+  this.grp.add(mkM(new THREE.BoxGeometry(.8,.55,.05),glass,-.6,1.3,-.9));
+  // Bell
+  this.grp.add(mkM(new THREE.BoxGeometry(.2,.25,.2),gold,.3,2.25,0));
+  // Wheels (6 pairs - 3 per side)
+  for(const wx of[-1,0,1]){
+    this.grp.add(mkM(new THREE.BoxGeometry(.35,.4,.15),frame,wx,.2,.85));
+    this.grp.add(mkM(new THREE.BoxGeometry(.35,.4,.15),frame,wx,.2,-.85));
   }
-  // Headlight
-  this.grp.add(mkM(new THREE.BoxGeometry(.1,.2,.2),new THREE.MeshBasicMaterial({color:0xffffaa,emissive:0xffff88}),1.25,.9,0));
+  // Headlight (bright)
+  this.grp.add(mkM(new THREE.BoxGeometry(.15,.3,.3),new THREE.MeshBasicMaterial({color:0xffeeaa,emissive:0xffdd66}),1.85,1.1,0));
+  // Rear coupler
+  this.grp.add(mkM(new THREE.BoxGeometry(.3,.15,.15),frame,-1.7,.3,0));
+  // Gold stripe detail
+  this.grp.add(mkM(new THREE.BoxGeometry(3,.08,1.85),gold,0,.45,0));
+  // ═══ FREIGHT CAR 1 ═══
+  const car1=-3.8;
+  this.grp.add(mkM(new THREE.BoxGeometry(2.6,.15,1.7),frame,car1,.15,0)); // underframe
+  this.grp.add(mkM(new THREE.BoxGeometry(2.4,1.2,1.5),cargo1,car1,.9,0)); // cargo box
+  this.grp.add(mkM(new THREE.BoxGeometry(2.6,.1,1.7),metal,car1,1.55,0)); // top rim
+  // Car 1 wheels
+  for(const wx of[-.7,.7]){
+    this.grp.add(mkM(new THREE.BoxGeometry(.3,.35,.12),frame,car1+wx,.18,.78));
+    this.grp.add(mkM(new THREE.BoxGeometry(.3,.35,.12),frame,car1+wx,.18,-.78));
+  }
+  // Coupler between loco and car1
+  this.grp.add(mkM(new THREE.BoxGeometry(1,.1,.1),frame,-2.5,.3,0));
+  // ═══ FREIGHT CAR 2 ═══
+  const car2=-7;
+  this.grp.add(mkM(new THREE.BoxGeometry(2.6,.15,1.7),frame,car2,.15,0));
+  this.grp.add(mkM(new THREE.BoxGeometry(2.4,1.4,1.5),cargo2,car2,1,0)); // taller cargo
+  this.grp.add(mkM(new THREE.BoxGeometry(2.6,.1,1.7),metal,car2,1.75,0));
+  this.grp.add(mkM(new THREE.BoxGeometry(2.2,.1,1.3),metal,car2,1.85,0)); // roof
+  // Car 2 windows
+  this.grp.add(mkM(new THREE.BoxGeometry(1.2,.35,.05),glass,car2,1.2,.76));
+  this.grp.add(mkM(new THREE.BoxGeometry(1.2,.35,.05),glass,car2,1.2,-.76));
+  // Car 2 wheels
+  for(const wx of[-.7,.7]){
+    this.grp.add(mkM(new THREE.BoxGeometry(.3,.35,.12),frame,car2+wx,.18,.78));
+    this.grp.add(mkM(new THREE.BoxGeometry(.3,.35,.12),frame,car2+wx,.18,-.78));
+  }
+  // Coupler between car1 and car2
+  this.grp.add(mkM(new THREE.BoxGeometry(1,.1,.1),frame,-5.4,.3,0));
   if(W.sc)W.sc.add(this.grp);
 }
 tick(dt){
@@ -1512,13 +1558,13 @@ async start(seed,mode,ld){try{
   if(this.ren){const c=this.ren.domElement;if(c.parentNode)c.parentNode.removeChild(c);this.ren.dispose();this.ren=null}
   this.sc=null;
   await new Promise(r=>setTimeout(r,30));this.seed=seed;this.gMode=mode;initN(seed);buildAtlas();
-  this.sc=new THREE.Scene();this.sc.background=new THREE.Color(.53,.81,.92);this.sc.fog=new THREE.FogExp2(new THREE.Color(.53,.81,.92),.012);
+  this.sc=new THREE.Scene();this.sc.background=new THREE.Color(.53,.81,.92);this.sc.fog=new THREE.FogExp2(new THREE.Color(.53,.81,.92),.009);
   this.cam=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,RD*CS+50);
   this.ren=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(mn(devicePixelRatio,2));this.ren.autoClear=false;
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.1});
-  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false,shininess:30,specular:0x336688});
+  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.5,side:THREE.DoubleSide,depthWrite:false,shininess:30,specular:0x336688});
   // Hemisphere light (sky blue above, ground brown below)
   this.hemiLight=new THREE.HemisphereLight(0x88bbff,0x554433,.45);this.sc.add(this.hemiLight);
   this.amb=new THREE.AmbientLight(0x404050,.3);this.sc.add(this.amb);
@@ -1616,7 +1662,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
       const px2=fl(this.pl.pos.x/CS),pz2=fl(this.pl.pos.z/CS);
       for(let dx=-RD;dx<=RD&&this.trains.length<3;dx++)for(let dz=-RD;dz<=RD&&this.trains.length<3;dz++){
         const cx2=px2+dx,cz2=pz2+dz;
-        const isEW=(((cz2%8)+8)%8===0),isNS=(((cx2%12)+12)%12===0);
+        const isEW=(((cz2%16)+16)%16===0),isNS=(((cx2%20)+20)%20===0);
         if(!isEW&&!isNS)continue;
         const tKey=cx2+','+cz2;if(this.trains.some(t=>fl(t.pos.x/CS)===cx2&&fl(t.pos.z/CS)===cz2))continue;
         const bi2=bio(cx2*CS+8,cz2*CS+8);if(bi2===BI.OC||bi2===BI.VCLANTIS)continue;

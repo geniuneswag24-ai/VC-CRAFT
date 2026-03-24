@@ -288,7 +288,7 @@ mt('flyl',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,30,0.6)';c.fillRec
 mt('shrb',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(50,100,30,0.8)';c.fillRect(2,6,12,10);c.fillStyle='rgba(70,130,40,0.7)';c.fillRect(4,4,8,8);c.fillStyle='rgba(40,80,25,0.6)';c.fillRect(3,8,10,6)});
 mt('reed',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(100,140,60,0.7)';c.fillRect(4,0,2,16);c.fillRect(10,2,2,14);c.fillStyle='rgba(120,160,70,0.6)';c.fillRect(7,4,2,12)});
 mt('fern',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(40,120,40,0.7)';c.fillRect(2,8,12,8);c.fillStyle='rgba(50,140,45,0.6)';c.fillRect(4,5,3,8);c.fillRect(9,5,3,8);c.fillStyle='rgba(60,150,50,0.5)';c.fillRect(6,3,4,6)});
-mt('lava',c=>{nf(c,'#CC3300','#FF6600',.6);c.fillStyle='rgba(255,200,50,0.5)';c.fillRect(2,3,5,4);c.fillRect(8,7,6,5);c.fillStyle='rgba(255,100,20,0.4)';c.fillRect(4,9,8,4);c.fillStyle='rgba(255,255,100,0.3)';c.fillRect(6,5,4,2)});
+mt('lava',c=>{nf(c,'#AA2200','#DD4400',.6);c.fillStyle='rgba(255,120,20,0.6)';c.fillRect(0,0,16,16);for(let i=0;i<20;i++){const lx=fl(tRng.n()*14),ly=fl(tRng.n()*14),lw=2+fl(tRng.n()*3);c.fillStyle=`rgba(${200+fl(tRng.n()*55)},${80+fl(tRng.n()*100)},${fl(tRng.n()*40)},${.4+tRng.n()*.4})`;c.fillRect(lx,ly,lw,1+fl(tRng.n()*2))}c.fillStyle='rgba(255,255,100,0.35)';c.fillRect(3,4,4,3);c.fillRect(9,8,5,3);c.fillStyle='rgba(255,200,50,0.25)';c.fillRect(1,10,6,3);c.fillRect(8,2,5,4)});
 // Volcano biome block textures
 mt('bslt',c=>{nf(c,'#2A2A30','#363640',.6);c.fillStyle='#1E1E25';c.fillRect(2,2,3,3);c.fillRect(9,5,3,3);c.fillRect(5,10,3,3);c.fillRect(12,1,3,3);c.fillRect(1,12,3,3);c.fillRect(10,12,3,3)});
 mt('ashst',c=>{nf(c,'#5A5A5A','#707070',.5);c.fillStyle='#484848';c.fillRect(0,8,16,3);c.fillStyle='#666';c.fillRect(4,2,8,4)});
@@ -2507,14 +2507,43 @@ document.addEventListener('contextmenu',e=>e.preventDefault())}}
 class Hand{constructor(){this.sc=new THREE.Scene();this.cam=new THREE.PerspectiveCamera(50,1.3,.1,10);
   const dl=new THREE.DirectionalLight(0xffffff,1);dl.position.set(1,2,3);this.sc.add(dl);this.sc.add(new THREE.AmbientLight(0xbbbbbb,.6));
   const skinMat=new THREE.MeshLambertMaterial({color:0xc49a6c});
-  // Thinner arm like MC - not chunky
   this.arm=mkM(new THREE.BoxGeometry(.3,.9,.3),skinMat,.35,-0.3,-0.7);
   this.arm.rotation.x=-.1;this.arm.rotation.z=.08;
-  this.sc.add(this.arm);this.swT=0;this.sw=false}
+  this.sc.add(this.arm);this.swT=0;this.sw=false;this.heldMesh=null;this.heldId=-1}
 swing(){this.sw=true;this.swT=0}
-render(ren,dt){if(this.sw){this.swT+=dt*8;if(this.swT>PI){this.sw=false;this.swT=0}}
+updateHeld(id){
+  if(id===this.heldId)return;this.heldId=id;
+  if(this.heldMesh){this.sc.remove(this.heldMesh);this.heldMesh=null}
+  if(id<=0||!BF[id])return;
+  const isItem=BD[id]&&!BD[id].sol&&id!==B.WATER&&id!==B.LAVA;
+  if(isItem&&IMAP[id]){
+    // Flat item (tool/ingot) - render as thin slab
+    const cv=TC[IMAP[id]];if(!cv)return;
+    const tex=new THREE.CanvasTexture(cv);tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;
+    const mat=new THREE.MeshLambertMaterial({map:tex,transparent:true,alphaTest:0.1});
+    this.heldMesh=mkM(new THREE.BoxGeometry(.5,.5,.06),mat,.35,.15,-0.65);
+    this.heldMesh.rotation.x=-.3;this.heldMesh.rotation.z=.1;
+  }else{
+    // Block - render as small cube
+    const bf2=BF[id];if(!bf2)return;
+    const cv=TC[bf2[1]];if(!cv)return;
+    const tex=new THREE.CanvasTexture(cv);tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;
+    const mat=new THREE.MeshLambertMaterial({map:tex,transparent:BD[id]?.tr||false,alphaTest:0.1});
+    this.heldMesh=mkM(new THREE.BoxGeometry(.4,.4,.4),mat,.35,.15,-0.65);
+    this.heldMesh.rotation.x=-.2;this.heldMesh.rotation.y=.5;
+  }
+  this.sc.add(this.heldMesh);
+}
+render(ren,dt){
+  if(this.sw){this.swT+=dt*8;if(this.swT>PI){this.sw=false;this.swT=0}}
   this.arm.rotation.x=-.1-(this.sw?Math.sin(this.swT)*.6:0);
   this.arm.position.y=-0.3+Math.sin((W.pl?.aT||0)*1.5)*.015;
+  if(this.heldMesh){
+    this.heldMesh.position.y=.15+Math.sin((W.pl?.aT||0)*1.5)*.015;
+    this.heldMesh.rotation.x=-.2-(this.sw?Math.sin(this.swT)*.6:0);
+  }
+  // Update held item if changed
+  const hb=W.pl?.hb;if(hb){const sel=W.pl?.sel||0;const heldItem=hb[sel];this.updateHeld(heldItem?heldItem.id:-1)}
   const w=fl(window.innerWidth*.35),h=fl(window.innerHeight*.4);
   const x=window.innerWidth-w,y=0;
   ren.setScissorTest(true);ren.setScissor(x,y,w,h);ren.setViewport(x,y,w,h);
@@ -2632,7 +2661,7 @@ async start(seed,mode,ld){try{
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.1});
-  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.82,side:THREE.DoubleSide,depthWrite:false,shininess:80,specular:0x448899,color:0x3388aa});
+  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:true,shininess:120,specular:0x66aacc,color:0x2266aa});
   this._frustum=new THREE.Frustum();this._projScreenMatrix=new THREE.Matrix4();
   // Hemisphere light (sky blue above, ground brown below)
   this.hemiLight=new THREE.HemisphereLight(0x88bbff,0x554433,.45);this.sc.add(this.hemiLight);
@@ -2908,14 +2937,14 @@ function cheatTPStruct(name){
   if(biomes.length>0){
     // Force-generate chunks in the target biome to find/create structures
     const px2=fl(W.pl.pos.x),pz2=fl(W.pl.pos.z);
-    for(let r=16;r<20000;r+=8){
+    for(let r=16;r<40000;r+=6){
       const angles=r<2000?32:16;
       for(let a=0;a<angles;a++){
         const tx=px2+fl(Math.cos(a*TAU/angles)*r),tz=pz2+fl(Math.sin(a*TAU/angles)*r);
         if(biomes.includes(bio(tx,tz))){
           // Force-generate this chunk and nearby chunks to trigger structure gen
           const ccx=fl(tx/CS),ccz=fl(tz/CS);
-          for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++){
+          for(let dx=-3;dx<=3;dx++)for(let dz=-3;dz<=3;dz++){
             const ck=(ccx+dx)+','+(ccz+dz);
             if(!W.ch[ck]){const c=new Chunk(ccx+dx,ccz+dz);c.gen();W.ch[ck]=c}
           }

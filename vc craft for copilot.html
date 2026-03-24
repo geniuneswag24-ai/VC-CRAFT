@@ -1379,7 +1379,26 @@ gen(){
           // Vertical shafts connecting cave layers
           const shaft=nC.n3(wx*.04,y*.006,wz*.04);
           if(abs(shaft)<.01&&y>5&&y<50){this.blk[this.I(x,y,z)]=(y<12&&dh01(wx*333+y,wz*444)<.08)?B.LAVA:B.AIR;continue}}
-          if(y>=h-3&&y<=h){const cEntry=nC.n3(wx*.06,y*.04,wz*.06);if(abs(cEntry)<.025&&bi===BI.MO){this.blk[this.I(x,y,z)]=B.AIR;continue}if(abs(cEntry)<.02&&(bi===BI.VC_BADLANDS||bi===BI.CAMGROVE)&&y<h){this.blk[this.I(x,y,z)]=B.AIR;continue}}
+          // Giant caverns - rare massive underground chambers
+          const giantCave=nC.n3(wx*.005,y*.008,wz*.005);
+          if(giantCave>.62&&y>15&&y<80){this.blk[this.I(x,y,z)]=(y<18&&dh01(wx*333+y,wz*444)<.1)?B.LAVA:B.AIR;continue}
+          // Mega connecting tunnels - link cave systems across large distances
+          const megaTunnel=nC.n3(wx*.012,y*.02,wz*.012);
+          const megaTunnel2=nC.n3(wx*.018+50,y*.015+50,wz*.018+50);
+          if(megaTunnel*megaTunnel+megaTunnel2*megaTunnel2<.003&&y>8&&y<70){this.blk[this.I(x,y,z)]=B.AIR;continue}
+          // Cave openings on steep terrain faces (mountains, cliffs, hillsides)
+          if(y>=h-4&&y<=h){
+            const cEntry=nC.n3(wx*.05,y*.035,wz*.05);
+            const cEntry2=nC.n3(wx*.08+20,y*.06+20,wz*.08+20);
+            // Mountain caves - very common
+            if(abs(cEntry)<.035&&bi===BI.MO){this.blk[this.I(x,y,z)]=B.AIR;continue}
+            // Volcano caves
+            if(abs(cEntry)<.03&&bi===BI.VOLCANO){this.blk[this.I(x,y,z)]=B.AIR;continue}
+            // Badlands and forest caves
+            if(abs(cEntry)<.025&&(bi===BI.VC_BADLANDS||bi===BI.CAMGROVE)&&y<h){this.blk[this.I(x,y,z)]=B.AIR;continue}
+            // General hillside caves (any biome with elevation)
+            if(abs(cEntry2)<.012&&h>WL+20&&y<h){this.blk[this.I(x,y,z)]=B.AIR;continue}
+          }
         if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>140?B.SNOW:bi===BI.VOLCANO&&y>160?B.SCORCHED:bd.sf;
         else if(y>h-4)b=bi===BI.VOLCANO?B.BASALT:bd.su;
         else if(y<16)b=bi===BI.VOLCANO?B.SCORCHED:B.DEEP;
@@ -1755,44 +1774,166 @@ deco(){
   if(chunkBio===BI.VCLANTIS){
     const vy=3,vr=dh01(this.cx*13,this.cz*17);
     const zone=dh01(this.cx*77,this.cz*33);
-    // ── Ground + Ceiling across chunk ──
+    const deep=dh01(this.cx*55,this.cz*44);
+    // ── MASSIVE GROUND + CEILING + DEEP FLOOR ──
     for(let dx=0;dx<CS;dx++)for(let dz=0;dz<CS;dz++){
+      // Main floor
       this.S(dx,vy,dz,B.MARBLE);this.S(dx,vy-1,dz,B.SEA_MARBLE);
-      this.S(dx,vy+18,dz,B.TEMPLE_STONE);
-      for(let dy=1;dy<18;dy++)if(this.G(dx,vy+dy,dz)===B.WATER)this.S(dx,vy+dy,dz,B.AIR);
+      // High ceiling
+      this.S(dx,vy+22,dz,B.TEMPLE_STONE);this.S(dx,vy+23,dz,B.SEA_MARBLE);
+      // Clear interior
+      for(let dy=1;dy<22;dy++)if(this.G(dx,vy+dy,dz)===B.WATER)this.S(dx,vy+dy,dz,B.AIR);
+      // Deep basement level
+      this.S(dx,vy-6,dz,B.SEA_MARBLE);
+      for(let dy=-5;dy<=-1;dy++)if(this.G(dx,vy+dy,dz)!==B.AIR)this.S(dx,vy+dy,dz,B.AIR);
     }
-    if(zone<.3){
-      // ZONE: Grand Hall with massive columns and VC monument
-      for(const[cx3,cz3]of[[2,2],[7,2],[13,2],[2,7],[7,7],[13,7],[2,13],[7,13],[13,13],[4,5],[10,10],[10,4],[5,10]]){
-        for(let dy=1;dy<18;dy++)this.S(cx3,vy+dy,cz3,B.COLUMN_BLK);
-        for(let dx2=-1;dx2<=1;dx2++)for(let dz2=-1;dz2<=1;dz2++){if(cx3+dx2>=0&&cx3+dx2<CS&&cz3+dz2>=0&&cz3+dz2<CS){this.S(cx3+dx2,vy+1,cz3+dz2,B.MARBLE);this.S(cx3+dx2,vy+17,cz3+dz2,B.MARBLE)}}
+    // ZONE 1: Grand Hall with massive columns and central monument
+    if(zone<.25){
+      for(const[cx3,cz3]of[[2,2],[7,2],[13,2],[2,7],[7,7],[13,7],[2,13],[7,13],[13,13],[4,5],[10,10],[10,4],[5,10],[4,10],[10,5]]){
+        for(let dy=1;dy<22;dy++)this.S(cx3,vy+dy,cz3,B.COLUMN_BLK);
+        for(let dx2=-1;dx2<=1;dx2++)for(let dz2=-1;dz2<=1;dz2++){
+          if(cx3+dx2>=0&&cx3+dx2<CS&&cz3+dz2>=0&&cz3+dz2<CS){
+            this.S(cx3+dx2,vy+1,cz3+dz2,B.MARBLE);this.S(cx3+dx2,vy+21,cz3+dz2,B.MARBLE)
+          }
+        }
       }
-      for(let dx2=-2;dx2<=2;dx2++)for(let dz2=-2;dz2<=2;dz2++){this.S(7+dx2,vy+1,7+dz2,B.MARBLE);this.S(7+dx2,vy+2,7+dz2,B.MARBLE)}
-      for(let dy=3;dy<12;dy++){this.S(7,vy+dy,7,B.STATUE_STONE);this.S(8,vy+dy,7,B.STATUE_STONE);this.S(7,vy+dy,8,B.STATUE_STONE);this.S(8,vy+dy,8,B.STATUE_STONE)}
-      this.S(7,vy+12,7,B.BRONZE);this.S(8,vy+12,7,B.BRONZE);this.S(7,vy+12,8,B.BRONZE);this.S(8,vy+12,8,B.BRONZE);this.S(7,vy+13,7,B.BRONZE);
-    }else if(zone<.55){
-      // ZONE: Side chambers and connecting corridors
-      for(let dy=1;dy<10;dy++)for(let dx2=1;dx2<7;dx2++)for(let dz2=0;dz2<8;dz2++){const isW=(dx2===1||dx2===6||dz2===0||dz2===7);if(isW)this.S(dx2,vy+dy,dz2,B.SEA_MARBLE)}
-      this.S(3,vy+1,0,B.AIR);this.S(3,vy+2,0,B.AIR);this.S(4,vy+1,0,B.AIR);this.S(4,vy+2,0,B.AIR);
-      for(let dy=1;dy<10;dy++)for(let dx2=9;dx2<15;dx2++)for(let dz2=8;dz2<16;dz2++){const isW=(dx2===9||dx2===14||dz2===8||dz2===15);if(isW)this.S(dx2,vy+dy,dz2,B.SEA_MARBLE)}
-      this.S(11,vy+1,8,B.AIR);this.S(11,vy+2,8,B.AIR);this.S(12,vy+1,8,B.AIR);this.S(12,vy+2,8,B.AIR);
-      for(let step=0;step<5;step++){for(let dx2=2;dx2<6;dx2++)this.S(dx2,vy+1+step,9+step,B.STAIR_MARBLE)}
-      this.S(3,vy+1,4,B.CHST);this.S(11,vy+1,12,B.CHST);
-    }else if(zone<.75){
-      // ZONE: Courtyard with broken pillars and ruins
-      for(let dy=1;dy<12;dy++){for(let d2=0;d2<CS;d2++){const isArch=(d2>4&&d2<11)&&(dy>2&&dy<10);if(!isArch){this.S(d2,vy+dy,0,B.SEA_MARBLE);this.S(d2,vy+dy,15,B.SEA_MARBLE);this.S(0,vy+dy,d2,B.SEA_MARBLE);this.S(15,vy+dy,d2,B.SEA_MARBLE)}}}
-      for(const[px,pz]of[[4,4],[11,4],[4,11],[11,11],[7,7]]){const ph=2+fl(dh01(px*10,pz*10)*6);for(let dy=1;dy<ph;dy++)this.S(px,vy+dy,pz,B.COLUMN_BLK)}
-      if(vr>.4)for(let dx2=5;dx2<10;dx2++)this.S(dx2,vy+1,8,B.COLUMN_BLK);
-    }else{
-      // ZONE: Deep vault with descending stairs
-      for(let dx=0;dx<CS;dx++)for(let dz=0;dz<CS;dz++){this.S(dx,vy-3,dz,B.SEA_MARBLE);for(let dy=-2;dy<0;dy++)this.S(dx,vy+dy,dz,B.AIR)}
-      for(let dx2=5;dx2<11;dx2++)for(let dz2=5;dz2<11;dz2++){this.S(dx2,vy-3,dz2,B.AIR);this.S(dx2,vy-4,dz2,B.WATER);this.S(dx2,vy-5,dz2,B.WATER)}
-      for(let dx2=1;dx2<4;dx2++)for(let dz2=1;dz2<4;dz2++){this.S(dx2,vy+1,dz2,B.MARBLE);this.S(dx2,vy+2,dz2,B.CHST)}
-      for(let step=0;step<4;step++){for(let dx2=6;dx2<10;dx2++)this.S(dx2,vy-step,4-step,B.STAIR_MARBLE)}
+      // Central grand monument (5x5 base, 15-block statue)
+      for(let dx2=-2;dx2<=2;dx2++)for(let dz2=-2;dz2<=2;dz2++){
+        this.S(7+dx2,vy+1,7+dz2,B.MARBLE);this.S(7+dx2,vy+2,7+dz2,B.MARBLE);this.S(7+dx2,vy+3,7+dz2,B.SEA_MARBLE)
+      }
+      for(let dy=4;dy<16;dy++){
+        this.S(7,vy+dy,7,B.STATUE_STONE);this.S(8,vy+dy,7,B.STATUE_STONE);
+        this.S(7,vy+dy,8,B.STATUE_STONE);this.S(8,vy+dy,8,B.STATUE_STONE)
+      }
+      for(let dx2=-1;dx2<=2;dx2++)this.S(7+dx2,vy+16,7,B.BRONZE);
+      this.S(7,vy+17,7,B.BRONZE);this.S(8,vy+17,8,B.BRONZE);
+      this.S(7,vy+18,7,B.SEA_LANTERN);
     }
-    if(vr>.5){for(let dx2=9;dx2<13;dx2++)for(let dz2=9;dz2<13;dz2++){this.S(dx2,vy+18,dz2,B.AIR);for(let dy=14;dy<18;dy++)if(dh01(dx2*10+dy,dz2*10)>.35)this.S(dx2,vy+dy,dz2,B.AIR)}}
-    for(let dx2=4;dx2<8;dx2++)for(let dz2=4;dz2<8;dz2++)for(let dy=10;dy<16;dy++)this.S(dx2,vy+dy,dz2,B.AIR);
-    for(const[lx,lz]of[[3,3],[12,3],[3,12],[12,12],[7,3],[7,12],[3,7],[12,7],[7,7]]){this.S(lx,vy+1,lz,B.SEA_LANTERN);this.S(lx,vy+17,lz,B.SEA_LANTERN)}
+    // ZONE 2: Coliseum / Arena chamber (massive round room)
+    else if(zone<.45){
+      // Circular arena with tiered seating
+      for(let dx=0;dx<CS;dx++)for(let dz=0;dz<CS;dz++){
+        const dist=Math.sqrt((dx-7.5)*(dx-7.5)+(dz-7.5)*(dz-7.5));
+        // Arena floor (central 6-block radius)
+        if(dist<6){this.S(dx,vy+1,dz,B.MARBLE);for(let dy=2;dy<20;dy++)this.S(dx,vy+dy,dz,B.AIR)}
+        // Tiered seating (ring from 6-8)
+        else if(dist<8){
+          const tier=fl(dist-5);
+          for(let dy=1;dy<=tier+1;dy++)this.S(dx,vy+dy,dz,B.STAIR_MARBLE);
+          for(let dy=tier+2;dy<20;dy++)this.S(dx,vy+dy,dz,B.AIR)
+        }
+        // Outer walls with arches
+        else{
+          for(let dy=1;dy<20;dy++){
+            const isArch=(dx===0||dx===15||dz===0||dz===15)&&(dy>3&&dy<12)&&((dx+dz)%5<3);
+            this.S(dx,vy+dy,dz,isArch?B.AIR:B.SEA_MARBLE)
+          }
+        }
+      }
+      // Boss fight pillars in arena
+      for(const[px,pz]of[[4,4],[11,4],[4,11],[11,11]]){
+        for(let dy=1;dy<18;dy++)this.S(px,vy+dy,pz,B.COLUMN_BLK);
+        this.S(px,vy+18,pz,B.SEA_LANTERN)
+      }
+    }
+    // ZONE 3: Side chambers and corridors
+    else if(zone<.6){
+      // Two large rooms with connecting corridor
+      for(let dy=1;dy<12;dy++){
+        for(let dx2=1;dx2<7;dx2++)for(let dz2=0;dz2<8;dz2++){
+          if(dx2===1||dx2===6||dz2===0||dz2===7)this.S(dx2,vy+dy,dz2,B.SEA_MARBLE);
+          else this.S(dx2,vy+dy,dz2,B.AIR)
+        }
+        for(let dx2=9;dx2<15;dx2++)for(let dz2=8;dz2<16;dz2++){
+          if(dx2===9||dx2===14||dz2===8||dz2===15)this.S(dx2,vy+dy,dz2,B.SEA_MARBLE);
+          else this.S(dx2,vy+dy,dz2,B.AIR)
+        }
+        // Connecting corridor
+        for(let dz2=7;dz2<=9;dz2++)for(let dx2=6;dx2<=9;dx2++){
+          if(dy<6)this.S(dx2,vy+dy,dz2,B.AIR)
+        }
+      }
+      this.S(3,vy+1,0,B.AIR);this.S(3,vy+2,0,B.AIR);this.S(4,vy+1,0,B.AIR);this.S(4,vy+2,0,B.AIR);
+      // Stair connecting levels
+      for(let step=0;step<8;step++){
+        for(let dx2=2;dx2<6;dx2++)if(9+step<CS)this.S(dx2,vy+1+step,9+step,B.STAIR_MARBLE)
+      }
+      this.S(3,vy+1,4,B.CHST);this.S(11,vy+1,12,B.CHST);this.S(12,vy+1,10,B.CHST);
+    }
+    // ZONE 4: Ruined courtyard with broken pillars and flooded areas
+    else if(zone<.75){
+      for(let dy=1;dy<16;dy++){
+        for(let d2=0;d2<CS;d2++){
+          const isArch=(d2>3&&d2<12)&&(dy>3&&dy<12);
+          if(!isArch){
+            this.S(d2,vy+dy,0,B.SEA_MARBLE);this.S(d2,vy+dy,15,B.SEA_MARBLE);
+            this.S(0,vy+dy,d2,B.SEA_MARBLE);this.S(15,vy+dy,d2,B.SEA_MARBLE)
+          }
+        }
+      }
+      // Broken pillars of varying heights
+      for(const[px,pz]of[[3,3],[12,3],[3,12],[12,12],[7,7],[5,9],[10,5],[8,12],[4,7]]){
+        const ph=2+fl(dh01(px*10,pz*10)*10);
+        for(let dy=1;dy<ph;dy++)this.S(px,vy+dy,pz,B.COLUMN_BLK);
+        if(dh01(px*11,pz*11)>.6)this.S(px,vy+ph,pz,B.SEA_LANTERN)
+      }
+      // Partially flooded floor
+      if(vr>.3){
+        for(let dx=3;dx<13;dx++)for(let dz=3;dz<13;dz++){
+          if(dh01(dx*5+dz,dz*7)<.3)this.S(dx,vy+1,dz,B.WATER)
+        }
+      }
+    }
+    // ZONE 5: Deep vault and treasure chamber
+    else{
+      // Multi-level vault descending deep
+      for(let dx=0;dx<CS;dx++)for(let dz=0;dz<CS;dz++){
+        this.S(dx,vy-8,dz,B.SEA_MARBLE); // Deep floor
+        for(let dy=-7;dy<0;dy++)this.S(dx,vy+dy,dz,B.AIR); // Clear deep space
+      }
+      // Flooded deep section
+      for(let dx2=4;dx2<12;dx2++)for(let dz2=4;dz2<12;dz2++){
+        for(let dy=-7;dy<=-5;dy++)this.S(dx2,vy+dy,dz2,B.WATER)
+      }
+      // Treasure platforms rising from water
+      for(const[tx,tz]of[[3,3],[12,3],[3,12],[12,12]]){
+        for(let dy=-4;dy<=2;dy++)this.S(tx,vy+dy,tz,B.MARBLE);
+        this.S(tx,vy+3,tz,B.CHST)
+      }
+      // Grand central staircase spiraling down
+      for(let step=0;step<12;step++){
+        const angle=step*PI/6;
+        const sx=7+fl(Math.cos(angle)*3),sz=7+fl(Math.sin(angle)*3);
+        if(sx>=0&&sx<CS&&sz>=0&&sz<CS)this.S(sx,vy-step,sz,B.STAIR_MARBLE)
+      }
+      // Deep treasure room
+      for(let dx2=1;dx2<5;dx2++)for(let dz2=1;dz2<5;dz2++){
+        this.S(dx2,vy+1,dz2,B.MARBLE);this.S(dx2,vy+2,dz2,B.SEA_LANTERN)
+      }
+      for(let dx2=2;dx2<4;dx2++)this.S(dx2,vy+3,3,B.CHST);
+    }
+    // Upper dome with damage holes letting water in
+    if(vr>.4){
+      for(let dx2=8;dx2<14;dx2++)for(let dz2=8;dz2<14;dz2++){
+        this.S(dx2,vy+22,dz2,B.AIR);this.S(dx2,vy+23,dz2,B.AIR);
+        for(let dy=16;dy<22;dy++)if(dh01(dx2*10+dy,dz2*10)>.3)this.S(dx2,vy+dy,dz2,B.AIR)
+      }
+    }
+    // Central upper chamber
+    for(let dx2=3;dx2<9;dx2++)for(let dz2=3;dz2<9;dz2++)for(let dy=12;dy<20;dy++)
+      this.S(dx2,vy+dy,dz2,B.AIR);
+    // Lanterns throughout
+    for(const[lx,lz]of[[3,3],[12,3],[3,12],[12,12],[7,3],[7,12],[3,7],[12,7],[7,7],[5,5],[10,10],[5,10],[10,5]]){
+      this.S(lx,vy+1,lz,B.SEA_LANTERN);this.S(lx,vy+21,lz,B.SEA_LANTERN)
+    }
+    // Outer ruined walls visible from above water
+    for(let d=0;d<CS;d++){
+      const wallH=3+fl(dh01(d*7,this.cx*3)*4);
+      for(let dy=22;dy<22+wallH;dy++){
+        if(dh01(d*11+dy,this.cz*5)>.2){this.S(d,vy+dy,0,B.SEA_MARBLE);this.S(d,vy+dy,15,B.SEA_MARBLE)}
+        if(dh01(d*13+dy,this.cx*7)>.2){this.S(0,vy+dy,d,B.SEA_MARBLE);this.S(15,vy+dy,d,B.SEA_MARBLE)}
+      }
+    }
     regStruct('VCLANTIS',ox+8,vy+2,oz+8);
     return;
   }

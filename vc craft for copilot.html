@@ -3014,8 +3014,10 @@ async start(seed,mode,ld){try{
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.5,depthWrite:true});
-  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false,shininess:120,specular:0x66aacc,color:0x2266aa});
-  this.lMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.95,side:THREE.DoubleSide,depthWrite:true,shininess:10,specular:0x442200,color:0xff4400,emissive:0xff3300,emissiveIntensity:.6});
+  const wAtlas=atlas.clone();wAtlas.needsUpdate=true;
+  this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false,shininess:120,specular:0x66aacc,color:0x2266aa});
+  const lAtlas=atlas.clone();lAtlas.needsUpdate=true;
+  this.lMat=new THREE.MeshPhongMaterial({map:lAtlas,transparent:true,opacity:.95,side:THREE.DoubleSide,depthWrite:true,shininess:10,specular:0x442200,color:0xff4400,emissive:0xff3300,emissiveIntensity:.6});
   this._frustum=new THREE.Frustum();this._projScreenMatrix=new THREE.Matrix4();
   // Hemisphere light (sky blue above, ground brown below)
   this.hemiLight=new THREE.HemisphereLight(0x88bbff,0x554433,.45);this.sc.add(this.hemiLight);

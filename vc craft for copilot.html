@@ -301,6 +301,9 @@ mt('ntrim',c=>{nf(c,'#FF33AA','#FF66CC',.4);c.fillStyle='#FF0088';c.fillRect(0,6
 mt('crpet',c=>{nf(c,'#882222','#993333',.3);c.fillStyle='#772222';c.fillRect(0,0,8,8);c.fillRect(8,8,8,8)});
 mt('cntop',c=>{nf(c,'#B0B0B0','#C0C0C0',.3);c.fillStyle='#A0A0A0';c.fillRect(0,0,16,16);c.fillStyle='#888';c.fillRect(0,0,16,1);c.fillRect(0,15,16,1)});
 mt('menbrd',c=>{nf(c,'#222222','#333333',.3);c.fillStyle='#FFCC00';c.fillRect(2,2,12,2);c.fillStyle='#FF6600';c.fillRect(2,6,10,1);c.fillRect(2,9,8,1);c.fillRect(2,12,6,1)});
+mt('rwl',c=>{nf(c,'#6B2A1A','#8A3828',.5);for(let y=0;y<16;y+=3)for(let x=0;x<16;x++)if(tRng.n()>.6)px(c,x,y,'#5A1A0A');c.fillStyle='rgba(100,40,20,0.15)';c.fillRect(0,0,16,16)});
+mt('rwlt',c=>{nf(c,'#7A3A2A','#9A4838',.4);c.strokeStyle='#5A1A0A';c.lineWidth=1;c.beginPath();c.arc(8,8,5,0,TAU);c.stroke();c.beginPath();c.arc(8,8,2,0,TAU);c.stroke()});
+mt('rwlv',c=>{nf(c,'#1A5520','#2A7530',.7);for(let i=0;i<8;i++)px(c,fl(tRng.n()*16),fl(tRng.n()*16),'#0A4010')});
 // Tool/item icons
 mt('stick_i',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#8A6C3A';c.fillRect(7,2,2,12)});
 mt('coal_ii',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#333';c.fillRect(5,4,6,8);c.fillRect(4,5,8,6)});
@@ -319,6 +322,7 @@ bf(B.CORAL_PINK,'crpk');bf(B.CORAL_BLUE,'crbl');bf(B.CORAL_YELLOW,'cryl');bf(B.K
 bf(B.TALL_GRASS,'tgrss');bf(B.FLOWER_RED,'flrd');bf(B.FLOWER_BLUE,'flbl');bf(B.FLOWER_YELLOW,'flyl');bf(B.SHRUB,'shrb');bf(B.REED,'reed');bf(B.FERN,'fern');bf(B.LAVA,'lava');
 bf(B.STAIR_COB,'co');bf(B.STAIR_PLNK,'pk');bf(B.STAIR_BRK,'bk');bf(B.STAIR_SBK,'sb');bf(B.STAIR_STONE,'st');bf(B.STAIR_MARBLE,'mrbl');
 bf(B.LADDER,'pk');bf(B.BASALT,'bslt');bf(B.ASH_STONE,'ashst');bf(B.SCORCHED,'scor');bf(B.OBSIDIAN,'obsi');bf(B.LOCKER2,'lock2');bf(B.BOOTH_SEAT,'bseat');bf(B.CABINET,'cabnt');bf(B.NEON_TRIM,'ntrim');bf(B.CARPET,'crpet');bf(B.COUNTER_TOP,'cntop');bf(B.MENU_BOARD,'menbrd');
+bf(B.REDWOOD_LOG,'rwlt','rwl');bf(B.REDWOOD_LVS,'rwlv');
 
 const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPICK]:'wpick_i',[B.SPICK]:'spick_i',[B.WSWD]:'wswd_i'};
 

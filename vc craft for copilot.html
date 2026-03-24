@@ -328,6 +328,7 @@ const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPI
 
 let atlas,uvL={},icons={};
 function buildAtlas(){
+  TN.length=0;for(const k in TC)delete TC[k];uvL={};icons={};
   buildTex();const cols=16,rows=Math.ceil(TN.length/cols);
   const ac=document.createElement('canvas');ac.width=cols*TS;ac.height=rows*TS;const ax=ac.getContext('2d');
   // Fill with solid color first to avoid any transparency leaks
@@ -3013,11 +3014,11 @@ async start(seed,mode,ld){try{
   this.ren=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(mn(devicePixelRatio,2));this.ren.autoClear=false;
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
-  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.5,depthWrite:true});
-  const wAtlas=atlas.clone();wAtlas.needsUpdate=true;
-  this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false,shininess:120,specular:0x66aacc,color:0x2266aa});
+  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.1});
+  const wAtlas=atlas.clone();wAtlas.needsUpdate=true;wAtlas.wrapS=THREE.RepeatWrapping;wAtlas.wrapT=THREE.RepeatWrapping;
+  this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false,shininess:30,specular:0x336688});
   const lAtlas=atlas.clone();lAtlas.needsUpdate=true;
-  this.lMat=new THREE.MeshPhongMaterial({map:lAtlas,transparent:true,opacity:.95,side:THREE.DoubleSide,depthWrite:true,shininess:10,specular:0x442200,color:0xff4400,emissive:0xff3300,emissiveIntensity:.6});
+  this.lMat=new THREE.MeshPhongMaterial({map:lAtlas,transparent:true,opacity:.95,side:THREE.DoubleSide,depthWrite:true,shininess:10,specular:0x442200,emissive:0xff3300,emissiveIntensity:.6});
   this._frustum=new THREE.Frustum();this._projScreenMatrix=new THREE.Matrix4();
   // Hemisphere light (sky blue above, ground brown below)
   this.hemiLight=new THREE.HemisphereLight(0x88bbff,0x554433,.45);this.sc.add(this.hemiLight);
@@ -3147,7 +3148,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';
     $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}`;
   }
-  if(this.ren){if(this.wMat&&this.wMat.map){this.wMat.map.offset.y=(Date.now()*.00008)%1}if(this.lMat){this.lMat.emissiveIntensity=.5+Math.sin(Date.now()*.003)*.15}this.ren.clear();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt)}
+  if(this.ren){if(this.wMat&&this.wMat.map){this.wMat.map.offset.y=(Date.now()*.00002)%1}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt)}
   requestAnimationFrame(()=>this.loop())}
 };
 

@@ -2080,7 +2080,7 @@ deco(){
   // ═══ RAIL SYSTEM - grid-based connected corridors ═══
   const isEWRail = (((this.cz%16)+16)%16===0); // east-west corridor every 16 chunks
   const isNSRail = (((this.cx%20)+20)%20===0); // north-south corridor every 20 chunks
-  const skipBiome = chunkBio===BI.OC||chunkBio===BI.VCLANTIS||chunkBio===BI.PROPS_ISLAND;
+  const skipBiome = chunkBio===BI.OC||chunkBio===BI.VCLANTIS||chunkBio===BI.PROPS_ISLAND||this._hasStruct;
   if((isEWRail||isNSRail)&&!skipBiome){
     // East-West rail: runs along x-axis at z=8
     if(isEWRail){

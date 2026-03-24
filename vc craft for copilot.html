@@ -1813,7 +1813,7 @@ deco(){
           let ahead=-1;for(let ax=x+1;ax<CS&&ax<x+8;ax++){const ah=this.sY(ax,rz);if(ah>WL){ahead=ah;break}}
           if(ahead>0){h=lastH>WL?lastH:ahead;for(let by=WL;by<=h;by++)this.S(x,by,rz,B.COB)}else continue;
         }
-        // Ramp logic: if height changes, build stepped ramp
+        // Ramp for gentle slopes (1-3 block height change)
         if(lastH>0&&abs(h-lastH)>0&&abs(h-lastH)<=3){
           const dir=h>lastH?1:-1;
           for(let step=0;step<abs(h-lastH);step++){
@@ -1821,6 +1821,19 @@ deco(){
             this.S(x,ry,rz,B.COB);this.S(x,ry,rz-1,B.GRAV);this.S(x,ry,rz+1,B.GRAV);
             this.S(x,ry+1,rz,B.RAIL_IRON);
           }
+        }
+        // Steep climb (>3 blocks up): drill tunnel through cliff
+        if(lastH>0&&h>lastH+3){
+          h=lastH+1; // force 1:1 ramp through terrain
+          this.S(x,h,rz,B.COB);this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
+          // Clear tunnel space above rail
+          for(let dy=1;dy<=3;dy++){this.S(x,h+dy,rz,B.AIR);this.S(x,h+dy,rz-1,B.AIR);this.S(x,h+dy,rz+1,B.AIR)}
+        }
+        // Steep drop (>3 blocks down): build bridge/support columns
+        if(lastH>0&&h<lastH-3){
+          h=lastH-1; // force 1:1 descent via bridge
+          for(let by=this.sY(x,rz);by<=h;by++)this.S(x,by,rz,B.COB); // support column
+          this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
         }
         lastH=h;
         this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
@@ -1840,7 +1853,7 @@ deco(){
           let ahead=-1;for(let az=z+1;az<CS&&az<z+8;az++){const ah=this.sY(rx,az);if(ah>WL){ahead=ah;break}}
           if(ahead>0){h=lastH>WL?lastH:ahead;for(let by=WL;by<=h;by++)this.S(rx,by,z,B.COB)}else continue;
         }
-        // Ramp logic
+        // Ramp for gentle slopes (1-3 block height change)
         if(lastH>0&&abs(h-lastH)>0&&abs(h-lastH)<=3){
           const dir=h>lastH?1:-1;
           for(let step=0;step<abs(h-lastH);step++){
@@ -1848,6 +1861,18 @@ deco(){
             this.S(rx,ry,z,B.COB);this.S(rx-1,ry,z,B.GRAV);this.S(rx+1,ry,z,B.GRAV);
             this.S(rx,ry+1,z,B.RAIL_IRON);
           }
+        }
+        // Steep climb: drill tunnel
+        if(lastH>0&&h>lastH+3){
+          h=lastH+1;
+          this.S(rx,h,z,B.COB);this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
+          for(let dy=1;dy<=3;dy++){this.S(rx,h+dy,z,B.AIR);this.S(rx-1,h+dy,z,B.AIR);this.S(rx+1,h+dy,z,B.AIR)}
+        }
+        // Steep drop: build bridge
+        if(lastH>0&&h<lastH-3){
+          h=lastH-1;
+          for(let by=this.sY(rx,z);by<=h;by++)this.S(rx,by,z,B.COB);
+          this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
         }
         lastH=h;
         this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
@@ -1863,9 +1888,9 @@ deco(){
       const sh=this.sY(8,8);if(sh>WL){
         // ──── LARGE TRAIN STATION ────
         // Main platform: 14x10 blocks
-        for(let dx=1;dx<15;dx++)for(let dz=2;dz<12;dz++)this.S(dx,sh,dz,B.PLATFORM_BLK);
+        for(let dx=1;dx<15;dx++)for(let dz=2;dz<12;dz++){this.S(dx,sh-1,dz,B.PLATFORM_BLK);this.S(dx,sh,dz,B.PLATFORM_BLK)}
         // Platform edge markings (yellow line)
-        for(let dx=1;dx<15;dx++){this.S(dx,sh,5,B.CONCRETE);this.S(dx,sh,10,B.CONCRETE)}
+        for(let dx=1;dx<15;dx++){this.S(dx,sh-1,5,B.CONCRETE);this.S(dx,sh-1,10,B.CONCRETE)}
         // Waiting shelter - roof with pillars (main structure)
         for(let dx=2;dx<14;dx++)for(let dz=2;dz<5;dz++)this.S(dx,sh+5,dz,B.METAL_PANEL);
         for(const px3 of[2,6,10,13])for(let dy=1;dy<=4;dy++)this.S(px3,sh+dy,2,B.CONCRETE);

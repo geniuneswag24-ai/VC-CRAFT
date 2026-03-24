@@ -1103,208 +1103,273 @@ function genStadium(ck,x,y,z,r){
 }
 // VC RESTAURANT: large sit-down restaurant (~30x26) with dining, stage, bar, kitchen, VIP room, patio, parking
 function genRestaurant(ck,x,y,z){
-  const w=20,d=14;
+  const w=32,d=16,kd=10;
   const ox=x-fl(w/2),oz=z;
-  // ── Main dining room (20x14, brick walls, 6 tall) ──
-  buildRoom(ck,ox,y,oz,w,d,6,B.BRK,B.CONCRETE,B.CONCRETE,true);
-  // Large front windows
-  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+2,oz,B.GLASS);ss(ck,ox+dx,y+3,oz,B.GLASS);ss(ck,ox+dx,y+4,oz,B.GLASS)}
-  // Front door - double wide
+  // ── Main dining hall (32x16, 7 tall, brick walls) ──
+  buildRoom(ck,ox,y,oz,w,d,7,B.BRK,B.CONCRETE,B.CONCRETE,true);
+  // Massive front window facade (4 rows of glass)
+  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+2,oz,B.GLASS);ss(ck,ox+dx,y+3,oz,B.GLASS);ss(ck,ox+dx,y+4,oz,B.GLASS);ss(ck,ox+dx,y+5,oz,B.GLASS)}
+  // Front doors - triple wide main + side entrance
   const mc=fl(w/2);
   ss(ck,ox+mc,y+1,oz,B.AIR);ss(ck,ox+mc,y+2,oz,B.AIR);ss(ck,ox+mc-1,y+1,oz,B.AIR);ss(ck,ox+mc-1,y+2,oz,B.AIR);
-  // Second entrance
-  ss(ck,ox+mc+3,y+1,oz,B.AIR);ss(ck,ox+mc+3,y+2,oz,B.AIR);
-  // ── Booth seating along walls (with proper booth backs) ──
-  for(let dz=2;dz<d-4;dz+=2){
+  ss(ck,ox+mc+1,y+1,oz,B.AIR);ss(ck,ox+mc+1,y+2,oz,B.AIR);
+  ss(ck,ox+mc+6,y+1,oz,B.AIR);ss(ck,ox+mc+6,y+2,oz,B.AIR);
+  // ── 8 booth sections along walls (4 per side with booth backs) ──
+  for(let i=0;i<4;i++){
+    const dz=2+i*3;
+    // Left wall booths
     ss(ck,ox+1,y+1,oz+dz,B.BOOTH_SEAT);ss(ck,ox+2,y+1,oz+dz,B.PLNK);ss(ck,ox+3,y+1,oz+dz,B.BOOTH_SEAT);
-    ss(ck,ox+1,y+2,oz+dz,B.BOOTH_SEAT);
+    ss(ck,ox+1,y+2,oz+dz,B.BOOTH_SEAT);ss(ck,ox+1,y+1,oz+dz+1,B.BOOTH_SEAT);
+    // Right wall booths
     ss(ck,ox+w-4,y+1,oz+dz,B.BOOTH_SEAT);ss(ck,ox+w-3,y+1,oz+dz,B.PLNK);ss(ck,ox+w-2,y+1,oz+dz,B.BOOTH_SEAT);
-    ss(ck,ox+w-2,y+2,oz+dz,B.BOOTH_SEAT);
+    ss(ck,ox+w-2,y+2,oz+dz,B.BOOTH_SEAT);ss(ck,ox+w-2,y+1,oz+dz+1,B.BOOTH_SEAT);
   }
-  // Center tables - two rows
-  for(let dx=6;dx<w-6;dx+=3)for(let dz=2;dz<6;dz+=2)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
-  for(let dx=6;dx<w-6;dx+=3)for(let dz=7;dz<10;dz+=2)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
-  // Carpet under dining area
-  for(let dx=5;dx<w-5;dx++)for(let dz=1;dz<d-4;dz++)ss(ck,ox+dx,y,oz+dz,B.CARPET);
-  // ── Stage area (raised planks platform with neon backdrop) ──
-  for(let dx=4;dx<w-4;dx++)for(let dz=d-3;dz<d-1;dz++)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
-  for(let dx=4;dx<w-4;dx++)ss(ck,ox+dx,y+4,oz+d-2,B.NEON_BLK);
-  // Stage spotlights
-  ss(ck,ox+5,y+5,oz+d-2,B.SEA_LANTERN);ss(ck,ox+w-6,y+5,oz+d-2,B.SEA_LANTERN);
-  // ── Bar/counter area with menu board ──
-  for(let dx=1;dx<9;dx++)ss(ck,ox+dx,y+1,oz+d-5,B.COUNTER_TOP);
-  ss(ck,ox+5,y+4,oz+d-1,B.MENU_BOARD);ss(ck,ox+6,y+4,oz+d-1,B.MENU_BOARD);ss(ck,ox+7,y+4,oz+d-1,B.MENU_BOARD);
-  // Bar stools
-  for(let dx=2;dx<8;dx+=2)ss(ck,ox+dx,y+1,oz+d-6,B.BOOTH_SEAT);
-  // ── VIP/Party room (8x6, glass partition, attached east) ──
-  buildRoom(ck,ox+w,y,oz,8,6,6,B.BRK,B.CONCRETE,B.CONCRETE,false);
-  for(let dy=1;dy<5;dy++)for(let dz=1;dz<5;dz++)ss(ck,ox+w,y+dy,oz+dz,B.GLASS);
-  ss(ck,ox+w,y+1,oz+3,B.AIR);ss(ck,ox+w,y+2,oz+3,B.AIR);
-  for(let dz=1;dz<5;dz+=2)ss(ck,ox+w+4,y+1,oz+dz,B.PLNK);
-  ss(ck,ox+w+2,y+1,oz+3,B.PLNK);ss(ck,ox+w+5,y+1,oz+2,B.CHST);
-  // VIP neon accents
-  ss(ck,ox+w+1,y+5,oz+3,B.NEON_BLK);ss(ck,ox+w+6,y+5,oz+3,B.NEON_BLK);
-  // ── Kitchen (full width behind dining room) ──
-  buildRoom(ck,ox,y,oz+d,w,8,6,B.STUCCO,B.CONCRETE,B.CONCRETE,false);
+  // ── Center seating area - 3 rows of tables ──
+  for(let row=0;row<3;row++){
+    const rz=2+row*4;
+    for(let dx=7;dx<w-7;dx+=3)ss(ck,ox+dx,y+1,oz+rz,B.PLNK);
+    for(let dx=7;dx<w-7;dx+=3)ss(ck,ox+dx,y+1,oz+rz+1,B.PLNK);
+  }
+  // ── Full carpeted floor ──
+  for(let dx=5;dx<w-5;dx++)for(let dz=1;dz<d-3;dz++)ss(ck,ox+dx,y,oz+dz,B.CARPET);
+  // ── Large stage area (10 wide, raised platform with neon backdrop + spotlights) ──
+  for(let dx=fl(w/2)-5;dx<fl(w/2)+5;dx++){
+    for(let dz=d-3;dz<d-1;dz++)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
+    ss(ck,ox+dx,y+5,oz+d-2,B.NEON_BLK);ss(ck,ox+dx,y+4,oz+d-2,B.NEON_BLK);
+  }
+  ss(ck,ox+fl(w/2)-4,y+6,oz+d-2,B.SEA_LANTERN);ss(ck,ox+fl(w/2),y+6,oz+d-2,B.SEA_LANTERN);ss(ck,ox+fl(w/2)+4,y+6,oz+d-2,B.SEA_LANTERN);
+  // ── Long bar/counter with 8+ stools and 3 menu boards ──
+  for(let dx=1;dx<14;dx++)ss(ck,ox+dx,y+1,oz+d-5,B.COUNTER_TOP);
+  for(let dx=2;dx<13;dx++)ss(ck,ox+dx,y+1,oz+d-6,B.BOOTH_SEAT);
+  ss(ck,ox+4,y+4,oz+d-1,B.MENU_BOARD);ss(ck,ox+7,y+4,oz+d-1,B.MENU_BOARD);ss(ck,ox+10,y+4,oz+d-1,B.MENU_BOARD);
+  // ── VIP party room (12x8, glass partition, east side) ──
+  buildRoom(ck,ox+w,y,oz,12,8,7,B.BRK,B.CARPET,B.CONCRETE,false);
+  for(let dy=1;dy<6;dy++)for(let dz=1;dz<7;dz++)ss(ck,ox+w,y+dy,oz+dz,B.GLASS);
+  ss(ck,ox+w,y+1,oz+4,B.AIR);ss(ck,ox+w,y+2,oz+4,B.AIR);
+  ss(ck,ox+w+6,y+1,oz,B.AIR);ss(ck,ox+w+6,y+2,oz,B.AIR);
+  for(let dz=1;dz<7;dz+=2){
+    ss(ck,ox+w+2,y+1,oz+dz,B.BOOTH_SEAT);ss(ck,ox+w+3,y+1,oz+dz,B.PLNK);ss(ck,ox+w+4,y+1,oz+dz,B.BOOTH_SEAT);
+    ss(ck,ox+w+7,y+1,oz+dz,B.BOOTH_SEAT);ss(ck,ox+w+8,y+1,oz+dz,B.PLNK);ss(ck,ox+w+9,y+1,oz+dz,B.BOOTH_SEAT);
+  }
+  for(let dx=1;dx<11;dx+=3)ss(ck,ox+w+dx,y+6,oz+4,B.NEON_BLK);
+  // ── Second VIP room (8x6, attached to first VIP) ──
+  buildRoom(ck,ox+w+12,y,oz,8,6,7,B.BRK,B.CARPET,B.CONCRETE,false);
+  ss(ck,ox+w+12,y+1,oz+3,B.AIR);ss(ck,ox+w+12,y+2,oz+3,B.AIR);
+  for(let dz=1;dz<5;dz+=2){ss(ck,ox+w+14,y+1,oz+dz,B.BOOTH_SEAT);ss(ck,ox+w+15,y+1,oz+dz,B.PLNK);ss(ck,ox+w+16,y+1,oz+dz,B.BOOTH_SEAT)}
+  ss(ck,ox+w+14,y+6,oz+3,B.NEON_BLK);ss(ck,ox+w+17,y+6,oz+3,B.NEON_BLK);
+  // ── Large kitchen (32x10 behind dining) ──
+  buildRoom(ck,ox,y,oz+d,w,kd,7,B.STUCCO,B.CONCRETE,B.CONCRETE,false);
   ss(ck,ox+5,y+1,oz+d,B.AIR);ss(ck,ox+5,y+2,oz+d,B.AIR);
-  ss(ck,ox+10,y+1,oz+d,B.AIR);ss(ck,ox+10,y+2,oz+d,B.AIR);
-  ss(ck,ox+8,y+2,oz+d,B.GLASS);ss(ck,ox+14,y+2,oz+d,B.GLASS);
+  ss(ck,ox+12,y+1,oz+d,B.AIR);ss(ck,ox+12,y+2,oz+d,B.AIR);
+  ss(ck,ox+20,y+1,oz+d,B.AIR);ss(ck,ox+20,y+2,oz+d,B.AIR);
+  ss(ck,ox+8,y+2,oz+d,B.GLASS);ss(ck,ox+15,y+2,oz+d,B.GLASS);ss(ck,ox+24,y+2,oz+d,B.GLASS);
+  // 8+ furnaces along back wall
+  for(let dx=2;dx<w-2;dx+=3)ss(ck,ox+dx,y+1,oz+d+kd-2,B.FURN);
   // Kitchen counter line
-  for(let dx=1;dx<w-1;dx++)ss(ck,ox+dx,y+1,oz+d+6,B.METAL_PANEL);
-  ss(ck,ox+2,y+1,oz+d+4,B.FURN);ss(ck,ox+5,y+1,oz+d+4,B.FURN);ss(ck,ox+8,y+1,oz+d+4,B.FURN);
-  ss(ck,ox+11,y+1,oz+d+4,B.FURN);ss(ck,ox+14,y+1,oz+d+4,B.FURN);ss(ck,ox+17,y+1,oz+d+4,B.FURN);
-  // Prep tables
-  for(let dx=3;dx<w-3;dx+=4)ss(ck,ox+dx,y+1,oz+d+2,B.COUNTER_TOP);
-  // ── Walk-in freezer (small metal room behind kitchen) ──
-  buildRoom(ck,ox+1,y,oz+d+8,6,4,4,B.METAL_PANEL,B.CONCRETE,B.METAL_PANEL,false);
-  ss(ck,ox+3,y+1,oz+d+8,B.AIR);ss(ck,ox+3,y+2,oz+d+8,B.AIR);
-  // ── Bathrooms (2 rooms in back) ──
-  buildRoom(ck,ox+w-6,y,oz+d+8,5,4,4,B.STUCCO,B.CONCRETE,B.STUCCO,false);
-  ss(ck,ox+w-5,y+1,oz+d+8,B.AIR);ss(ck,ox+w-5,y+2,oz+d+8,B.AIR);
-  buildRoom(ck,ox+w-11,y,oz+d+8,5,4,4,B.STUCCO,B.CONCRETE,B.STUCCO,false);
-  ss(ck,ox+w-10,y+1,oz+d+8,B.AIR);ss(ck,ox+w-10,y+2,oz+d+8,B.AIR);
-  // ── Office/security room ──
-  buildRoom(ck,ox+8,y,oz+d+8,5,4,4,B.BRK,B.CONCRETE,B.CONCRETE,false);
-  ss(ck,ox+9,y+1,oz+d+8,B.AIR);ss(ck,ox+9,y+2,oz+d+8,B.AIR);
-  ss(ck,ox+10,y+1,oz+d+9,B.PLNK);ss(ck,ox+11,y+1,oz+d+9,B.CHST);
-  // ── Outdoor patio with fence and tables (larger) ──
-  for(let dx=-7;dx<0;dx++)for(let dz=1;dz<10;dz++){
+  for(let dx=1;dx<w-1;dx++)ss(ck,ox+dx,y+1,oz+d+kd-4,B.METAL_PANEL);
+  // Prep tables (two rows)
+  for(let dx=3;dx<w-3;dx+=4)ss(ck,ox+dx,y+1,oz+d+3,B.COUNTER_TOP);
+  for(let dx=3;dx<w-3;dx+=4)ss(ck,ox+dx,y+1,oz+d+5,B.COUNTER_TOP);
+  // ── Walk-in freezer (8x5, metal panel walls) ──
+  buildRoom(ck,ox+1,y,oz+d+kd,8,5,5,B.METAL_PANEL,B.CONCRETE,B.METAL_PANEL,false);
+  ss(ck,ox+4,y+1,oz+d+kd,B.AIR);ss(ck,ox+4,y+2,oz+d+kd,B.AIR);
+  for(let dx=2;dx<7;dx++)ss(ck,ox+dx,y+1,oz+d+kd+3,B.METAL_PANEL);
+  // ── 2 bathrooms (6x4 each) ──
+  buildRoom(ck,ox+w-7,y,oz+d+kd,6,4,5,B.STUCCO,B.CONCRETE,B.STUCCO,false);
+  ss(ck,ox+w-5,y+1,oz+d+kd,B.AIR);ss(ck,ox+w-5,y+2,oz+d+kd,B.AIR);
+  buildRoom(ck,ox+w-14,y,oz+d+kd,6,4,5,B.STUCCO,B.CONCRETE,B.STUCCO,false);
+  ss(ck,ox+w-12,y+1,oz+d+kd,B.AIR);ss(ck,ox+w-12,y+2,oz+d+kd,B.AIR);
+  // ── Manager office (6x4) with desk and chest ──
+  buildRoom(ck,ox+11,y,oz+d+kd,6,4,5,B.BRK,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+13,y+1,oz+d+kd,B.AIR);ss(ck,ox+13,y+2,oz+d+kd,B.AIR);
+  ss(ck,ox+14,y+1,oz+d+kd+1,B.PLNK);ss(ck,ox+15,y+1,oz+d+kd+1,B.CHST);
+  // ── Storage/supply room (6x4) ──
+  buildRoom(ck,ox+17,y,oz+d+kd,6,4,5,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+19,y+1,oz+d+kd,B.AIR);ss(ck,ox+19,y+2,oz+d+kd,B.AIR);
+  for(let dz=1;dz<3;dz++){ss(ck,ox+18,y+1,oz+d+kd+dz,B.PLNK);ss(ck,ox+21,y+1,oz+d+kd+dz,B.PLNK)}
+  // ── Large outdoor patio (12x12) with fencing and 6+ tables ──
+  for(let dx=-13;dx<0;dx++)for(let dz=1;dz<13;dz++){
     ss(ck,ox+dx,y,oz+dz,B.BOARDWALK);
-    if(dz===1||dz===9||dx===-7)ss(ck,ox+dx,y+1,oz+dz,B.FENCE_BLK);
+    if(dz===1||dz===12||dx===-13)ss(ck,ox+dx,y+1,oz+dz,B.FENCE_BLK);
   }
-  for(let dx=-6;dx<-1;dx+=2)for(let dz=2;dz<9;dz+=3)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
-  // Patio lights
-  ss(ck,ox-4,y+1,oz+5,B.SEA_LANTERN);
+  for(let dx=-12;dx<-1;dx+=3)for(let dz=2;dz<12;dz+=3)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
+  ss(ck,ox-4,y+1,oz+4,B.SEA_LANTERN);ss(ck,ox-10,y+1,oz+4,B.SEA_LANTERN);
+  ss(ck,ox-4,y+1,oz+9,B.SEA_LANTERN);ss(ck,ox-10,y+1,oz+9,B.SEA_LANTERN);
   // ── Neon facade signage (3 rows) ──
-  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+6,oz,B.NEON_BLK);ss(ck,ox+dx,y+7,oz,B.NEON_BLK)}
-  // ── Roof ──
-  for(let dx=-1;dx<=w+8;dx++)for(let dz=-1;dz<=d+12;dz++)ss(ck,ox+dx,y+6,oz+dz,B.ROOF_TILE);
-  // ── Parking lot (larger) ──
-  for(let dx=-7;dx<w+8;dx++)for(let dz=-7;dz<0;dz++)ss(ck,ox+dx,y-1,oz+dz,B.ASPHALT);
-  for(let dx=-5;dx<w+6;dx+=3)ss(ck,ox+dx,y-1,oz-4,B.SIDEWALK);
-  // Parking lot lights
-  ss(ck,ox+3,y,oz-5,B.SEA_LANTERN);ss(ck,ox+w-3,y,oz-5,B.SEA_LANTERN);
+  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+7,oz,B.NEON_BLK);ss(ck,ox+dx,y+8,oz,B.NEON_BLK);ss(ck,ox+dx,y+9,oz,B.NEON_BLK)}
+  // Rooftop signage
+  for(let dx=fl(w/2)-6;dx<fl(w/2)+6;dx++){ss(ck,ox+dx,y+8,oz+fl(d/2),B.NEON_BLK);ss(ck,ox+dx,y+9,oz+fl(d/2),B.NEON_BLK)}
+  // ── Complete roof over all sections ──
+  for(let dx=-1;dx<=w+20;dx++)for(let dz=-1;dz<=d+kd+5;dz++)ss(ck,ox+dx,y+7,oz+dz,B.ROOF_TILE);
+  // ── Large parking lot with lighting ──
+  for(let dx=-13;dx<w+20;dx++)for(let dz=-10;dz<0;dz++)ss(ck,ox+dx,y-1,oz+dz,B.ASPHALT);
+  for(let dx=-10;dx<w+18;dx+=4)ss(ck,ox+dx,y-1,oz-5,B.SIDEWALK);
+  ss(ck,ox+5,y,oz-7,B.SEA_LANTERN);ss(ck,ox+15,y,oz-7,B.SEA_LANTERN);ss(ck,ox+25,y,oz-7,B.SEA_LANTERN);
+  ss(ck,ox+w+5,y,oz-7,B.SEA_LANTERN);ss(ck,ox+w+15,y,oz-7,B.SEA_LANTERN);
 }
-// PROPS ARCADE: game arcade (~22x18) with cabinets, prizes, neon, back rooms
+// PROPS ARCADE: large game arcade (24x20) with cabinets, prizes, neon, party room, back rooms
 function genArcade(ck,x,y,z){
-  const w=15,d=12;
+  const w=24,d=14;
   const ox=x-fl(w/2),oz=z;
-  // ── Main hall (15x12, dark panel walls, 5 tall) ──
-  buildRoom(ck,ox,y,oz,w,d,5,B.DARK_PANEL,B.CONCRETE,B.DARK_PANEL,false);
-  // ── Neon facade (full front wall) ──
-  for(let dx=0;dx<w;dx++){ss(ck,ox+dx,y+3,oz,B.NEON_BLK);ss(ck,ox+dx,y+4,oz,B.NEON_BLK)}
+  // ── Main arcade hall (24x14, 6 tall, dark panel walls) ──
+  buildRoom(ck,ox,y,oz,w,d,6,B.DARK_PANEL,B.CONCRETE,B.DARK_PANEL,false);
+  // ── Full neon facade (front wall entirely neon-lit) ──
+  for(let dx=0;dx<w;dx++){ss(ck,ox+dx,y+3,oz,B.NEON_BLK);ss(ck,ox+dx,y+4,oz,B.NEON_BLK);ss(ck,ox+dx,y+5,oz,B.NEON_BLK)}
   for(let dy=1;dy<4;dy++){ss(ck,ox,y+dy,oz,B.NEON_BLK);ss(ck,ox+w-1,y+dy,oz,B.NEON_BLK)}
-  // Front door
+  // Front doors - triple wide
   ss(ck,ox+fl(w/2),y+1,oz,B.AIR);ss(ck,ox+fl(w/2),y+2,oz,B.AIR);
   ss(ck,ox+fl(w/2)-1,y+1,oz,B.AIR);ss(ck,ox+fl(w/2)-1,y+2,oz,B.AIR);
-  // ── 4 rows of arcade cabinets (dark panel + glass screen + neon trim) ──
-  for(let row=0;row<4;row++){
+  ss(ck,ox+fl(w/2)+1,y+1,oz,B.AIR);ss(ck,ox+fl(w/2)+1,y+2,oz,B.AIR);
+  // ── 6 rows of arcade cabinets (dark panel + glass screen + neon trim) ──
+  for(let row=0;row<6;row++){
     const rz=2+row*2;
+    if(rz>=d-2)break;
     for(let dx=1;dx<w-1;dx+=2){
       ss(ck,ox+dx,y+1,oz+rz,B.DARK_PANEL);ss(ck,ox+dx,y+2,oz+rz,B.GLASS);
       if(row%2===0)ss(ck,ox+dx,y+3,oz+rz,B.NEON_TRIM);
     }
   }
-  // ── Prize counter with glass display and shelving ──
-  for(let dx=3;dx<w-3;dx++){ss(ck,ox+dx,y+1,oz+d-2,B.NEON_BLK);ss(ck,ox+dx,y+2,oz+d-2,B.GLASS)}
-  for(let dx=3;dx<w-3;dx++)ss(ck,ox+dx,y+1,oz+d-1,B.PLNK); // shelving behind counter
-  for(let dx=4;dx<w-4;dx+=2)ss(ck,ox+dx,y+2,oz+d-1,B.PLNK); // upper shelves
-  // ── Glow floor checkerboard pattern with carpet accents ──
+  // ── Prize counter with glass display (10 wide) ──
+  for(let dx=fl(w/2)-5;dx<fl(w/2)+5;dx++){ss(ck,ox+dx,y+1,oz+d-2,B.NEON_BLK);ss(ck,ox+dx,y+2,oz+d-2,B.GLASS)}
+  for(let dx=fl(w/2)-5;dx<fl(w/2)+5;dx++)ss(ck,ox+dx,y+1,oz+d-1,B.PLNK);
+  for(let dx=fl(w/2)-4;dx<fl(w/2)+4;dx+=2)ss(ck,ox+dx,y+2,oz+d-1,B.PLNK);
+  // ── Glow floor checkerboard pattern ──
   for(let dx=1;dx<w-1;dx+=2)for(let dz=1;dz<d-1;dz+=2)ss(ck,ox+dx,y,oz+dz,B.GLOW_CRYSTAL);
   for(let dx=2;dx<w-2;dx+=2)for(let dz=2;dz<d-2;dz+=2)ss(ck,ox+dx,y,oz+dz,B.CARPET);
-  // ── Neon ceiling lights ──
-  for(let dx=2;dx<w-2;dx+=3)for(let dz=2;dz<d-2;dz+=4)ss(ck,ox+dx,y+4,oz+dz,B.NEON_BLK);
-  // ── Back office with desk and chest ──
-  buildRoom(ck,ox+1,y,oz+d,5,4,4,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
+  // ── Neon ceiling lights throughout ──
+  for(let dx=2;dx<w-2;dx+=3)for(let dz=2;dz<d-2;dz+=3)ss(ck,ox+dx,y+5,oz+dz,B.NEON_BLK);
+  // ── Party room (8x8, attached east side) with neon accents ──
+  buildRoom(ck,ox+w,y,oz+2,8,8,6,B.DARK_PANEL,B.GLOW_CRYSTAL,B.DARK_PANEL,false);
+  ss(ck,ox+w,y+1,oz+5,B.AIR);ss(ck,ox+w,y+2,oz+5,B.AIR);
+  for(let dx=1;dx<7;dx+=2)ss(ck,ox+w+dx,y+1,oz+5,B.PLNK);
+  for(let dx=2;dx<6;dx+=3)ss(ck,ox+w+dx,y+1,oz+3,B.PLNK);
+  ss(ck,ox+w+2,y+5,oz+4,B.NEON_BLK);ss(ck,ox+w+5,y+5,oz+4,B.NEON_BLK);
+  ss(ck,ox+w+2,y+5,oz+7,B.NEON_BLK);ss(ck,ox+w+5,y+5,oz+7,B.NEON_BLK);
+  // ── Back office (6x5) with desk and chest ──
+  buildRoom(ck,ox+1,y,oz+d,6,5,5,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
   ss(ck,ox+3,y+1,oz+d,B.AIR);ss(ck,ox+3,y+2,oz+d,B.AIR);
-  ss(ck,ox+4,y+1,oz+d+1,B.PLNK);ss(ck,ox+2,y+1,oz+d+2,B.CHST);
-  // ── Storage room ──
-  buildRoom(ck,ox+6,y,oz+d,5,4,4,B.DARK_PANEL,B.CONCRETE,B.DARK_PANEL,false);
-  ss(ck,ox+8,y+1,oz+d,B.AIR);ss(ck,ox+8,y+2,oz+d,B.AIR);
-  for(let dz=d+1;dz<d+3;dz++)ss(ck,ox+7,y+1,oz+dz,B.PLNK);
-  // ── Side room / party room ──
-  buildRoom(ck,ox+w,y,oz+2,6,6,5,B.DARK_PANEL,B.GLOW_CRYSTAL,B.DARK_PANEL,false);
-  ss(ck,ox+w,y+1,oz+4,B.AIR);ss(ck,ox+w,y+2,oz+4,B.AIR); // connecting door
-  for(let dx=1;dx<5;dx+=2)ss(ck,ox+w+dx,y+1,oz+4,B.PLNK);
-  ss(ck,ox+w+3,y+4,oz+5,B.NEON_BLK);ss(ck,ox+w+2,y+4,oz+3,B.NEON_BLK); // party neon
+  ss(ck,ox+4,y+1,oz+d+1,B.PLNK);ss(ck,ox+2,y+1,oz+d+2,B.CHST);ss(ck,ox+5,y+1,oz+d+1,B.PLNK);
+  // ── Storage/utility room (6x5) ──
+  buildRoom(ck,ox+7,y,oz+d,6,5,5,B.DARK_PANEL,B.CONCRETE,B.DARK_PANEL,false);
+  ss(ck,ox+9,y+1,oz+d,B.AIR);ss(ck,ox+9,y+2,oz+d,B.AIR);
+  for(let dz=d+1;dz<d+4;dz++)ss(ck,ox+8,y+1,oz+dz,B.PLNK);
+  // ── Break room (6x5) with table and furnace ──
+  buildRoom(ck,ox+13,y,oz+d,6,5,5,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+15,y+1,oz+d,B.AIR);ss(ck,ox+15,y+2,oz+d,B.AIR);
+  ss(ck,ox+14,y+1,oz+d+2,B.PLNK);ss(ck,ox+16,y+1,oz+d+2,B.PLNK);
+  ss(ck,ox+15,y+1,oz+d+3,B.FURN);
   // ── Side entrance ──
-  ss(ck,ox,y+1,oz+5,B.AIR);ss(ck,ox,y+2,oz+5,B.AIR);
-  // ── Roof sign ──
-  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+5,oz,B.NEON_BLK);ss(ck,ox+dx,y+6,oz,B.NEON_BLK)}
-  for(let dx=3;dx<w-3;dx++)ss(ck,ox+dx,y+7,oz,B.NEON_BLK);
+  ss(ck,ox,y+1,oz+6,B.AIR);ss(ck,ox,y+2,oz+6,B.AIR);
+  // ── Massive neon roof sign (3 tiers) ──
+  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+6,oz,B.NEON_BLK);ss(ck,ox+dx,y+7,oz,B.NEON_BLK)}
+  for(let dx=3;dx<w-3;dx++)ss(ck,ox+dx,y+8,oz,B.NEON_BLK);
+  for(let dx=5;dx<w-5;dx++)ss(ck,ox+dx,y+9,oz,B.NEON_BLK);
+  // ── Front sidewalk area ──
+  for(let dx=-2;dx<w+2;dx++)for(let dz=-3;dz<0;dz++)ss(ck,ox+dx,y-1,oz+dz,B.SIDEWALK);
 }
-// VC MALL: massive 2-floor shopping complex (~45x30) with stores, food court, atrium, parking
+// VC MALL: massive 3-floor shopping complex (52x36) with stores, food court, atrium, parking
 function genMall(ck,x,y,z,r){
-  const w=40,d=28,floors=2,fh=5;
+  const w=52,d=36,floors=3,fh=6;
   const ox=x-fl(w/2),oz=z;
-  // ── Main shell: 2 floors ──
+  // ── Main shell: 3 floors, each 6 blocks tall ──
   for(let f=0;f<floors;f++){
     const fy=y+f*fh;
     buildRoom(ck,ox,fy,oz,w,d,fh,B.CONCRETE,f===0?B.CONCRETE:B.PLNK,B.CONCRETE,true);
-    // ── Wide central atrium (4 blocks wide) running full length ──
-    const ac=fl(w/2);
+    // ── Wide central atrium (6 blocks wide) running full length ──
+    const ac=fl(w/2)-3;
     for(let dz=1;dz<d-1;dz++)for(let dy=1;dy<fh-1;dy++){
-      ss(ck,ox+ac-1,fy+dy,oz+dz,B.AIR);ss(ck,ox+ac,fy+dy,oz+dz,B.AIR);
-      ss(ck,ox+ac+1,fy+dy,oz+dz,B.AIR);ss(ck,ox+ac+2,fy+dy,oz+dz,B.AIR);
+      for(let ax=0;ax<6;ax++)ss(ck,ox+ac+ax,fy+dy,oz+dz,B.AIR);
     }
-    // ── 8 stores per side per floor (glass partition storefronts) ──
-    for(let store=0;store<8;store++){
+    // ── 10 stores per side per floor (glass partition storefronts) ──
+    for(let store=0;store<10;store++){
       const sz=1+store*3;
       if(sz+2>=d)break;
-      // Left-side store partition
-      for(let dy=1;dy<fh-1;dy++){ss(ck,ox+3,fy+dy,oz+sz+2,B.GLASS);ss(ck,ox+w-4,fy+dy,oz+sz+2,B.GLASS)}
-      // Store entrance from atrium
-      ss(ck,ox+ac-2,fy+1,oz+sz+1,B.AIR);ss(ck,ox+ac-2,fy+2,oz+sz+1,B.AIR);
-      ss(ck,ox+ac+3,fy+1,oz+sz+1,B.AIR);ss(ck,ox+ac+3,fy+2,oz+sz+1,B.AIR);
-      // Display shelves inside stores
-      ss(ck,ox+1,fy+1,oz+sz,B.PLNK);ss(ck,ox+2,fy+1,oz+sz,B.PLNK);
-      ss(ck,ox+w-2,fy+1,oz+sz,B.PLNK);ss(ck,ox+w-3,fy+1,oz+sz,B.PLNK);
-      // Counter
-      if(store%2===0){ss(ck,ox+1,fy+1,oz+sz+1,B.METAL_PANEL);ss(ck,ox+w-2,fy+1,oz+sz+1,B.METAL_PANEL)}
+      // Left-side and right-side store glass partitions
+      for(let dy=1;dy<fh-1;dy++){ss(ck,ox+4,fy+dy,oz+sz+2,B.GLASS);ss(ck,ox+w-5,fy+dy,oz+sz+2,B.GLASS)}
+      // Store entrances from atrium - left and right
+      ss(ck,ox+ac-1,fy+1,oz+sz+1,B.AIR);ss(ck,ox+ac-1,fy+2,oz+sz+1,B.AIR);
+      ss(ck,ox+ac+6,fy+1,oz+sz+1,B.AIR);ss(ck,ox+ac+6,fy+2,oz+sz+1,B.AIR);
+      // Display shelves inside stores (3 deep)
+      ss(ck,ox+1,fy+1,oz+sz,B.PLNK);ss(ck,ox+2,fy+1,oz+sz,B.PLNK);ss(ck,ox+3,fy+1,oz+sz,B.PLNK);
+      ss(ck,ox+w-2,fy+1,oz+sz,B.PLNK);ss(ck,ox+w-3,fy+1,oz+sz,B.PLNK);ss(ck,ox+w-4,fy+1,oz+sz,B.PLNK);
+      // Counter in alternating stores
+      if(store%2===0){
+        ss(ck,ox+2,fy+1,oz+sz+1,B.METAL_PANEL);ss(ck,ox+3,fy+1,oz+sz+1,B.METAL_PANEL);
+        ss(ck,ox+w-3,fy+1,oz+sz+1,B.METAL_PANEL);ss(ck,ox+w-4,fy+1,oz+sz+1,B.METAL_PANEL);
+      }
     }
-    // ── Escalator/stairs at both ends ──
+    // ── Stairwell/escalator at both ends of each floor ──
     if(f<floors-1){
       for(let dy=0;dy<fh;dy++){
-        ss(ck,ox+2,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+3,fy+dy,oz+1,B.STAIR_STONE);
-        ss(ck,ox+w-3,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+w-4,fy+dy,oz+1,B.STAIR_STONE);
-        ss(ck,ox+2,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+3,fy+dy,oz+d-2,B.STAIR_STONE);
-        ss(ck,ox+w-3,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+w-4,fy+dy,oz+d-2,B.STAIR_STONE);
+        ss(ck,ox+2,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+3,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+4,fy+dy,oz+1,B.STAIR_STONE);
+        ss(ck,ox+w-3,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+w-4,fy+dy,oz+1,B.STAIR_STONE);ss(ck,ox+w-5,fy+dy,oz+1,B.STAIR_STONE);
+        ss(ck,ox+2,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+3,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+4,fy+dy,oz+d-2,B.STAIR_STONE);
+        ss(ck,ox+w-3,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+w-4,fy+dy,oz+d-2,B.STAIR_STONE);ss(ck,ox+w-5,fy+dy,oz+d-2,B.STAIR_STONE);
       }
     }
     // Neon signage in atrium
     if(f===0){
-      ss(ck,ox+fl(w/2),fy+fh-1,oz+5,B.NEON_BLK);ss(ck,ox+fl(w/2),fy+fh-1,oz+d-6,B.NEON_BLK);
-      ss(ck,ox+fl(w/2)+1,fy+fh-1,oz+fl(d/2),B.NEON_BLK);
+      for(let dz=5;dz<d-5;dz+=4){ss(ck,ox+fl(w/2),fy+fh-1,oz+dz,B.NEON_BLK);ss(ck,ox+fl(w/2)-1,fy+fh-1,oz+dz,B.NEON_BLK)}
     }
   }
-  // ── Anchor stores at each end (larger rooms) ──
-  buildRoom(ck,ox+2,y,oz+d-4,fl(w/2)-4,3,fh,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
-  ss(ck,ox+fl(w/4),y+1,oz+d-4,B.AIR);ss(ck,ox+fl(w/4),y+2,oz+d-4,B.AIR);
-  for(let dx=3;dx<fl(w/2)-5;dx+=3)ss(ck,ox+dx,y+1,oz+d-3,B.PLNK);
-  buildRoom(ck,ox+fl(w/2)+2,y,oz+d-4,fl(w/2)-4,3,fh,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
-  ss(ck,ox+fl(w*3/4),y+1,oz+d-4,B.AIR);ss(ck,ox+fl(w*3/4),y+2,oz+d-4,B.AIR);
-  // ── Grand entrance (5 wide, 4 tall) ──
-  for(let dx=fl(w/2)-2;dx<=fl(w/2)+3;dx++)for(let dy=1;dy<=4;dy++)ss(ck,ox+dx,y+dy,oz,B.AIR);
-  // ── Back entrance ──
-  for(let dx=fl(w/2)-1;dx<=fl(w/2)+2;dx++){ss(ck,ox+dx,y+1,oz+d-1,B.AIR);ss(ck,ox+dx,y+2,oz+d-1,B.AIR)}
-  // ── Food court on top floor ──
+  // ── Anchor stores at each end (12x8) ──
+  buildRoom(ck,ox+2,y,oz+d-10,12,8,fh,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+7,y+1,oz+d-10,B.AIR);ss(ck,ox+7,y+2,oz+d-10,B.AIR);
+  for(let dx=3;dx<12;dx+=3)ss(ck,ox+dx,y+1,oz+d-9,B.PLNK);
+  for(let dx=3;dx<12;dx+=3)ss(ck,ox+dx,y+1,oz+d-5,B.PLNK);
+  ss(ck,ox+5,y+1,oz+d-7,B.METAL_PANEL);ss(ck,ox+10,y+1,oz+d-7,B.METAL_PANEL);
+  buildRoom(ck,ox+w-14,y,oz+d-10,12,8,fh,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+w-8,y+1,oz+d-10,B.AIR);ss(ck,ox+w-8,y+2,oz+d-10,B.AIR);
+  for(let dx=w-13;dx<w-2;dx+=3)ss(ck,ox+dx,y+1,oz+d-9,B.PLNK);
+  for(let dx=w-13;dx<w-2;dx+=3)ss(ck,ox+dx,y+1,oz+d-5,B.PLNK);
+  ss(ck,ox+w-10,y+1,oz+d-7,B.METAL_PANEL);ss(ck,ox+w-5,y+1,oz+d-7,B.METAL_PANEL);
+  // ── Grand entrance (7 wide, 5 tall) ──
+  for(let dx=fl(w/2)-3;dx<=fl(w/2)+3;dx++)for(let dy=1;dy<=5;dy++)ss(ck,ox+dx,y+dy,oz,B.AIR);
+  // ── Back entrance (5 wide) ──
+  for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++){ss(ck,ox+dx,y+1,oz+d-1,B.AIR);ss(ck,ox+dx,y+2,oz+d-1,B.AIR)}
+  // ── Food court on top floor with 8 food counters + 12 seating tables ──
   const ftY=y+(floors-1)*fh;
-  for(let dx=6;dx<w-6;dx+=3)ss(ck,ox+dx,ftY+1,oz+d-6,B.METAL_PANEL); // food counters
-  for(let dx=8;dx<w-8;dx+=4)for(let dz=d-8;dz<d-5;dz+=2)ss(ck,ox+dx,ftY+1,oz+dz,B.PLNK); // seating
+  for(let i=0;i<8;i++){
+    const fdx=4+i*5;
+    if(fdx+2>=w)break;
+    ss(ck,ox+fdx,ftY+1,oz+d-8,B.METAL_PANEL);ss(ck,ox+fdx+1,ftY+1,oz+d-8,B.METAL_PANEL);ss(ck,ox+fdx+2,ftY+1,oz+d-8,B.METAL_PANEL);
+    ss(ck,ox+fdx+1,ftY+3,oz+d-8,B.MENU_BOARD);
+  }
+  for(let i=0;i<12;i++){
+    const tx=6+fl(i/3)*10,tz=d-12+(i%3)*2;
+    if(tx<w-4){ss(ck,ox+tx,ftY+1,oz+tz,B.PLNK);ss(ck,ox+tx-1,ftY+1,oz+tz,B.BOOTH_SEAT);ss(ck,ox+tx+1,ftY+1,oz+tz,B.BOOTH_SEAT)}
+  }
   // ── Glass skylight atrium roof ──
-  for(let dx=fl(w/2)-2;dx<=fl(w/2)+3;dx++)for(let dz=3;dz<d-3;dz++)ss(ck,ox+dx,y+floors*fh,oz+dz,B.GLASS_TOWER);
-  // ── Roof with equipment ──
+  for(let dx=fl(w/2)-4;dx<=fl(w/2)+3;dx++)for(let dz=3;dz<d-3;dz++)ss(ck,ox+dx,y+floors*fh,oz+dz,B.GLASS);
+  // ── Full concrete roof with HVAC equipment blocks ──
   for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d;dz++)ss(ck,ox+dx,y+floors*fh,oz+dz,B.CONCRETE);
-  // ── Service corridor / loading dock in back ──
-  buildRoom(ck,ox+4,y,oz+d,10,5,4,B.CONCRETE,B.CONCRETE,B.METAL_PANEL,false);
-  ss(ck,ox+8,y+1,oz+d,B.AIR);ss(ck,ox+8,y+2,oz+d,B.AIR);ss(ck,ox+8,y+3,oz+d,B.AIR);
-  // ── Parking lot in front with markings ──
-  for(let dx=-5;dx<w+5;dx++)for(let dz=-8;dz<0;dz++)ss(ck,ox+dx,y-1,oz+dz,B.ASPHALT);
-  for(let dx=0;dx<w;dx+=4)ss(ck,ox+dx,y-1,oz-4,B.SIDEWALK);
-  // ── Roof access ──
-  for(let dy=0;dy<3;dy++){ss(ck,ox+w-3,y+floors*fh+1+dy,oz+d-3,B.COB);ss(ck,ox+2,y+floors*fh+1+dy,oz+d-3,B.COB)}
-  // ── Mall sign ──
-  for(let dx=fl(w/2)-5;dx<fl(w/2)+6;dx++){ss(ck,ox+dx,y+floors*fh+1,oz,B.NEON_BLK);ss(ck,ox+dx,y+floors*fh+2,oz,B.NEON_BLK)}
+  for(let dx=5;dx<w-5;dx+=8)for(let dz=5;dz<d-5;dz+=10){
+    ss(ck,ox+dx,y+floors*fh+1,oz+dz,B.METAL_PANEL);ss(ck,ox+dx+1,y+floors*fh+1,oz+dz,B.METAL_PANEL);
+    ss(ck,ox+dx,y+floors*fh+1,oz+dz+1,B.METAL_PANEL);ss(ck,ox+dx+1,y+floors*fh+1,oz+dz+1,B.METAL_PANEL);
+  }
+  // ── Service corridor / loading dock in back (12x6) ──
+  buildRoom(ck,ox+4,y,oz+d,12,6,5,B.CONCRETE,B.CONCRETE,B.METAL_PANEL,false);
+  ss(ck,ox+9,y+1,oz+d,B.AIR);ss(ck,ox+9,y+2,oz+d,B.AIR);ss(ck,ox+9,y+3,oz+d,B.AIR);
+  ss(ck,ox+12,y+1,oz+d,B.AIR);ss(ck,ox+12,y+2,oz+d,B.AIR);
+  // ── Employee break room (8x5) behind service corridor ──
+  buildRoom(ck,ox+4,y,oz+d+6,8,5,5,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+7,y+1,oz+d+6,B.AIR);ss(ck,ox+7,y+2,oz+d+6,B.AIR);
+  ss(ck,ox+6,y+1,oz+d+8,B.PLNK);ss(ck,ox+8,y+1,oz+d+8,B.PLNK);ss(ck,ox+10,y+1,oz+d+9,B.FURN);
+  // ── Roof access stairs ──
+  for(let dy=0;dy<4;dy++){
+    ss(ck,ox+w-4,y+floors*fh+1+dy,oz+d-4,B.STAIR_STONE);ss(ck,ox+w-5,y+floors*fh+1+dy,oz+d-4,B.STAIR_STONE);
+    ss(ck,ox+3,y+floors*fh+1+dy,oz+d-4,B.STAIR_STONE);ss(ck,ox+4,y+floors*fh+1+dy,oz+d-4,B.STAIR_STONE);
+  }
+  // ── Large parking lot with markings and lights ──
+  for(let dx=-8;dx<w+8;dx++)for(let dz=-12;dz<0;dz++)ss(ck,ox+dx,y-1,oz+dz,B.ASPHALT);
+  for(let dx=-4;dx<w+4;dx+=4)ss(ck,ox+dx,y-1,oz-6,B.SIDEWALK);
+  for(let dx=-4;dx<w+4;dx+=4)ss(ck,ox+dx,y-1,oz-10,B.SIDEWALK);
+  for(let dx=0;dx<w;dx+=10)ss(ck,ox+dx,y,oz-8,B.SEA_LANTERN);
+  ss(ck,ox-5,y,oz-8,B.SEA_LANTERN);ss(ck,ox+w+5,y,oz-8,B.SEA_LANTERN);
+  // ── Grand neon mall sign on front (3 rows tall) ──
+  for(let dx=fl(w/2)-8;dx<fl(w/2)+8;dx++){
+    ss(ck,ox+dx,y+floors*fh+1,oz,B.NEON_BLK);ss(ck,ox+dx,y+floors*fh+2,oz,B.NEON_BLK);ss(ck,ox+dx,y+floors*fh+3,oz,B.NEON_BLK);
+  }
 }
 // TEMPLE: large ancient temple with multiple rooms, columns, and altar
 function genTemple(ck,x,y,z){
@@ -2241,70 +2306,76 @@ deco(){
     }
   }
   // ═══ FLUID FLOW PROPAGATION PASS ═══
-  // Make water and lava flow downward and spread naturally
-  for(let pass=0;pass<3;pass++){
+  // Make water and lava flow downward and spread naturally - 5 passes for full propagation
+  for(let pass=0;pass<5;pass++){
     for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
       for(let y=CH-2;y>=2;y--){
         const b=this.G(x,y,z);
         if(b!==B.WATER&&b!==B.LAVA)continue;
-        // Flow downward: if block below is air, fill it
-        const below=this.G(x,y-1,z);
-        if(below===B.AIR){
-          this.S(x,y-1,z,b);
-          // For water, remove source if it was isolated (no water neighbor above or beside)
-          continue;
+        // Flow downward: waterfall/lavafall - keep flowing down through air
+        for(let dy=1;dy<=8;dy++){
+          if(y-dy<1)break;
+          const below=this.G(x,y-dy,z);
+          if(below===B.AIR){this.S(x,y-dy,z,b)}
+          else break;
         }
-        // Spread outward on solid ground (only 1 block out per pass)
+        // Spread outward on solid ground (water 3 blocks, lava 2)
+        const below=this.G(x,y-1,z);
         if(below!==B.AIR&&below!==B.WATER&&below!==B.LAVA){
-          const spread=b===B.WATER?2:1; // water spreads further than lava
-          for(let s=0;s<spread;s++){
+          const spread=b===B.WATER?3:2;
+          for(let s=1;s<=spread;s++){
             for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
-              const nx=x+dx,nz=z+dz;
+              const nx=x+dx*s,nz=z+dz*s;
               if(nx<0||nx>=CS||nz<0||nz>=CS)continue;
-              if(this.G(nx,y,nz)===B.AIR&&this.G(nx,y-1,nz)!==B.AIR){
-                this.S(nx,y,nz,b);
-              }
-              // Flow into holes beside
-              if(this.G(nx,y,nz)===B.AIR&&this.G(nx,y-1,nz)===B.AIR){
-                this.S(nx,y-1,nz,b);
-              }
+              if(this.G(nx,y,nz)===B.AIR){
+                if(this.G(nx,y-1,nz)!==B.AIR)this.S(nx,y,nz,b);
+                else{this.S(nx,y-1,nz,b);break}// Flow into hole
+              }else break;// Stop spreading at obstacle
             }
           }
         }
       }
     }
   }
-  // Remove isolated floating fluid blocks (no fluid neighbor = delete)
-  for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
+  // Remove isolated floating fluid blocks (must have support or fluid neighbor)
+  for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
     for(let y=3;y<CH-2;y++){
       const b=this.G(x,y,z);
       if(b!==B.WATER&&b!==B.LAVA)continue;
-      // Check if has any solid/fluid support
       const below=this.G(x,y-1,z);
-      const above=this.G(x,y+1,z);
-      if(below===B.AIR&&above===B.AIR){
-        // Check lateral neighbors for same fluid
-        let hasNeighbor=false;
-        for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
-          const nb=this.G(x+dx,y,z+dz);
-          if(nb===b){hasNeighbor=true;break}
+      // If nothing below and nothing above same fluid, check for lateral support
+      if(below===B.AIR){
+        const above=this.G(x,y+1,z);
+        if(above!==b){
+          let hasSupport=false;
+          for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+            const nx=x+dx,nz=z+dz;
+            if(nx>=0&&nx<CS&&nz>=0&&nz<CS){
+              const nb=this.G(nx,y,nz);
+              if(nb===b||BD[nb]?.sol){hasSupport=true;break}
+            }
+          }
+          if(!hasSupport)this.S(x,y,z,B.AIR);
         }
-        if(!hasNeighbor)this.S(x,y,z,B.AIR); // Remove floating isolated block
       }
     }
   }
   // ═══ LAVA-WATER INTERACTION PASS ═══
-  for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
-    for(let y=2;y<80;y++){
-      if(this.G(x,y,z)!==B.LAVA)continue;
-      // Check if adjacent to water
+  // Lava touching water → obsidian (deep) or cobblestone (shallow)
+  // Water touching lava → cobblestone
+  for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
+    for(let y=2;y<140;y++){
+      const cur=this.G(x,y,z);
+      if(cur!==B.LAVA&&cur!==B.WATER)continue;
       for(const[dx2,dy2,dz2]of[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]){
         const nx2=x+dx2,ny2=y+dy2,nz2=z+dz2;
-        if(nx2>=0&&nx2<CS&&nz2>=0&&nz2<CS&&ny2>=0&&ny2<CH){
-          if(this.G(nx2,ny2,nz2)===B.WATER){
-            // Lava source touching water → obsidian; flowing → cobblestone
-            this.S(x,y,z,y<75?B.OBSIDIAN:B.COB);break;
-          }
+        if(nx2<0||nx2>=CS||nz2<0||nz2>=CS||ny2<0||ny2>=CH)continue;
+        const adj=this.G(nx2,ny2,nz2);
+        if(cur===B.LAVA&&adj===B.WATER){
+          this.S(x,y,z,y<75?B.OBSIDIAN:B.COB);break;
+        }
+        if(cur===B.WATER&&adj===B.LAVA){
+          this.S(nx2,ny2,nz2,B.COB);
         }
       }
     }
@@ -2451,7 +2522,7 @@ buildMesh(gB){
     for(const f of FACES){
       const nx2=x+f.d[0],ny=y+f.d[1],nz=z+f.d[2];let nb;
       if(nx2>=0&&nx2<CS&&nz>=0&&nz<CS&&ny>=0&&ny<CH){nb=this.G(nx2,ny,nz)}
-      else{const ck=W.ch[((this.cx*CS+nx2)>>4)+','+((this.cz*CS+nz)>>4)];nb=ck?ck.G(((nx2%CS)+CS)%CS,ny,((nz%CS)+CS)%CS):0}
+      else{const ck=W.ch[((this.cx*CS+nx2)>>4)+','+((this.cz*CS+nz)>>4)];nb=ck?ck.G(((nx2%CS)+CS)%CS,ny,((nz%CS)+CS)%CS):b}
       const nd=BD[nb];if(!nd)continue;
       const show=isW?(nb!==B.WATER&&nb!==B.LAVA&&!nd.sol):(nb===B.AIR||!nd.sol||(nd.tr&&b!==nb));
       if(!show)continue;if(isW&&nd.liq)continue;
@@ -2477,7 +2548,7 @@ buildMesh(gB){
   }
   if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}this.m=null;this.wm=null;this.lm=null;
   if(P.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setIndex(IX);this.m=new THREE.Mesh(g,W.bMat);W.sc.add(this.m)}
-  if(WP.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(WP,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(WN,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(WU,2));g.setIndex(WI2);this.wm=new THREE.Mesh(g,W.wMat);W.sc.add(this.wm)}
+  if(WP.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(WP,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(WN,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(WU,2));g.setIndex(WI2);this.wm=new THREE.Mesh(g,W.wMat);this.wm.renderOrder=1;W.sc.add(this.wm)}
   if(LP.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(LP,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(LN,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(LU,2));g.setIndex(LI2);this.lm=new THREE.Mesh(g,W.lMat);W.sc.add(this.lm)}
   this.dirty=false;
 }
@@ -2774,7 +2845,7 @@ tick(dt){if(this.hT>0)this.hT-=dt;this.aT+=dt;const I=W.inp;this.yaw-=I.dx*.002;
     if(_trainFuel<5&&_trainThrottle>0)feedCoal();
   }else if(_trainMount&&!_trainMount.alive){dismountTrain()}
   W.cam.position.set(this.pos.x,this.pos.y+1.62,this.pos.z);W.cam.quaternion.setFromEuler(new THREE.Euler(this.pitch,this.yaw,0,'YXZ'));
-  this.act(dt);if(this.pos.y<-20&&this.mode==='survival')this.hurt(100);if(this.pos.y<-50)this.pos.y=160}
+  this.act(dt);if(this.pos.y<-80&&this.mode==='survival')this.hurt(100);if(this.pos.y<-100)this.pos.y=200}
 col(dt){const hw=.28,sol=(a,b,c)=>BD[W.gB(a,b,c)]?.sol;let ny=this.pos.y+this.vel.y*dt;if(this.vel.y<0&&(sol(fl(this.pos.x),fl(ny),fl(this.pos.z))||sol(fl(this.pos.x-hw),fl(ny),fl(this.pos.z-hw))||sol(fl(this.pos.x+hw),fl(ny),fl(this.pos.z+hw)))){ny=fl(ny)+1;this.vel.y=0;this.gr=true}else{this.gr=false;if(this.vel.y>0&&sol(fl(this.pos.x),fl(ny+1.7),fl(this.pos.z))){this.vel.y=0;ny=this.pos.y}}this.pos.y=ny;let nx=this.pos.x+this.vel.x*dt;if(sol(fl(nx+hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx+hw),fl(this.pos.y+1),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y+1),fl(this.pos.z)))nx=this.pos.x;this.pos.x=nx;let nz=this.pos.z+this.vel.z*dt;if(sol(fl(this.pos.x),fl(this.pos.y),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y),fl(nz-hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz-hw)))nz=this.pos.z;this.pos.z=nz}
 act(dt){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const hit=this.ray(W.cam.position.clone(),dir,5.5);const bn=$('bn');
   if(hit){W.hl.visible=true;W.hl.position.set(hit.x+.5,hit.y+.5,hit.z+.5);bn.textContent=BD[hit.b]?.nm||'';
@@ -2786,10 +2857,10 @@ act(dt){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);co
       if(!_trainMount){for(const t of W.trains){if(t.pos.distanceTo(this.pos)<5){mountTrain(t);return}}}
       const it=this.hb[this.sel];if(it&&BD[it.id]&&BD[it.id].sol!==undefined&&!BD[it.id].liq){const bx=hit.x+hit.n[0],by=hit.y+hit.n[1],bz=hit.z+hit.n[2];const ex=W.gB(bx,by,bz);if((ex===B.AIR||BD[ex]?.liq)&&!(abs(bx-fl(this.pos.x))<1&&by>=fl(this.pos.y)&&by<=fl(this.pos.y+1)&&abs(bz-fl(this.pos.z))<1)){W.sB(bx,by,bz,it.id);if(this.mode!=='creative'){it.n--;if(it.n<=0)this.hb[this.sel]=null}}}}}  else{W.hl.visible=false;bn.textContent='';this.bp=0;this.bt=null;W.brkS=-1}
   if(W.inp.lj){W.inp.lj=false;for(const m of W.mobs){if(m.dT>=0||m.pos.distanceTo(this.pos)>3.5)continue;const tm=m.pos.clone().sub(this.pos).normalize();if(dir.dot(tm)>.4)m.hit(this.mode==='creative'?100:4,tm)}}}
-ray(o,d,md){let x=fl(o.x),y=fl(o.y),z=fl(o.z);const sx=d.x>0?1:-1,sy=d.y>0?1:-1,sz=d.z>0?1:-1;let tx=d.x?((d.x>0?x+1:x)-o.x)/d.x:1e9,ty=d.y?((d.y>0?y+1:y)-o.y)/d.y:1e9,tz=d.z?((d.z>0?z+1:z)-o.z)/d.z:1e9;const ddx=d.x?abs(1/d.x):1e9,ddy=d.y?abs(1/d.y):1e9,ddz=d.z?abs(1/d.z):1e9;let n=[0,0,0];for(let i=0;i<fl(md)*3;i++){const b=W.gB(x,y,z);if(b!==B.AIR&&BD[b]?.sol)return{x,y,z,b,n};if(tx<ty){if(tx<tz){x+=sx;tx+=ddx;n=[-sx,0,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}else{if(ty<tz){y+=sy;ty+=ddy;n=[0,-sy,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}if(mn(tx,ty,tz)>md)break}return null}
+ray(o,d,md){let x=fl(o.x),y=fl(o.y),z=fl(o.z);const sx=d.x>0?1:-1,sy=d.y>0?1:-1,sz=d.z>0?1:-1;let tx=d.x?((d.x>0?x+1:x)-o.x)/d.x:1e9,ty=d.y?((d.y>0?y+1:y)-o.y)/d.y:1e9,tz=d.z?((d.z>0?z+1:z)-o.z)/d.z:1e9;const ddx=d.x?abs(1/d.x):1e9,ddy=d.y?abs(1/d.y):1e9,ddz=d.z?abs(1/d.z):1e9;let n=[0,0,0];for(let i=0;i<fl(md)*3;i++){const b=W.gB(x,y,z);if(b!==B.AIR&&b!==B.WATER&&b!==B.LAVA&&(BD[b]?.sol||BD[b]?.hd>0))return{x,y,z,b,n};if(tx<ty){if(tx<tz){x+=sx;tx+=ddx;n=[-sx,0,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}else{if(ty<tz){y+=sy;ty+=ddy;n=[0,-sy,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}if(mn(tx,ty,tz)>md)break}return null}
 addI(id,c){for(let i=0;i<9;i++)if(this.hb[i]?.id===id&&this.hb[i].n<(BD[id]?.st||64)){this.hb[i].n+=c;return true}for(let i=0;i<27;i++)if(this.inv[i]?.id===id&&this.inv[i].n<(BD[id]?.st||64)){this.inv[i].n+=c;return true}for(let i=0;i<9;i++)if(!this.hb[i]){this.hb[i]={id,n:c};return true}for(let i=0;i<27;i++)if(!this.inv[i]){this.inv[i]={id,n:c};return true}return false}
 hurt(a){if(this.mode==='creative'||this.hT>0)return;this.hp-=a;this.hT=.5;if(this.hp<=0){this.hp=0;W.st='dead';$('deathUI').style.display='flex';document.exitPointerLock()}}
-rsp(){this.pos.set(0,120,0);this.vel.set(0,0,0);this.hp=20;this.hunger=20;for(let y=CH-1;y>0;y--)if(BD[W.gB(0,y,0)]?.sol){this.pos.y=y+2;break}}}
+rsp(){this.pos.set(0,180,0);this.vel.set(0,0,0);this.hp=20;this.hunger=20;for(let y=CH-1;y>0;y--)if(BD[W.gB(0,y,0)]?.sol){this.pos.y=y+2;break}}}
 
 // ITEM DROPS
 class ItemDrop{constructor(x,y,z,id){this.pos=new THREE.Vector3(x,y+.5,z);this.id=id;this.age=0;this.vy=3;this.mesh=mkM(new THREE.BoxGeometry(.2,.2,.2),new THREE.MeshLambertMaterial({color:0xeeeeaa}),x,y+.5,z);W.sc.add(this.mesh)}
@@ -2876,7 +2947,7 @@ function slotClick(getItem,setItem){
   rebI();
 }
 function mkSlot(par,item,getter,setter){const s=document.createElement('div');s.className='is';if(item){const cv=mkIcon(item.id);if(cv){s.appendChild(cv);if(item.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=item.n;s.appendChild(sp)}}}s.onclick=()=>slotClick(getter,setter);par.appendChild(s)}
-function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.BED)continue;const s=document.createElement('div');s.className='is';const cv=mkIcon(id);if(cv)s.appendChild(cv);s.onclick=()=>{showDrag({id,n:64})};s.onmouseenter=(e)=>{const tt=$('itemTT');tt.textContent=BD[id]?.nm||'Block '+id;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};s.onmouseleave=()=>{$('itemTT').style.display='none'};s.onmousemove=(e)=>{const tt=$('itemTT');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};g.appendChild(s)};const ts=document.createElement('div');ts.className='is';ts.style.background='#445';ts.innerHTML='<span style="font-size:10px;color:#fff">🚂 Train</span>';ts.onclick=()=>{if(W.pl){const pp=W.pl.pos;const t=new Train(pp.x+3,pp.y,pp.z);W.trains.push(t);W.sc.add(t.mesh);W.pl.addI(B.RAIL_IRON,32);W.pl.addI(B.RAIL_POWERED,8);closeI()}};g.appendChild(ts)}else $('ciDiv').style.display='none';rebI()}
+function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.BED)continue;const s=document.createElement('div');s.className='is';const cv=mkIcon(id);if(cv)s.appendChild(cv);s.onclick=()=>{showDrag({id,n:64})};s.onmouseenter=(e)=>{const tt=$('itemTT');tt.textContent=BD[id]?.nm||'Block '+id;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};s.onmouseleave=()=>{$('itemTT').style.display='none'};s.onmousemove=(e)=>{const tt=$('itemTT');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};g.appendChild(s)};const ts=document.createElement('div');ts.className='is';ts.style.background='#445';ts.innerHTML='<span style="font-size:10px;color:#fff">🚂 Train</span>';ts.onclick=()=>{showDrag({id:B.RAIL_IRON,n:64})};g.appendChild(ts);const ts2=document.createElement('div');ts2.className='is';ts2.style.background='#544';ts2.innerHTML='<span style="font-size:9px;color:#fff">🚂 Spawn</span>';ts2.onclick=()=>{if(W.pl){const pp=W.pl.pos;const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const t=new Train(pp.x+dir.x*4,pp.y,pp.z+dir.z*4);W.trains.push(t);closeI()}};g.appendChild(ts2)}else $('ciDiv').style.display='none';rebI()}
 function closeI(){W.st='play';$('invUI').style.display='none';if(dragItm){W.pl.addI(dragItm.id,dragItm.n);showDrag(null)}for(let i=0;i<cSlots.length;i++)if(cSlots[i]){W.pl.addI(cSlots[i].id,cSlots[i].n);cSlots[i]=null}if(W.ren)W.ren.domElement.requestPointerLock()}
 function rebI(){
   const cg=$('cGrid');cg.innerHTML='';cg.style.gridTemplateColumns=`repeat(${cSz},34px)`;
@@ -2964,7 +3035,7 @@ async start(seed,mode,ld){try{
   this.ren=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(mn(devicePixelRatio,2));this.ren.autoClear=false;
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
-  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.1,depthWrite:true});
+  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.5,depthWrite:true});
   this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.75,side:THREE.DoubleSide,depthWrite:false,shininess:120,specular:0x66aacc,color:0x2266aa});
   this.lMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.95,side:THREE.DoubleSide,depthWrite:true,shininess:10,specular:0x442200,color:0xff4400,emissive:0xff3300,emissiveIntensity:.6});
   this._frustum=new THREE.Frustum();this._projScreenMatrix=new THREE.Matrix4();

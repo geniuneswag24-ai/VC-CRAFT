@@ -2011,7 +2011,7 @@ deco(){
       const caveN=nC.n3((ox+x)*.04,15*.06,(oz+z)*.04);
       // Large cave chambers from surface down
       if(caveN>.15){
-        for(let y=mn(h,60);y>5;y--){
+        for(let y=mn(h,120);y>5;y--){
           const caveR=nC.n3((ox+x)*.06,y*.08,(oz+z)*.06);
           if(caveR>.1)this.S(x,y,z,B.AIR);
         }
@@ -2036,7 +2036,7 @@ deco(){
         }
       }
       // Ceiling stalactites
-      const ceilY=mn(h,80);
+      const ceilY=mn(h,140);
       if(this.G(x,ceilY,z)!==B.AIR&&dh01(ox+x+400,oz+z+400)<.06){
         const sh=1+fl(dh01(ox+x+401,oz+z+401)*4);
         for(let dy=0;dy<sh;dy++){
@@ -2045,7 +2045,7 @@ deco(){
       }
     }
     // Register as structure for teleport
-    regStruct('Discord Depths Cave',ox+8,15,oz+8);
+    regStruct('Discord Depths Cave',ox+8,75,oz+8);
   }
 
   // ═══ STRUCTURE GEN ═══
@@ -2054,7 +2054,7 @@ deco(){
   // ═══ RAIL SYSTEM - grid-based connected corridors ═══
   const isEWRail = (((this.cz%16)+16)%16===0); // east-west corridor every 16 chunks
   const isNSRail = (((this.cx%20)+20)%20===0); // north-south corridor every 20 chunks
-  const skipBiome = chunkBio===BI.OC||chunkBio===BI.VCLANTIS||chunkBio===BI.PROPS_ISLAND||chunkBio===BI.VOLCANO;
+  const skipBiome = chunkBio===BI.OC||chunkBio===BI.VCLANTIS||chunkBio===BI.PROPS_ISLAND;
   if((isEWRail||isNSRail)&&!skipBiome){
     // East-West rail: runs along x-axis at z=8
     if(isEWRail){
@@ -2062,38 +2062,28 @@ deco(){
       let lastH=-1;
       for(let x=0;x<CS;x++){
         let h=this.sY(x,rz);
-        if(h<=WL&&lastH>WL){h=lastH}
-        else if(h<=WL){
-          let ahead=-1;for(let ax=x+1;ax<CS&&ax<x+8;ax++){const ah=this.sY(ax,rz);if(ah>WL){ahead=ah;break}}
-          if(ahead>0){h=lastH>WL?lastH:ahead;for(let by=WL;by<=h;by++)this.S(x,by,rz,B.COB)}else continue;
+        // Force connection over water: build bridge
+        if(h<=WL){
+          if(lastH>WL)h=lastH;
+          else{h=WL+1;for(let by=this.sY(x,rz)+1;by<=h;by++)this.S(x,by,rz,B.COB)}
         }
-        // Ramp for gentle slopes (1-3 block height change)
-        if(lastH>0&&abs(h-lastH)>0&&abs(h-lastH)<=3){
-          const dir=h>lastH?1:-1;
-          for(let step=0;step<abs(h-lastH);step++){
-            const ry=mn(h,lastH)+step+1;
-            this.S(x,ry,rz,B.COB);this.S(x,ry,rz-1,B.GRAV);this.S(x,ry,rz+1,B.GRAV);
-            this.S(x,ry+1,rz,B.RAIL_IRON);
+        // Enforce max 1-block height change per block (always connect)
+        if(lastH>0){
+          if(h>lastH+1){
+            h=lastH+1;// Force 1:1 ramp upward
+            // Tunnel through terrain: clear 3 blocks above rail
+            for(let dy=0;dy<=3;dy++){this.S(x,h+dy,rz,dy===0?B.COB:B.AIR);this.S(x,h+dy,rz-1,dy===0?B.GRAV:B.AIR);this.S(x,h+dy,rz+1,dy===0?B.GRAV:B.AIR)}
+          }else if(h<lastH-1){
+            h=lastH-1;// Force 1:1 ramp downward via bridge
+            for(let by=this.sY(x,rz);by<=h;by++)this.S(x,by,rz,B.COB);
           }
         }
-        // Steep climb (>3 blocks up): drill tunnel through cliff
-        if(lastH>0&&h>lastH+3){
-          h=lastH+1; // force 1:1 ramp through terrain
-          this.S(x,h,rz,B.COB);this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
-          // Clear tunnel space above rail
-          for(let dy=1;dy<=3;dy++){this.S(x,h+dy,rz,B.AIR);this.S(x,h+dy,rz-1,B.AIR);this.S(x,h+dy,rz+1,B.AIR)}
-        }
-        // Steep drop (>3 blocks down): build bridge/support columns
-        if(lastH>0&&h<lastH-3){
-          h=lastH-1; // force 1:1 descent via bridge
-          for(let by=this.sY(x,rz);by<=h;by++)this.S(x,by,rz,B.COB); // support column
-          this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
-        }
         lastH=h;
+        // Lay rail on foundation
         this.S(x,h,rz-1,B.GRAV);this.S(x,h,rz+1,B.GRAV);
-        if(x%3===0){this.S(x,h,rz,B.RAIL_BED)}
-        this.S(x,h+1,rz,B.RAIL_IRON);
-        if(x%8===0)this.S(x,h+1,rz,B.RAIL_POWERED);
+        this.S(x,h+1,rz,x%8===0?B.RAIL_POWERED:B.RAIL_IRON);
+        // Clear space above rail
+        for(let dy=2;dy<=4;dy++)if(BD[this.G(x,h+dy,rz)]?.sol)this.S(x,h+dy,rz,B.AIR);
       }
     }
     // North-South rail: runs along z-axis at x=8
@@ -2102,37 +2092,25 @@ deco(){
       let lastH=-1;
       for(let z=0;z<CS;z++){
         let h=this.sY(rx,z);
-        if(h<=WL&&lastH>WL){h=lastH}
-        else if(h<=WL){
-          let ahead=-1;for(let az=z+1;az<CS&&az<z+8;az++){const ah=this.sY(rx,az);if(ah>WL){ahead=ah;break}}
-          if(ahead>0){h=lastH>WL?lastH:ahead;for(let by=WL;by<=h;by++)this.S(rx,by,z,B.COB)}else continue;
+        // Force connection over water: build bridge
+        if(h<=WL){
+          if(lastH>WL)h=lastH;
+          else{h=WL+1;for(let by=this.sY(rx,z)+1;by<=h;by++)this.S(rx,by,z,B.COB)}
         }
-        // Ramp for gentle slopes (1-3 block height change)
-        if(lastH>0&&abs(h-lastH)>0&&abs(h-lastH)<=3){
-          const dir=h>lastH?1:-1;
-          for(let step=0;step<abs(h-lastH);step++){
-            const ry=mn(h,lastH)+step+1;
-            this.S(rx,ry,z,B.COB);this.S(rx-1,ry,z,B.GRAV);this.S(rx+1,ry,z,B.GRAV);
-            this.S(rx,ry+1,z,B.RAIL_IRON);
+        // Enforce max 1-block height change per block
+        if(lastH>0){
+          if(h>lastH+1){
+            h=lastH+1;
+            for(let dy=0;dy<=3;dy++){this.S(rx,h+dy,z,dy===0?B.COB:B.AIR);this.S(rx-1,h+dy,z,dy===0?B.GRAV:B.AIR);this.S(rx+1,h+dy,z,dy===0?B.GRAV:B.AIR)}
+          }else if(h<lastH-1){
+            h=lastH-1;
+            for(let by=this.sY(rx,z);by<=h;by++)this.S(rx,by,z,B.COB);
           }
-        }
-        // Steep climb: drill tunnel
-        if(lastH>0&&h>lastH+3){
-          h=lastH+1;
-          this.S(rx,h,z,B.COB);this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
-          for(let dy=1;dy<=3;dy++){this.S(rx,h+dy,z,B.AIR);this.S(rx-1,h+dy,z,B.AIR);this.S(rx+1,h+dy,z,B.AIR)}
-        }
-        // Steep drop: build bridge
-        if(lastH>0&&h<lastH-3){
-          h=lastH-1;
-          for(let by=this.sY(rx,z);by<=h;by++)this.S(rx,by,z,B.COB);
-          this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
         }
         lastH=h;
         this.S(rx-1,h,z,B.GRAV);this.S(rx+1,h,z,B.GRAV);
-        if(z%3===0){this.S(rx,h,z,B.RAIL_BED)}
-        this.S(rx,h+1,z,B.RAIL_IRON);
-        if(z%8===0)this.S(rx,h+1,z,B.RAIL_POWERED);
+        this.S(rx,h+1,z,z%8===0?B.RAIL_POWERED:B.RAIL_IRON);
+        for(let dy=2;dy<=4;dy++)if(BD[this.G(rx,h+dy,z)]?.sol)this.S(rx,h+dy,z,B.AIR);
       }
     }
     // ═══ LARGE STATION at intersections or every ~15 chunks ═══
@@ -2238,7 +2216,7 @@ deco(){
   // ═══ CAVE DECORATION PASS ═══
   for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
     const wx=ox+x,wz=oz+z,surfH=this.sY(x,z);
-    for(let y=5;y<mn(surfH-2,120);y++){
+    for(let y=5;y<mn(surfH-2,200);y++){
       if(this.G(x,y,z)!==B.AIR)continue;
       if(this.G(x,y-1,z)===B.AIR)continue; // need floor below
       const floorB=this.G(x,y-1,z);
@@ -3070,7 +3048,7 @@ async start(seed,mode,ld){try{
     if(th>WL+2&&tb!==BI.OC&&tb!==BI.BE&&tb!==BI.DISCORD_DEEP){spX=tx;spZ=tz;spFound=true}
   }
   const sb=bio(spX,spZ),sh=htA(spX,spZ,sb);this.pl.pos.set(spX+.5,sh+3,spZ+.5);
-  if(ld){this.pl.pos.set(ld.px||0,ld.py||60,ld.pz||0);this.pl.hp=ld.hp||20;this.pl.hunger=ld.hu||20;if(ld.hb)this.pl.hb=ld.hb;if(ld.inv)this.pl.inv=ld.inv;this.pl.sel=ld.sel||0}
+  if(ld){this.pl.pos.set(ld.px||0,ld.py||180,ld.pz||0);this.pl.hp=ld.hp||20;this.pl.hunger=ld.hu||20;if(ld.hb)this.pl.hb=ld.hb;if(ld.inv)this.pl.inv=ld.inv;this.pl.sel=ld.sel||0}
   this.hand=new Hand();this.drops=[];
   const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS),tg=[];
   for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;tg.push([pcx+dx,pcz+dz])}
@@ -3165,7 +3143,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     document.querySelectorAll('.ht2 svg path').forEach((h,i)=>h.setAttribute('fill',i<p.hp/2?'#e22':'#444'));
     document.querySelectorAll('.fd2 svg path').forEach((f,i)=>f.setAttribute('fill',i<p.hunger/2?'#c84':'#444'));
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';
-    $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${p.pos.y.toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}`;
+    $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}`;
   }
   if(this.ren){if(this.wMat&&this.wMat.map){this.wMat.map.offset.y=(Date.now()*.00008)%1}if(this.lMat){this.lMat.emissiveIntensity=.5+Math.sin(Date.now()*.003)*.15}this.ren.clear();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt)}
   requestAnimationFrame(()=>this.loop())}

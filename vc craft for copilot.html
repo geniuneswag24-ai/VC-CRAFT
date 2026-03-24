@@ -82,7 +82,7 @@
 <div style="background:#222;border:2px solid #555;padding:12px;min-width:320px;max-height:70vh;overflow-y:auto">
 <h3 style="font-size:10px;margin-bottom:8px;color:#aaf">Settings</h3>
 <div style="font-size:7px;color:#aaa;margin:4px 0">Render Distance: <span id="rdVal">5</span></div>
-<input type="range" id="rdSlider" min="2" max="10" value="5" style="width:280px" oninput="setRD(this.value)">
+<input type="range" id="rdSlider" min="2" max="16" value="5" style="width:280px" oninput="setRD(this.value)">
 <div style="font-size:7px;color:#aaa;margin:4px 0">Brightness: <span id="brVal">100</span>%</div>
 <input type="range" id="brSlider" min="50" max="150" value="100" style="width:280px" oninput="setBright(this.value)">
 <div style="font-size:7px;color:#aaa;margin:4px 0">FOV: <span id="fovVal">75</span></div>
@@ -139,7 +139,7 @@ SCHOOL_WALL:81,LOCKER_BLK:82,GYM_FLOOR:83,BOARDWALK:84,RESORT_WALL:85,
 POOL_TILE:86,CABIN_WALL:87,TRAIL_STONE:88,CHAPEL_STONE:89,SIDING:90,
 SHINGLE:91,FENCE_BLK:92,DRIVEWAY:93,WATCHER_SAND:94,TOWER_BRICK:95,
 ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112,LAVA:113,STAIR_COB:114,STAIR_PLNK:115,STAIR_BRK:116,STAIR_SBK:117,STAIR_STONE:118,STAIR_MARBLE:119,
-LADDER:120,BASALT:121,ASH_STONE:122,SCORCHED:123,OBSIDIAN:124,LOCKER2:125,BOOTH_SEAT:126,CABINET:127,NEON_TRIM:128,CARPET:129,COUNTER_TOP:130,MENU_BOARD:131};
+LADDER:120,BASALT:121,ASH_STONE:122,SCORCHED:123,OBSIDIAN:124,LOCKER2:125,BOOTH_SEAT:126,CABINET:127,NEON_TRIM:128,CARPET:129,COUNTER_TOP:130,MENU_BOARD:131,REDWOOD_LOG:132,REDWOOD_LVS:133};
 const BD={};function db(id,nm,o={}){BD[id]={nm,sol:o.s!==0,tr:!!o.t,liq:!!o.l,hd:o.h||1,dr:o.d!==undefined?o.d:id,st:o.st||64}}
 db(B.AIR,'Air',{s:0,t:1});db(B.GRASS,'Grass Block',{h:.6});db(B.DIRT,'Dirt',{h:.5});db(B.STONE,'Stone',{h:1.5,d:B.COB});db(B.SAND,'Sand',{h:.5});db(B.WATER,'Water',{s:0,t:1,l:1,h:-1});db(B.BED,'Bedrock',{h:-1});db(B.OLOG,'Oak Log',{h:2});db(B.OLVS,'Oak Leaves',{h:.2,t:1});db(B.BLOG,'Birch Log',{h:2});db(B.BLVS,'Birch Leaves',{h:.2,t:1});db(B.SLOG,'Spruce Log',{h:2});db(B.SLVS,'Spruce Leaves',{h:.2,t:1});db(B.SNOW,'Snow',{h:.3});db(B.COB,'Cobblestone',{h:1.5});db(B.SSTON,'Sandstone',{h:1.2});db(B.PLNK,'Oak Planks',{h:1.5});db(B.GLASS,'Glass',{h:.3,t:1,d:B.AIR});db(B.GRAV,'Gravel',{h:.6});db(B.CLAY,'Clay',{h:.6});db(B.RSAND,'Red Sand',{h:.5});db(B.MUD,'Mud',{h:.5});db(B.CACT,'Cactus',{h:.4});db(B.DEEP,'Deepslate',{h:2});db(B.COAL,'Coal Ore',{h:1.8,d:B.COAL_I});db(B.IRON,'Iron Ore',{h:2.2});db(B.GOLD,'Gold Ore',{h:2.5});db(B.DIAM,'Diamond Ore',{h:3});db(B.MOSS,'Mossy Stone',{h:1.5});db(B.BRK,'Bricks',{h:2});db(B.SBK,'Stone Bricks',{h:1.5});db(B.DLOG,'Dark Oak Log',{h:2});db(B.DLVS,'Dark Leaves',{h:.2,t:1});db(B.JLOG,'Jungle Log',{h:2});db(B.JLVS,'Jungle Leaves',{h:.2,t:1});db(B.ALOG,'Acacia Log',{h:2});db(B.ALVS,'Acacia Leaves',{h:.2,t:1});db(B.CRFT,'Crafting Table',{h:1.5});db(B.FURN,'Furnace',{h:2});db(B.CHST,'Chest',{h:1.5});db(B.ICE,'Ice',{h:.5,t:1});db(B.STICK,'Stick',{s:0,t:1,st:64});db(B.COAL_I,'Coal',{s:0,t:1,st:64});db(B.IRON_I,'Iron Ingot',{s:0,t:1,st:64});db(B.WPICK,'Wood Pickaxe',{s:0,t:1,st:1});db(B.SPICK,'Stone Pickaxe',{s:0,t:1,st:1});db(B.WSWD,'Wood Sword',{s:0,t:1,st:1});
 // VC World block defs
@@ -149,6 +149,7 @@ db(B.TALL_GRASS,'Tall Grass',{h:.1,s:0,t:1});db(B.FLOWER_RED,'Red Flower',{h:.1,
 db(B.LAVA,'Lava',{s:0,t:1,l:1,h:-1});
 db(B.STAIR_COB,'Cobblestone Stairs',{h:1.5});db(B.STAIR_PLNK,'Oak Plank Stairs',{h:1});db(B.STAIR_BRK,'Brick Stairs',{h:2});db(B.STAIR_SBK,'Stone Brick Stairs',{h:1.5});db(B.STAIR_STONE,'Stone Stairs',{h:1.5});db(B.STAIR_MARBLE,'Marble Stairs',{h:2});
 db(B.LADDER,'Ladder',{h:.5,s:0,t:1});db(B.BASALT,'Basalt',{h:2});db(B.ASH_STONE,'Ash Stone',{h:1.5});db(B.SCORCHED,'Scorched Rock',{h:2});db(B.OBSIDIAN,'Obsidian',{h:3});db(B.LOCKER2,'Locker',{h:1});db(B.BOOTH_SEAT,'Booth Seat',{h:1});db(B.CABINET,'Cabinet',{h:1});db(B.NEON_TRIM,'Neon Trim',{h:1});db(B.CARPET,'Carpet',{h:.5,s:0,t:1});db(B.COUNTER_TOP,'Counter Top',{h:1.5});db(B.MENU_BOARD,'Menu Board',{h:1});
+db(B.REDWOOD_LOG,'Redwood Log',{h:2.5});db(B.REDWOOD_LVS,'Redwood Leaves',{h:.2,t:1});
 
 // RECIPES
 const RCP=[];function addR(g,r,n){RCP.push({g,r,n:n||1})}
@@ -322,7 +323,7 @@ function buildAtlas(){
 
 // BIOMES
 // VC BIOMES - unique themed biome roster
-const BI={OC:0,BE:1,SA_PLAINS:2,NICSHADE:3,CAMGROVE:4,WATCHER:5,VC_SUBURB:6,VC_BADLANDS:7,MO:8,DRY_COAST:9,RIO_LAGOON:10,GARFBOT_CITY:11,DISCORD_DEEP:12,TAIGA:13,SNOWY:14,PROPS_ISLAND:15,VCLANTIS:16,VOLCANO:17,PLAINS:18};
+const BI={OC:0,BE:1,SA_PLAINS:2,NICSHADE:3,CAMGROVE:4,WATCHER:5,VC_SUBURB:6,VC_BADLANDS:7,MO:8,DRY_COAST:9,RIO_LAGOON:10,GARFBOT_CITY:11,DISCORD_DEEP:12,TAIGA:13,SNOWY:14,PROPS_ISLAND:15,VCLANTIS:16,VOLCANO:17,PLAINS:18,REDWOOD:19};
 const BDt={
 [BI.OC]:{n:'Ocean',bH:22,a:20,sf:B.SAND,su:B.SAND},
 [BI.BE]:{n:'Beach',bH:68,a:4,sf:B.SAND,su:B.SAND},
@@ -342,7 +343,8 @@ const BDt={
 [BI.PROPS_ISLAND]:{n:'Props Island',bH:72,a:8,sf:B.SAND,su:B.SAND,tr:'jungle',tc:.02,structs:['boardwalk','shrine','arcade']},
 [BI.VCLANTIS]:{n:'VCLANTIS',bH:16,a:6,sf:B.MARBLE,su:B.SEA_MARBLE},
 [BI.VOLCANO]:{n:'Volcanic Wastes',bH:110,a:55,sf:B.BASALT,su:B.SCORCHED},
-[BI.PLAINS]:{n:'Plains',bH:78,a:5,sf:B.GRASS,su:B.DIRT,tr:'oak',tc:.003,structs:['house','waffle','cabin']}
+[BI.PLAINS]:{n:'Plains',bH:78,a:5,sf:B.GRASS,su:B.DIRT,tr:'oak',tc:.003,structs:['house','waffle','cabin']},
+[BI.REDWOOD]:{n:'Redwood Forest',bH:92,a:18,sf:B.GRASS,su:B.DIRT,tr:'redwood',tc:.045,structs:['cabin','shrine']}
 };
 
 let nT,nM,nE,nC,nD,nR,nS,nB; // nB = biome boundary noise
@@ -391,6 +393,8 @@ function bio(x,z){
   if(m<-.3)return BI.VC_SUBURB;
   if(m<-.15)return BI.PLAINS;
   if(m<-.05)return BI.CAMGROVE;
+  if(m<.1)return BI.NICSHADE;
+  if(m<.25&&e>.2)return BI.REDWOOD;
   if(m<.25)return BI.NICSHADE;
   return BI.RIO_LAGOON;
 }
@@ -406,13 +410,21 @@ function htA(x,z,b){
     if(ridge<.08)h+=30*(1-ridge/.08);
     h+=nE.n2(x*.025,z*.025)*18+abs(nD.n2(x*.05,z*.05))*12;
   }
-  // Volcano: dramatic conical peak with crater
+  // Volcano: massive landmark mountain with crater
   if(b===BI.VOLCANO){
+    const coneDist=abs(nR.n2(x*.003,z*.003));
+    // Main volcanic cone - dramatic peak
+    if(coneDist<.15)h+=80*(1-coneDist/.15);
+    else if(coneDist<.25)h+=30*(1-((coneDist-.15)/.1));
+    // Ridge enhancement
     const ridge=abs(nR.n2(x*.01,z*.01));
-    if(ridge<.1)h+=40*(1-ridge/.1);
-    h+=abs(nE.n2(x*.02,z*.02))*25;
-    const craterN=nD.n2(x*.008,z*.008);
-    if(craterN>.7)h-=15*(craterN-.7)/.3;
+    if(ridge<.08)h+=25*(1-ridge/.08);
+    h+=abs(nE.n2(x*.02,z*.02))*20;
+    // Crater depression at very peak
+    const craterN=nD.n2(x*.006,z*.006);
+    if(craterN>.65&&h>170)h-=25*(craterN-.65)/.35;
+    // Outer foothills transition
+    if(coneDist>.2)h-=(coneDist-.2)*60;
   }
   // Plains: gentle rolling hills
   if(b===BI.PLAINS){
@@ -1065,70 +1077,89 @@ function genStadium(ck,x,y,z,r){
   for(let dx=-8;dx<fw+8;dx++)for(let dz=-15;dz<-9;dz++)ss(ck,ox+dx,y-1,oz+dz,B.ASPHALT);
   for(let dx=-6;dx<fw+6;dx+=4)ss(ck,ox+dx,y-1,oz-12,B.SIDEWALK);
 }
-// VC RESTAURANT: full sit-down restaurant (~24x22) with dining, stage, kitchen, patio, parking
+// VC RESTAURANT: large sit-down restaurant (~30x26) with dining, stage, bar, kitchen, VIP room, patio, parking
 function genRestaurant(ck,x,y,z){
-  const w=14,d=10;
+  const w=20,d=14;
   const ox=x-fl(w/2),oz=z;
-  // ── Main dining room (14x10, brick walls, 5 tall) ──
-  buildRoom(ck,ox,y,oz,w,d,5,B.BRK,B.CONCRETE,B.CONCRETE,true);
+  // ── Main dining room (20x14, brick walls, 6 tall) ──
+  buildRoom(ck,ox,y,oz,w,d,6,B.BRK,B.CONCRETE,B.CONCRETE,true);
   // Large front windows
-  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+2,oz,B.GLASS);ss(ck,ox+dx,y+3,oz,B.GLASS)}
+  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+2,oz,B.GLASS);ss(ck,ox+dx,y+3,oz,B.GLASS);ss(ck,ox+dx,y+4,oz,B.GLASS)}
   // Front door - double wide
   const mc=fl(w/2);
   ss(ck,ox+mc,y+1,oz,B.AIR);ss(ck,ox+mc,y+2,oz,B.AIR);ss(ck,ox+mc-1,y+1,oz,B.AIR);ss(ck,ox+mc-1,y+2,oz,B.AIR);
+  // Second entrance
+  ss(ck,ox+mc+3,y+1,oz,B.AIR);ss(ck,ox+mc+3,y+2,oz,B.AIR);
   // ── Booth seating along walls (with proper booth backs) ──
-  for(let dz=2;dz<d-3;dz+=2){
+  for(let dz=2;dz<d-4;dz+=2){
     ss(ck,ox+1,y+1,oz+dz,B.BOOTH_SEAT);ss(ck,ox+2,y+1,oz+dz,B.PLNK);ss(ck,ox+3,y+1,oz+dz,B.BOOTH_SEAT);
-    ss(ck,ox+1,y+2,oz+dz,B.BOOTH_SEAT); // booth back
+    ss(ck,ox+1,y+2,oz+dz,B.BOOTH_SEAT);
     ss(ck,ox+w-4,y+1,oz+dz,B.BOOTH_SEAT);ss(ck,ox+w-3,y+1,oz+dz,B.PLNK);ss(ck,ox+w-2,y+1,oz+dz,B.BOOTH_SEAT);
     ss(ck,ox+w-2,y+2,oz+dz,B.BOOTH_SEAT);
   }
-  // Center tables
-  for(let dx=5;dx<w-5;dx+=3)for(let dz=2;dz<5;dz+=2)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
+  // Center tables - two rows
+  for(let dx=6;dx<w-6;dx+=3)for(let dz=2;dz<6;dz+=2)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
+  for(let dx=6;dx<w-6;dx+=3)for(let dz=7;dz<10;dz+=2)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
+  // Carpet under dining area
+  for(let dx=5;dx<w-5;dx++)for(let dz=1;dz<d-4;dz++)ss(ck,ox+dx,y,oz+dz,B.CARPET);
   // ── Stage area (raised planks platform with neon backdrop) ──
-  for(let dx=3;dx<w-3;dx++)for(let dz=d-3;dz<d-1;dz++)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
-  for(let dx=3;dx<w-3;dx++)ss(ck,ox+dx,y+3,oz+d-2,B.NEON_BLK); // neon backdrop
+  for(let dx=4;dx<w-4;dx++)for(let dz=d-3;dz<d-1;dz++)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
+  for(let dx=4;dx<w-4;dx++)ss(ck,ox+dx,y+4,oz+d-2,B.NEON_BLK);
+  // Stage spotlights
+  ss(ck,ox+5,y+5,oz+d-2,B.SEA_LANTERN);ss(ck,ox+w-6,y+5,oz+d-2,B.SEA_LANTERN);
   // ── Bar/counter area with menu board ──
-  for(let dx=1;dx<7;dx++)ss(ck,ox+dx,y+1,oz+d-4,B.COUNTER_TOP);
-  ss(ck,ox+4,y+3,oz+d-1,B.MENU_BOARD);ss(ck,ox+5,y+3,oz+d-1,B.MENU_BOARD);
-  // ── Party room (6x5, glass partition, attached east) ──
-  buildRoom(ck,ox+w,y,oz,6,5,5,B.BRK,B.CONCRETE,B.CONCRETE,false);
-  for(let dy=1;dy<4;dy++)for(let dz=1;dz<4;dz++)ss(ck,ox+w,y+dy,oz+dz,B.GLASS);
-  ss(ck,ox+w,y+1,oz+2,B.AIR);ss(ck,ox+w,y+2,oz+2,B.AIR); // connecting door
-  for(let dz=1;dz<4;dz+=2)ss(ck,ox+w+3,y+1,oz+dz,B.PLNK); // party tables
+  for(let dx=1;dx<9;dx++)ss(ck,ox+dx,y+1,oz+d-5,B.COUNTER_TOP);
+  ss(ck,ox+5,y+4,oz+d-1,B.MENU_BOARD);ss(ck,ox+6,y+4,oz+d-1,B.MENU_BOARD);ss(ck,ox+7,y+4,oz+d-1,B.MENU_BOARD);
+  // Bar stools
+  for(let dx=2;dx<8;dx+=2)ss(ck,ox+dx,y+1,oz+d-6,B.BOOTH_SEAT);
+  // ── VIP/Party room (8x6, glass partition, attached east) ──
+  buildRoom(ck,ox+w,y,oz,8,6,6,B.BRK,B.CONCRETE,B.CONCRETE,false);
+  for(let dy=1;dy<5;dy++)for(let dz=1;dz<5;dz++)ss(ck,ox+w,y+dy,oz+dz,B.GLASS);
+  ss(ck,ox+w,y+1,oz+3,B.AIR);ss(ck,ox+w,y+2,oz+3,B.AIR);
+  for(let dz=1;dz<5;dz+=2)ss(ck,ox+w+4,y+1,oz+dz,B.PLNK);
+  ss(ck,ox+w+2,y+1,oz+3,B.PLNK);ss(ck,ox+w+5,y+1,oz+2,B.CHST);
+  // VIP neon accents
+  ss(ck,ox+w+1,y+5,oz+3,B.NEON_BLK);ss(ck,ox+w+6,y+5,oz+3,B.NEON_BLK);
   // ── Kitchen (full width behind dining room) ──
-  buildRoom(ck,ox,y,oz+d,w,6,5,B.STUCCO,B.CONCRETE,B.CONCRETE,false);
-  // Kitchen wall with service window + door
-  ss(ck,ox+5,y+1,oz+d,B.AIR);ss(ck,ox+5,y+2,oz+d,B.AIR); // kitchen door
-  ss(ck,ox+8,y+2,oz+d,B.GLASS); // service window
+  buildRoom(ck,ox,y,oz+d,w,8,6,B.STUCCO,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+5,y+1,oz+d,B.AIR);ss(ck,ox+5,y+2,oz+d,B.AIR);
+  ss(ck,ox+10,y+1,oz+d,B.AIR);ss(ck,ox+10,y+2,oz+d,B.AIR);
+  ss(ck,ox+8,y+2,oz+d,B.GLASS);ss(ck,ox+14,y+2,oz+d,B.GLASS);
   // Kitchen counter line
-  for(let dx=1;dx<w-1;dx++)ss(ck,ox+dx,y+1,oz+d+4,B.METAL_PANEL);
-  ss(ck,ox+2,y+1,oz+d+3,B.FURN);ss(ck,ox+5,y+1,oz+d+3,B.FURN);ss(ck,ox+8,y+1,oz+d+3,B.FURN);ss(ck,ox+11,y+1,oz+d+3,B.FURN);
+  for(let dx=1;dx<w-1;dx++)ss(ck,ox+dx,y+1,oz+d+6,B.METAL_PANEL);
+  ss(ck,ox+2,y+1,oz+d+4,B.FURN);ss(ck,ox+5,y+1,oz+d+4,B.FURN);ss(ck,ox+8,y+1,oz+d+4,B.FURN);
+  ss(ck,ox+11,y+1,oz+d+4,B.FURN);ss(ck,ox+14,y+1,oz+d+4,B.FURN);ss(ck,ox+17,y+1,oz+d+4,B.FURN);
+  // Prep tables
+  for(let dx=3;dx<w-3;dx+=4)ss(ck,ox+dx,y+1,oz+d+2,B.COUNTER_TOP);
   // ── Walk-in freezer (small metal room behind kitchen) ──
-  buildRoom(ck,ox+1,y,oz+d+6,5,3,4,B.METAL_PANEL,B.CONCRETE,B.METAL_PANEL,false);
-  ss(ck,ox+3,y+1,oz+d+6,B.AIR);ss(ck,ox+3,y+2,oz+d+6,B.AIR);
-  // ── Bathrooms (2 small rooms in back) ──
-  buildRoom(ck,ox+w-5,y,oz+d+6,4,3,4,B.STUCCO,B.CONCRETE,B.STUCCO,false);
-  ss(ck,ox+w-4,y+1,oz+d+6,B.AIR);ss(ck,ox+w-4,y+2,oz+d+6,B.AIR);
-  buildRoom(ck,ox+w-9,y,oz+d+6,4,3,4,B.STUCCO,B.CONCRETE,B.STUCCO,false);
-  ss(ck,ox+w-8,y+1,oz+d+6,B.AIR);ss(ck,ox+w-8,y+2,oz+d+6,B.AIR);
+  buildRoom(ck,ox+1,y,oz+d+8,6,4,4,B.METAL_PANEL,B.CONCRETE,B.METAL_PANEL,false);
+  ss(ck,ox+3,y+1,oz+d+8,B.AIR);ss(ck,ox+3,y+2,oz+d+8,B.AIR);
+  // ── Bathrooms (2 rooms in back) ──
+  buildRoom(ck,ox+w-6,y,oz+d+8,5,4,4,B.STUCCO,B.CONCRETE,B.STUCCO,false);
+  ss(ck,ox+w-5,y+1,oz+d+8,B.AIR);ss(ck,ox+w-5,y+2,oz+d+8,B.AIR);
+  buildRoom(ck,ox+w-11,y,oz+d+8,5,4,4,B.STUCCO,B.CONCRETE,B.STUCCO,false);
+  ss(ck,ox+w-10,y+1,oz+d+8,B.AIR);ss(ck,ox+w-10,y+2,oz+d+8,B.AIR);
   // ── Office/security room ──
-  buildRoom(ck,ox+7,y,oz+d+6,4,3,4,B.BRK,B.CONCRETE,B.CONCRETE,false);
-  ss(ck,ox+8,y+1,oz+d+6,B.AIR);ss(ck,ox+8,y+2,oz+d+6,B.AIR);
-  ss(ck,ox+9,y+1,oz+d+7,B.PLNK);ss(ck,ox+8,y+1,oz+d+7,B.CHST);
-  // ── Outdoor patio with fence and tables ──
-  for(let dx=-5;dx<0;dx++)for(let dz=1;dz<8;dz++){
+  buildRoom(ck,ox+8,y,oz+d+8,5,4,4,B.BRK,B.CONCRETE,B.CONCRETE,false);
+  ss(ck,ox+9,y+1,oz+d+8,B.AIR);ss(ck,ox+9,y+2,oz+d+8,B.AIR);
+  ss(ck,ox+10,y+1,oz+d+9,B.PLNK);ss(ck,ox+11,y+1,oz+d+9,B.CHST);
+  // ── Outdoor patio with fence and tables (larger) ──
+  for(let dx=-7;dx<0;dx++)for(let dz=1;dz<10;dz++){
     ss(ck,ox+dx,y,oz+dz,B.BOARDWALK);
-    if(dz===1||dz===7||dx===-5)ss(ck,ox+dx,y+1,oz+dz,B.FENCE_BLK);
+    if(dz===1||dz===9||dx===-7)ss(ck,ox+dx,y+1,oz+dz,B.FENCE_BLK);
   }
-  for(let dx=-4;dx<-1;dx+=2)for(let dz=2;dz<7;dz+=3)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
-  // ── Neon facade signage (2 rows) ──
-  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+5,oz,B.NEON_BLK);ss(ck,ox+dx,y+6,oz,B.NEON_BLK)}
+  for(let dx=-6;dx<-1;dx+=2)for(let dz=2;dz<9;dz+=3)ss(ck,ox+dx,y+1,oz+dz,B.PLNK);
+  // Patio lights
+  ss(ck,ox-4,y+1,oz+5,B.SEA_LANTERN);
+  // ── Neon facade signage (3 rows) ──
+  for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+6,oz,B.NEON_BLK);ss(ck,ox+dx,y+7,oz,B.NEON_BLK)}
   // ── Roof ──
-  for(let dx=-1;dx<=w+6;dx++)for(let dz=-1;dz<=d+9;dz++)ss(ck,ox+dx,y+5,oz+dz,B.ROOF_TILE);
-  // ── Parking lot ──
-  for(let dx=-5;dx<w+6;dx++)for(let dz=-5;dz<0;dz++)ss(ck,ox+dx,y-1,oz+dz,B.ASPHALT);
-  for(let dx=-3;dx<w+4;dx+=3)ss(ck,ox+dx,y-1,oz-3,B.SIDEWALK);
+  for(let dx=-1;dx<=w+8;dx++)for(let dz=-1;dz<=d+12;dz++)ss(ck,ox+dx,y+6,oz+dz,B.ROOF_TILE);
+  // ── Parking lot (larger) ──
+  for(let dx=-7;dx<w+8;dx++)for(let dz=-7;dz<0;dz++)ss(ck,ox+dx,y-1,oz+dz,B.ASPHALT);
+  for(let dx=-5;dx<w+6;dx+=3)ss(ck,ox+dx,y-1,oz-4,B.SIDEWALK);
+  // Parking lot lights
+  ss(ck,ox+3,y,oz-5,B.SEA_LANTERN);ss(ck,ox+w-3,y,oz-5,B.SEA_LANTERN);
 }
 // PROPS ARCADE: game arcade (~22x18) with cabinets, prizes, neon, back rooms
 function genArcade(ck,x,y,z){
@@ -1308,6 +1339,9 @@ gen(){
           if(caveVal<.018){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10)?B.WATER:(y<20&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
           const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
           if(bigCave>.55&&y>8&&y<120){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10)?B.WATER:(y<20&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
+          // Giant cavern: very rare, huge open space
+          const giantCav=nC.n3(wx*.005,y*.008,wz*.005);
+          if(giantCav>.7&&y>15&&y<80){this.blk[this.I(x,y,z)]=B.AIR;continue}
           // Deep cavern layer below y=30
           if(y<30){const deepCave=nC.n3(wx*.04,y*.04,wz*.04);if(deepCave>.42){this.blk[this.I(x,y,z)]=(y<20&&dh01(wx*333+y,wz*444)<.06)?B.LAVA:B.AIR;continue}}
           const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
@@ -1321,7 +1355,7 @@ gen(){
           // Vertical shafts connecting cave layers
           const shaft=nC.n3(wx*.04,y*.006,wz*.04);
           if(abs(shaft)<.01&&y>5&&y<50){this.blk[this.I(x,y,z)]=(y<12&&dh01(wx*333+y,wz*444)<.08)?B.LAVA:B.AIR;continue}}
-        if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>140?B.SNOW:bi===BI.VOLCANO&&y>130?B.SCORCHED:bd.sf;
+        if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>140?B.SNOW:bi===BI.VOLCANO&&y>160?B.SCORCHED:bd.sf;
         else if(y>h-4)b=bi===BI.VOLCANO?B.BASALT:bd.su;
         else if(y<16)b=bi===BI.VOLCANO?B.SCORCHED:B.DEEP;
         else{b=B.STONE;if(y<24&&rv<.004)b=B.DIAM;else if(y<56&&rv<.01)b=B.GOLD;else if(y<100&&rv<.018)b=B.IRON;else if(y<130&&rv<.022)b=B.COAL}
@@ -1347,6 +1381,13 @@ deco(){
         if(gridX===0&&gridZ===0){this.S(x,h,z,B.ASPHALT);if(x<3||x>12||z<3||z>12)this.S(x,h,z,B.SIDEWALK)}
         else if(gridX===0){this.S(x,h,z,x<2||x>13?B.SIDEWALK:B.ASPHALT)}
         else{this.S(x,h,z,z<2||z>13?B.SIDEWALK:B.ASPHALT)}
+      }
+      // Street lights every 4 blocks along roads
+      for(let x=0;x<CS;x+=4)for(let z=0;z<CS;z+=4){
+        const h=this.sY(x,z);if(h<=WL)continue;
+        const wx=ox+x,wz=oz+z;
+        if((wx+wz)%8===0){for(let dy=1;dy<5;dy++)this.S(x,h+dy,z,B.METAL_PANEL);this.S(x,h+5,z,B.NEON_BLK)}
+        if((wx+wz)%16===0)this.S(x,h,z,B.SEA_LANTERN);
       }
       // Street furniture: streetlights, trash cans
       if(dh01(this.cx*333,this.cz*555)>.5){
@@ -1390,6 +1431,8 @@ deco(){
         const ry=bh+1+floors*fh;
         for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++)this.S(ox2+dx,ry,oz2+dz,B.CONCRETE);
         this.S(ox2+2,ry+1,oz2+2,B.METAL_PANEL);this.S(ox2+2,ry+2,oz2+2,B.METAL_PANEL);
+        // Roof corner lights
+        this.S(ox2,ry+1,oz2,B.NEON_BLK);this.S(ox2+bw-1,ry+1,oz2,B.NEON_BLK);this.S(ox2,ry+1,oz2+bd2-1,B.NEON_BLK);this.S(ox2+bw-1,ry+1,oz2+bd2-1,B.NEON_BLK);
       }else if(bType<.45){
         // TYPE 2: Short commercial/service building (2-3 floors)
         const floors=2+fl(bSeed*2),fh=5;
@@ -1444,6 +1487,8 @@ deco(){
         }
         for(let dy=1;dy<4;dy++)for(let dx=fl(bw/2)-1;dx<=fl(bw/2)+1;dx++)this.S(ox2+dx,bh+1+dy,oz2,B.AIR);
         const ry=bh+1+floors*fh;for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++)this.S(ox2+dx,ry,oz2+dz,B.CONCRETE);
+        // Roof lights
+        this.S(ox2,ry+1,oz2,B.NEON_BLK);this.S(ox2+bw-1,ry+1,oz2+bd2-1,B.NEON_BLK);this.S(ox2+fl(bw/2),ry+1,oz2+fl(bd2/2),B.SEA_LANTERN);
       }else{
         // TYPE 6: Plaza/open space with benches and rubble
         for(let dx=1;dx<bw-1;dx++)for(let dz=1;dz<bd2-1;dz++)this.S(ox2+dx,bh,oz2+dz,B.CONCRETE);
@@ -1608,16 +1653,16 @@ deco(){
       const wx=ox+x,wz=oz+z,h=this.sY(x,z);
       if(h<=WL)continue;
       // Crater: fill with lava at certain height
-      const craterN=nD.n2(wx*.008,wz*.008);
-      if(craterN>.7&&h>130){
-        for(let y=125;y<=h;y++)this.S(x,y,z,B.AIR);
-        this.S(x,125,z,B.LAVA);this.S(x,126,z,B.LAVA);
+      const craterN=nD.n2(wx*.006,wz*.006);
+      if(craterN>.65&&h>170){
+        for(let y=165;y<=h;y++)this.S(x,y,z,B.AIR);
+        this.S(x,165,z,B.LAVA);this.S(x,166,z,B.LAVA);this.S(x,167,z,B.LAVA);
       }
       // Lava channels down slopes
       const chN=nD.n2(wx*.04,wz*.04);
-      if(abs(chN)<.03&&h>90&&h<140){
+      if(abs(chN)<.035&&h>100&&h<180){
         this.S(x,h,z,B.LAVA);
-        if(h>100)this.S(x,h-1,z,B.LAVA);
+        if(h>120){this.S(x,h-1,z,B.LAVA);this.S(x,h-2,z,B.LAVA)}
       }
       // Ash and scorched surface variation
       const ashN=dh01(wx+500,wz+500);
@@ -1625,13 +1670,13 @@ deco(){
       else if(ashN<.5)this.S(x,h,z,B.SCORCHED);
       else if(ashN<.55&&h>100)this.S(x,h,z,B.OBSIDIAN);
       // Surface lava pools in low areas
-      if(h<95&&dh01(wx+700,wz+700)<.02)this.S(x,h,z,B.LAVA);
+      if(h<105&&dh01(wx+700,wz+700)<.025)this.S(x,h,z,B.LAVA);
       // Volcanic boulders
       if(dh01(wx+300,wz+300)<.005){for(let dy=1;dy<3+fl(dh01(wx,wz)*3);dy++)this.S(x,h+dy,z,B.BASALT)}
     }
     // Volcanic cave entrances on slopes
     const caveE=dh01(this.cx*99,this.cz*88);
-    if(caveE>.8){
+    if(caveE>.7){
       const cx3=7,cz3=7,ch=this.sY(cx3,cz3);
       if(ch>WL+5){for(let dy=0;dy<4;dy++)for(let dx=-1;dx<=1;dx++)this.S(cx3+dx,ch-dy,cz3,B.AIR);for(let dy=4;dy<12;dy++)this.S(cx3,ch-dy,cz3,B.AIR)}
     }
@@ -1969,11 +2014,40 @@ deco(){
       }
     }
   }
+  // ═══ LAVA POOL PASS: Fill deep cave basins with lava ═══
+  for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
+    for(let y=4;y<22;y++){
+      if(this.G(x,y,z)===B.AIR&&this.G(x,y-1,z)!==B.AIR&&this.G(x,y-1,z)!==B.LAVA&&this.G(x,y-1,z)!==B.WATER){
+        let hasCeiling=false;for(let cy=y+1;cy<y+20&&cy<CH;cy++){if(BD[this.G(x,cy,z)]?.sol){hasCeiling=true;break}}
+        if(hasCeiling){
+          const lavaChance=y<10?.35:y<15?.2:y<18?.1:.05;
+          if(dh01(ox+x+y*111,oz+z+y*222)<lavaChance){
+            this.S(x,y,z,B.LAVA);
+            if(x>0&&this.G(x-1,y,z)===B.AIR&&this.G(x-1,y-1,z)!==B.AIR)this.S(x-1,y,z,B.LAVA);
+            if(x<15&&this.G(x+1,y,z)===B.AIR&&this.G(x+1,y-1,z)!==B.AIR)this.S(x+1,y,z,B.LAVA);
+            if(z>0&&this.G(x,y,z-1)===B.AIR&&this.G(x,y-1,z-1)!==B.AIR)this.S(x,y,z-1,B.LAVA);
+            if(z<15&&this.G(x,y,z+1)===B.AIR&&this.G(x,y-1,z+1)!==B.AIR)this.S(x,y,z+1,B.LAVA);
+          }
+        }
+      }
+    }
+  }
+  // ═══ LAVAFALL PASS: Lava dripping from cave ceilings ═══
+  for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
+    for(let y=8;y<25;y++){
+      if(this.G(x,y,z)===B.LAVA&&this.G(x,y+1,z)!==B.AIR){
+        for(let dy=1;dy<8;dy++){
+          if(this.G(x,y-dy,z)===B.AIR)this.S(x,y-dy,z,B.LAVA);
+          else break;
+        }
+      }
+    }
+  }
 }
 tree(x,y,z,t,r2){
   // Prevent trees on top of trees
-  if(y>0){const below=this.G(x,y-1,z);if(below===B.OLVS||below===B.BLVS||below===B.SLVS||below===B.DLVS||below===B.JLVS||below===B.ALVS||below===B.NICSHADE_LVS)return}
-  const T={oak:[B.OLOG,B.OLVS],birch:[B.BLOG,B.BLVS],spruce:[B.SLOG,B.SLVS],dark:[B.DLOG,B.DLVS],jungle:[B.JLOG,B.JLVS],acacia:[B.ALOG,B.ALVS],nicshade:[B.NICSHADE_LOG,B.NICSHADE_LVS]};
+  if(y>0){const below=this.G(x,y-1,z);if(below===B.OLVS||below===B.BLVS||below===B.SLVS||below===B.DLVS||below===B.JLVS||below===B.ALVS||below===B.NICSHADE_LVS||below===B.REDWOOD_LVS)return}
+  const T={oak:[B.OLOG,B.OLVS],birch:[B.BLOG,B.BLVS],spruce:[B.SLOG,B.SLVS],dark:[B.DLOG,B.DLVS],jungle:[B.JLOG,B.JLVS],acacia:[B.ALOG,B.ALVS],nicshade:[B.NICSHADE_LOG,B.NICSHADE_LVS],redwood:[B.REDWOOD_LOG,B.REDWOOD_LVS]};
   const[lg,lf]=T[t]||T.oak;
   const big=r2>.75; // 25% chance of being a large tree
   if(t==='spruce'){
@@ -2007,6 +2081,23 @@ tree(x,y,z,t,r2){
     }
     // Hanging vines on big jungle trees
     if(big)for(let dx=-cr;dx<=cr;dx+=cr*2)for(let dz=-1;dz<=1;dz++){const vh=1+fl(dh01(x+dx,z+dz)*3);for(let dy=0;dy<vh;dy++){if(this.G(x+dx,y+h-1-dy,z+dz)===B.AIR)this.S(x+dx,y+h-1-dy,z+dz,B.JLVS)}}
+  }else if(t==='redwood'){
+    // Giant redwood: very tall trunk with high canopy
+    const h=big?16+fl(r2*6):10+fl(r2*4);
+    // Thick trunk (2x2 for big, 1x1 for small)
+    for(let i=0;i<h;i++){this.S(x,y+i,z,lg);if(big){this.S(x+1,y+i,z,lg);this.S(x,y+i,z+1,lg);this.S(x+1,y+i,z+1,lg)}}
+    // Buttress roots for big trees
+    if(big){for(const[dx,dz]of[[-1,0],[2,0],[0,-1],[0,2],[2,2],[-1,-1]]){this.S(x+dx,y,z+dz,lg);if(dh01(x+dx*7,z+dz*7)<.5)this.S(x+dx,y+1,z+dz,lg)}}
+    // High canopy layers - sparse conifer-like
+    const cx2=big?x:x,cz2=big?z:z;
+    for(let ly=fl(h*.6);ly<h;ly++){
+      const layerR=ly<h-2?(ly%2===0?(big?4:3):(big?3:2)):(big?2:1);
+      for(let dx=-layerR;dx<=layerR;dx++)for(let dz=-layerR;dz<=layerR;dz++){
+        if(abs(dx)+abs(dz)>layerR+1)continue;
+        if(this.G(cx2+dx,y+ly,cz2+dz)===B.AIR)this.S(cx2+dx,y+ly,cz2+dz,lf);
+      }
+    }
+    this.S(cx2,y+h,cz2,lf);this.S(cx2,y+h+1,cz2,lf);
   }else{
     const h=big?7+fl(r2*3):4+fl(r2*2);
     for(let i=0;i<h;i++)this.S(x,y+i,z,lg);
@@ -2035,11 +2126,16 @@ buildMesh(gB){
       const isRail = b===B.RAIL_IRON||b===B.RAIL_POWERED||b===B.RAIL_BED;
       const isLadder = b===B.LADDER;
       const isCarpet = b===B.CARPET;
-      const thinH = isRail ? 0.125 : isStair ? 0.5 : isLadder ? 0.125 : isCarpet ? 0.0625 : 1;
+      const thinH = isRail ? 0.125 : isLadder ? 0.125 : isCarpet ? 0.0625 : 1;
       for(const c of f.v){
-        let vy = (isRail||isStair||isLadder||isCarpet) ? c[1] * thinH : c[1];
-        // Stair wedge effect: front face is full height, back is half
-        if(isStair&&f.f===1&&c[1]>0)vy=c[1]*0.5+(c[2]>0?0.5:0);
+        let vy = (isRail||isLadder||isCarpet) ? c[1] * thinH : c[1];
+        // Stair step: bottom half is full, top half only exists at back (z<0)
+        if(isStair){
+          if(f.f===2||f.f===3){/* top or bottom face - no change */}
+          else if(f.f===1){if(c[1]>0)vy=0.5;}// front face (+z) - only bottom half visible
+          else if(f.f===0){}// back face (-z) - full height
+          else{if(c[1]>0&&c[2]>0)vy=0.5;}// side faces - step profile
+        }
         p.push(ox+x+c[0], y+vy-(isW&&f.f===0?.12:0), oz+z+c[2]);
         n.push(f.n[0],f.n[1],f.n[2]);
       }
@@ -2423,7 +2519,8 @@ async start(seed,mode,ld){try{
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.1});
-  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.72,side:THREE.DoubleSide,depthWrite:false,shininess:60,specular:0x448899,color:0x88bbdd});
+  this.wMat=new THREE.MeshPhongMaterial({map:atlas,transparent:true,opacity:.82,side:THREE.DoubleSide,depthWrite:false,shininess:80,specular:0x448899,color:0x3388aa});
+  this._frustum=new THREE.Frustum();this._projScreenMatrix=new THREE.Matrix4();
   // Hemisphere light (sky blue above, ground brown below)
   this.hemiLight=new THREE.HemisphereLight(0x88bbff,0x554433,.45);this.sc.add(this.hemiLight);
   this.amb=new THREE.AmbientLight(0x404050,.3);this.sc.add(this.amb);
@@ -2478,6 +2575,7 @@ async start(seed,mode,ld){try{
 loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;this.fps=Math.round(1/mx(dt,.001));
   if(this.st==='play'){
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
+    if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
     for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k]){const c=new Chunk(pcx+dx,pcz+dz);c.gen();this.ch[k]=c}}
     let b2=0;for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz<=RD*RD){c.buildMesh((x,y,z)=>this.gB(x,y,z));if(++b2>=2)break}}}

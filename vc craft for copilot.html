@@ -440,7 +440,7 @@ function htA(x,z,b){
     h+=abs(nE.n2(x*.02,z*.02))*20;
     // Crater depression at very peak
     const craterN=nD.n2(x*.006,z*.006);
-    if(craterN>.65&&h>170)h-=25*(craterN-.65)/.35;
+    if(craterN>.65&&h>230)h-=25*(craterN-.65)/.35;
     // Outer foothills transition
     if(coneDist>.2)h-=(coneDist-.2)*60;
   }
@@ -1698,7 +1698,7 @@ deco(){
       // Massive crater at volcanic peaks
       const craterN=nD.n2(wx*.005,wz*.005);
       const craterR=nD.n2(wx*.015,wz*.015);
-      if(craterN>.55&&h>150){
+      if(craterN>.55&&h>210){
         // Blow out crater - clear top, fill with lava
         const crDepth=mn(20,fl((craterN-.55)*120));
         for(let y=h;y>=h-crDepth;y--)this.S(x,y,z,B.AIR);
@@ -1706,7 +1706,7 @@ deco(){
         for(let y=h-crDepth;y<=h-crDepth+4;y++)this.S(x,y,z,B.LAVA);
       }
       // Wider secondary craters
-      if(craterR>.6&&h>120&&h<160){
+      if(craterR>.6&&h>180&&h<220){
         const d2=mn(8,fl((craterR-.6)*40));
         for(let y=h;y>=h-d2;y--)this.S(x,y,z,B.AIR);
         if(d2>3)for(let y=h-d2;y<=h-d2+2;y++)this.S(x,y,z,B.LAVA);
@@ -1714,12 +1714,12 @@ deco(){
       // Lava channels flowing down slopes
       const chN=nD.n2(wx*.035,wz*.035);
       const chN2=nD.n2(wx*.025+100,wz*.025+100);
-      if(abs(chN)<.025&&h>90){
+      if(abs(chN)<.025&&h>150){
         this.S(x,h,z,B.LAVA);
-        if(h>110){this.S(x,h-1,z,B.LAVA);this.S(x,h-2,z,B.LAVA)}
-        if(h>140)this.S(x,h-3,z,B.LAVA);
+        if(h>170){this.S(x,h-1,z,B.LAVA);this.S(x,h-2,z,B.LAVA)}
+        if(h>200)this.S(x,h-3,z,B.LAVA);
       }
-      if(abs(chN2)<.02&&h>100){
+      if(abs(chN2)<.02&&h>160){
         this.S(x,h,z,B.LAVA);this.S(x,h-1,z,B.LAVA);
       }
       // Surface variety
@@ -1727,10 +1727,10 @@ deco(){
       const rockN=dh01(wx+600,wz+600);
       if(ashN<.25)this.S(x,h,z,B.ASH_STONE);
       else if(ashN<.45)this.S(x,h,z,B.SCORCHED);
-      else if(ashN<.55&&h>100)this.S(x,h,z,B.OBSIDIAN);
+      else if(ashN<.55&&h>160)this.S(x,h,z,B.OBSIDIAN);
       else if(rockN<.15)this.S(x,h,z,B.BASALT);
       // Low-lying lava pools and basins
-      if(h<95&&dh01(wx+700,wz+700)<.06){
+      if(h<155&&dh01(wx+700,wz+700)<.06){
         this.S(x,h,z,B.LAVA);
         if(dh01(wx+701,wz+701)<.03)this.S(x,h-1,z,B.LAVA);
       }
@@ -1740,7 +1740,7 @@ deco(){
         for(let dy=1;dy<=bh;dy++)this.S(x,h+dy,z,B.BASALT);
       }
       // Obsidian spires at high elevations
-      if(h>160&&dh01(wx+400,wz+400)<.006){
+      if(h>220&&dh01(wx+400,wz+400)<.006){
         const sh2=4+fl(dh01(wx+1,wz+1)*8);
         for(let dy=1;dy<=sh2;dy++)this.S(x,h+dy,z,B.OBSIDIAN);
       }
@@ -1772,7 +1772,7 @@ deco(){
   }
   // ═══ VCLANTIS: MASSIVE underwater ruin-city ═══
   if(chunkBio===BI.VCLANTIS){
-    const vy=3,vr=dh01(this.cx*13,this.cz*17);
+    const vy=30,vr=dh01(this.cx*13,this.cz*17);
     const zone=dh01(this.cx*77,this.cz*33);
     const deep=dh01(this.cx*55,this.cz*44);
     // ── MASSIVE GROUND + CEILING + DEEP FLOOR ──
@@ -1784,8 +1784,8 @@ deco(){
       // Clear interior
       for(let dy=1;dy<22;dy++)if(this.G(dx,vy+dy,dz)===B.WATER)this.S(dx,vy+dy,dz,B.AIR);
       // Deep basement level
-      this.S(dx,vy-6,dz,B.SEA_MARBLE);
-      for(let dy=-5;dy<=-1;dy++)if(this.G(dx,vy+dy,dz)!==B.AIR)this.S(dx,vy+dy,dz,B.AIR);
+      this.S(dx,vy-10,dz,B.SEA_MARBLE);
+      for(let dy=-9;dy<=-1;dy++)if(this.G(dx,vy+dy,dz)!==B.AIR)this.S(dx,vy+dy,dz,B.AIR);
     }
     // ZONE 1: Grand Hall with massive columns and central monument
     if(zone<.25){
@@ -1888,12 +1888,12 @@ deco(){
     else{
       // Multi-level vault descending deep
       for(let dx=0;dx<CS;dx++)for(let dz=0;dz<CS;dz++){
-        this.S(dx,vy-8,dz,B.SEA_MARBLE); // Deep floor
-        for(let dy=-7;dy<0;dy++)this.S(dx,vy+dy,dz,B.AIR); // Clear deep space
+        this.S(dx,vy-14,dz,B.SEA_MARBLE); // Deep floor
+        for(let dy=-13;dy<0;dy++)this.S(dx,vy+dy,dz,B.AIR); // Clear deep space
       }
       // Flooded deep section
       for(let dx2=4;dx2<12;dx2++)for(let dz2=4;dz2<12;dz2++){
-        for(let dy=-7;dy<=-5;dy++)this.S(dx2,vy+dy,dz2,B.WATER)
+        for(let dy=-13;dy<=-9;dy++)this.S(dx2,vy+dy,dz2,B.WATER)
       }
       // Treasure platforms rising from water
       for(const[tx,tz]of[[3,3],[12,3],[3,12],[12,12]]){
@@ -2193,17 +2193,17 @@ deco(){
         else if(cr<.06)this.S(x,y,z,B.SEA_LANTERN);
       }
       // Dripstone cave: spikes from floor and ceiling
-      else if(deepNoise>.4&&y>20){
+      else if(deepNoise>.4&&y>80){
         if(cr<.05)this.S(x,y,z,B.COB);
         if(cr>.95&&this.G(x,y+1,z)===B.AIR)this.S(x,y+1,z,B.COB);
       }
       // Dark deep cave: darker blocks, more oppressive
-      else if(y<25&&deepNoise<-.3){
+      else if(y<85&&deepNoise<-.3){
         if(cr<.04)this.S(x,y-1,z,B.DEEP);
         else if(cr<.06)this.S(x,y,z,B.DARK_PANEL);
       }
       // Lava-rich deep zone - proper pools and flows
-      else if(y<20&&deepNoise>.2){
+      else if(y<80&&deepNoise>.2){
         if(cr<.05){
           // Lava pool: fill to same y-level for connected pool
           this.S(x,y,z,B.LAVA);
@@ -2227,7 +2227,7 @@ deco(){
       // Stalagmites from floor
       if(cr>.97)this.S(x,y,z,B.COB);
       // Lava basins in deep zones - fills connected low areas
-      if(y<15&&this.G(x,y-1,z)!==B.AIR&&cr>.90){
+      if(y<75&&this.G(x,y-1,z)!==B.AIR&&cr>.90){
         this.S(x,y,z,B.LAVA);
         // Fill adjacent at same level
         for(const[dx2,dz2]of[[1,0],[-1,0],[0,1],[0,-1]]){
@@ -2237,7 +2237,7 @@ deco(){
         }
       }
       // Underground ore veins exposed in cave walls
-      if(y<40&&cr>.95)this.S(x,y,z,y<24?B.GOLD:B.IRON);
+      if(y<100&&cr>.95)this.S(x,y,z,y<84?B.GOLD:B.IRON);
     }
   }
   // ═══ FLUID FLOW PROPAGATION PASS ═══
@@ -2984,7 +2984,7 @@ async start(seed,mode,ld){try{
   // Clouds - flat white planes at high altitude
   this.clouds=new THREE.Group();
   const cloudMat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7,side:THREE.DoubleSide,fog:false,depthWrite:false});
-  for(let i=0;i<60;i++){const cw=20+dh01(i,999)*40,cd=12+dh01(i+50,999)*20;const cloud=mkM(new THREE.PlaneGeometry(cw,cd),cloudMat,dh01(i,100)*800-400,180+dh01(i,200)*15,dh01(i,300)*800-400);cloud.rotation.x=-PI/2;this.clouds.add(cloud)}
+  for(let i=0;i<60;i++){const cw=20+dh01(i,999)*40,cd=12+dh01(i+50,999)*20;const cloud=mkM(new THREE.PlaneGeometry(cw,cd),cloudMat,dh01(i,100)*800-400,250+dh01(i,200)*15,dh01(i,300)*800-400);cloud.rotation.x=-PI/2;this.clouds.add(cloud)}
   this.sc.add(this.clouds);
   this.hl=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.01,1.01,1.01)),new THREE.LineBasicMaterial({color:0,transparent:true,opacity:.35}));this.hl.visible=false;this.sc.add(this.hl);
   // Block break overlay - textured box with crack stages

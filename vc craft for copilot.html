@@ -2539,7 +2539,7 @@ buildMesh(gB){
       if(nx2>=0&&nx2<CS&&nz>=0&&nz<CS&&ny>=0&&ny<CH){nb=this.G(nx2,ny,nz)}
       else{const ck=W.ch[((this.cx*CS+nx2)>>4)+','+((this.cz*CS+nz)>>4)];nb=ck?ck.G(((nx2%CS)+CS)%CS,ny,((nz%CS)+CS)%CS):b}
       const nd=BD[nb];if(!nd)continue;
-      const show=isW?(nb!==B.WATER&&nb!==B.LAVA&&!nd.sol):(nb===B.AIR||!nd.sol||(nd.tr&&b!==nb));
+      const show=isW?(nb!==B.WATER&&nb!==B.LAVA&&!nd.sol):(nb===B.AIR||(!nd.sol&&!nd.liq)||(nd.tr&&b!==nb));
       if(!show)continue;if(isW&&nd.liq)continue;
       const uv=uvL[bf2[f.f]];if(!uv)continue;
       const p=isLava?LP:isW?WP:P,n=isLava?LN:isW?WN:N,u=isLava?LU:isW?WU:U,idx=isLava?LI2:isW?WI2:IX,base=isLava?lvi:isW?wvi:vi;
@@ -3096,9 +3096,9 @@ async start(seed,mode,ld){try{
   this.ren=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(mn(devicePixelRatio,2));this.ren.autoClear=false;
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
-  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.5});
+  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.3});
   const wAtlas=atlas.clone();wAtlas.needsUpdate=true;wAtlas.wrapS=THREE.RepeatWrapping;wAtlas.wrapT=THREE.RepeatWrapping;
-  this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.82,side:THREE.DoubleSide,depthWrite:false,renderOrder:1,shininess:20,specular:0x224466});
+  this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.88,side:THREE.FrontSide,depthWrite:false,renderOrder:1,shininess:10,specular:0x113344,color:0xddeeff});
   const lAtlas=atlas.clone();lAtlas.needsUpdate=true;
   this.lMat=new THREE.MeshPhongMaterial({map:lAtlas,transparent:true,opacity:.95,side:THREE.DoubleSide,depthWrite:true,shininess:10,specular:0x442200,emissive:0xff3300,emissiveIntensity:.6});
   this._frustum=new THREE.Frustum();this._projScreenMatrix=new THREE.Matrix4();
@@ -3158,7 +3158,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k]){const c=new Chunk(pcx+dx,pcz+dz);c.gen();this.ch[k]=c}}
+    let _gc=0;for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k]){if(_gc>=1)continue;const c=new Chunk(pcx+dx,pcz+dz);c.gen();this.ch[k]=c;_gc++}}
     let b2=0;for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz<=RD*RD){c.buildMesh((x,y,z)=>this.gB(x,y,z));if(++b2>=2)break}}}
     for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);
@@ -3230,7 +3230,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';
     $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}`;
   }
-  if(this.ren){if(this.wMat&&this.wMat.map){this.wMat.map.offset.y=(Date.now()*.000005)%1}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt)}
+  if(this.ren){if(this.wMat&&this.wMat.map){this.wMat.map.offset.y=(Date.now()*.000002)%1}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt)}
   requestAnimationFrame(()=>this.loop())}
 };
 

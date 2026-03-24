@@ -2467,10 +2467,13 @@ buildMesh(gB){
         let vy = (isRail||isLadder||isCarpet) ? c[1] * thinH : c[1];
         // Stair step: bottom half is full, top half only exists at back (z<0)
         if(isStair){
-          if(f.f===2||f.f===3){/* top or bottom face - no change */}
-          else if(f.f===1){if(c[1]>0)vy=0.5;}// front face (+z) - only bottom half visible
-          else if(f.f===0){}// back face (-z) - full height
-          else{if(c[1]>0&&c[2]>0)vy=0.5;}// side faces - step profile
+          // Proper Minecraft-style step: bottom half full width, top half only back half
+          if(f.f===2){// top face: shift forward half to show step ledge
+            if(c[2]>0)vy=0.5; // top face front vertices lowered to step height
+          }else if(f.f===3){// bottom face: no change
+          }else if(f.f===1){if(c[1]>0)vy=0.5;}// front face: half height (step front)
+          else if(f.f===0){}// back face: full height
+          else{if(c[1]>0&&c[2]>0)vy=0.5;}// side faces: step profile on front half
         }
         p.push(ox+x+c[0], y+vy-(isW&&f.f===0?.12:0), oz+z+c[2]);
         n.push(f.n[0],f.n[1],f.n[2]);

@@ -2001,20 +2001,29 @@ deco(){
         if(dh01(d*13+dy,this.cx*7)>.2){this.S(0,vy+dy,d,B.SEA_MARBLE);this.S(15,vy+dy,d,B.SEA_MARBLE)}
       }
     }
-    // ── DEEP BASEMENT: pillars, ruins, treasure rooms ──
+    // ── DEEP BASEMENT: pillars, ruins, treasure rooms, corridors ──
     for(let dx=0;dx<CS;dx++)for(let dz=0;dz<CS;dz++){
       const bNoise=dh01(ox+dx+9999,oz+dz+8888);
-      // Support pillars every 4 blocks
-      if(dx%4===0&&dz%4===0){for(let dy=-9;dy<0;dy++)this.S(dx,vy+dy,dz,B.COLUMN_BLK)}
-      // Lower level pillars
-      if(dx%5===2&&dz%5===2){for(let dy=-14;dy<=-11;dy++)this.S(dx,vy+dy,dz,B.SEA_MARBLE)}
+      // Support pillars every 4 blocks with bases and capitals
+      if(dx%4===0&&dz%4===0){for(let dy=-9;dy<0;dy++)this.S(dx,vy+dy,dz,B.COLUMN_BLK);this.S(dx,vy-10,dz,B.MARBLE);for(let ddx=-1;ddx<=1;ddx++)for(let ddz=-1;ddz<=1;ddz++){if(dx+ddx>=0&&dx+ddx<CS&&dz+ddz>=0&&dz+ddz<CS){this.S(dx+ddx,vy-1,dz+ddz,B.MARBLE)}}}
+      // Lower level grand pillars
+      if(dx%5===2&&dz%5===2){for(let dy=-14;dy<=-11;dy++)this.S(dx,vy+dy,dz,B.SEA_MARBLE);this.S(dx,vy-15,dz,B.MARBLE)}
+      // Corridor walls along edges
+      if((dx===1||dx===14)&&dz>1&&dz<14){for(let dy=-8;dy<-2;dy++)if(dy!==-5)this.S(dx,vy+dy,dz,B.SEA_MARBLE)}
+      if((dz===1||dz===14)&&dx>1&&dx<14){for(let dy=-8;dy<-2;dy++)if(dy!==-5)this.S(dz,vy+dy,dx,B.SEA_MARBLE)}
+      // Archways in corridors
+      if((dx===1||dx===14)&&dz%4===0&&dz>0&&dz<15){this.S(dx,vy-2,dz,B.MARBLE);this.S(dx,vy-3,dz,B.SEA_MARBLE)}
+      // Chamber rooms in corners
+      if(dx>=2&&dx<=5&&dz>=2&&dz<=5){if(bNoise>.5)this.S(dx,vy-9,dz,B.MARBLE);this.S(dx,vy-4,dz,B.MARBLE)}
+      if(dx>=10&&dx<=13&&dz>=10&&dz<=13){if(bNoise>.5)this.S(dx,vy-9,dz,B.MARBLE);this.S(dx,vy-4,dz,B.MARBLE)}
       // Scattered treasure chests in basement
-      if(bNoise<.01&&dx>2&&dx<14&&dz>2&&dz<14)this.S(dx,vy-9,dz,B.CHST);
-      // Broken wall fragments
-      if(bNoise>.4&&bNoise<.44&&(dx<3||dx>12||dz<3||dz>12)){for(let dy=-8;dy<-4;dy++)this.S(dx,vy+dy,dz,B.SEA_MARBLE)}
-      // Glowing crystals scattered in deep basement
-      if(bNoise>.95)this.S(dx,vy-9,dz,B.SEA_LANTERN);
-      if(bNoise>.97)this.S(dx,vy-14,dz,B.GLOW_CRYSTAL);
+      if(bNoise<.015&&dx>2&&dx<14&&dz>2&&dz<14)this.S(dx,vy-9,dz,B.CHST);
+      // Broken wall fragments and reliefs
+      if(bNoise>.38&&bNoise<.44&&(dx<3||dx>12||dz<3||dz>12)){for(let dy=-8;dy<-3;dy++)this.S(dx,vy+dy,dz,B.SEA_MARBLE)}
+      // Glowing elements
+      if(bNoise>.93)this.S(dx,vy-9,dz,B.SEA_LANTERN);
+      if(bNoise>.96)this.S(dx,vy-14,dz,B.GLOW_CRYSTAL);
+      if(bNoise>.98&&dx>3&&dx<12&&dz>3&&dz<12)this.S(dx,vy-5,dz,B.SEA_LANTERN);
     }
     regStruct('VCLANTIS',ox+8,vy+2,oz+8);
     return;
@@ -2181,7 +2190,7 @@ deco(){
   for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){const nk=(this.cx+dx)+','+(this.cz+dz);const nc=W.ch[nk];if(nc&&nc._hasStruct)return}
   for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
     const wx=ox+x,wz=oz+z,bi2=bio(wx,wz),bd=BDt[bi2],h=this.sY(x,z);
-    if(h<=WL||h>=CH-10||this.G(x,h,z)===B.WATER||this.G(x,h,z)===B.AIR||!isNaturalSurface(this.G(x,h,z)))continue;
+    if(h<=WL||h>=CH-10||this.G(x,h,z)===B.WATER||this.G(x,h,z)===B.AIR||!isNaturalSurface(this.G(x,h,z)))continue;const abv=this.G(x,h+1,z);if(abv!==B.AIR&&abv!==B.WATER&&!BD[abv]?.liq)continue;
     const r=dh01(wx,wz);
     if(bd.tc&&r<bd.tc&&this.G(x,h+1,z)===B.AIR){
       // Mixed tree types for forest diversity
@@ -2737,7 +2746,7 @@ tick(dt){
   if(!this.alive)return false;
   if(this._playerDriving){
     // Player-controlled: speed set by _trainThrottle via player tick
-    if(abs(this.spd)<.01){this.grp.position.copy(this.pos);this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ)+Math.PI/2;return true}
+    if(abs(this.spd)<.01){this.grp.position.copy(this.pos);this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ);return true}
   }else{
     if(this.pauseT>0){this.pauseT-=dt;return true}
   }
@@ -2769,7 +2778,7 @@ tick(dt){
     if(belowBlock===B.PLATFORM_BLK&&this.pauseT<=0)this.pauseT=5;
   }
   this.grp.position.copy(this.pos);
-  this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ)+Math.PI/2;
+  this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ);
   return true;
 }
 rm(){if(this.grp&&W.sc){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}})}catch(e){}}this.alive=false}
@@ -2841,7 +2850,7 @@ tick(dt){if(this.hT>0)this.hT-=dt;this.aT+=dt;const I=W.inp;this.yaw-=I.dx*.002;
   this._wasW=I.k.KeyW;
   const sprintMul=this.sprinting?1.6:1;
   const baseSpd=(I.k.ShiftLeft?7:5.2)*sprintMul;
-  const sp=this.inWater?baseSpd*.4:baseSpd;
+  const inL2=feetBlock===B.LAVA;const sp=inL2?baseSpd*.2:this.inWater?baseSpd*.4:baseSpd;
   let mmx=0,mz=0;
   if(I.k.KeyW){mmx-=Math.sin(this.yaw);mz-=Math.cos(this.yaw)}if(I.k.KeyS){mmx+=Math.sin(this.yaw);mz+=Math.cos(this.yaw)}
   if(I.k.KeyA){mmx-=Math.cos(this.yaw);mz+=Math.sin(this.yaw)}if(I.k.KeyD){mmx+=Math.cos(this.yaw);mz-=Math.sin(this.yaw)}
@@ -3010,7 +3019,7 @@ function slotClick(getItem,setItem){
   rebI();
 }
 function mkSlot(par,item,getter,setter){const s=document.createElement('div');s.className='is';if(item){const cv=mkIcon(item.id);if(cv){s.appendChild(cv);if(item.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=item.n;s.appendChild(sp)}}}s.onclick=()=>slotClick(getter,setter);par.appendChild(s)}
-function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.BED)continue;const s=document.createElement('div');s.className='is';const cv=mkIcon(id);if(cv)s.appendChild(cv);s.onclick=()=>{showDrag({id,n:64})};s.onmouseenter=(e)=>{const tt=$('itemTT');tt.textContent=BD[id]?.nm||'Block '+id;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};s.onmouseleave=()=>{$('itemTT').style.display='none'};s.onmousemove=(e)=>{const tt=$('itemTT');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};g.appendChild(s)};const ts=document.createElement('div');ts.className='is';ts.style.background='#445';ts.innerHTML='<span style="font-size:10px;color:#fff">🚂 Train</span>';ts.onclick=()=>{showDrag({id:B.RAIL_IRON,n:64})};g.appendChild(ts);const ts2=document.createElement('div');ts2.className='is';ts2.style.background='#544';ts2.innerHTML='<span style="font-size:9px;color:#fff">🚂 Spawn</span>';ts2.onclick=()=>{if(W.pl){const pp=W.pl.pos;const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const t=new Train(pp.x+dir.x*4,pp.y,pp.z+dir.z*4);W.trains.push(t);closeI()}};g.appendChild(ts2);const wb=document.createElement('div');wb.className='is';wb.style.background='#248';wb.innerHTML='<span style="font-size:8px;color:#fff">💧Water</span>';wb.onclick=()=>{showDrag({id:B.WATER_BUCKET,n:1})};g.appendChild(wb);const lb=document.createElement('div');lb.className='is';lb.style.background='#842';lb.innerHTML='<span style="font-size:8px;color:#fff">🔥Lava</span>';lb.onclick=()=>{showDrag({id:B.LAVA_BUCKET,n:1})};g.appendChild(lb)}else $('ciDiv').style.display='none';rebI()}
+function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.BED)continue;const s=document.createElement('div');s.className='is';const cv=mkIcon(id);if(cv)s.appendChild(cv);s.onclick=()=>{showDrag({id,n:64})};s.onmouseenter=(e)=>{const tt=$('itemTT');tt.textContent=BD[id]?.nm||'Block '+id;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};s.onmouseleave=()=>{$('itemTT').style.display='none'};s.onmousemove=(e)=>{const tt=$('itemTT');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};g.appendChild(s)};const ts=document.createElement('div');ts.className='is';ts.style.background='#445';ts.innerHTML='<span style="font-size:10px;color:#fff">🚂 Train</span>';ts.onclick=()=>{showDrag({id:B.RAIL_IRON,n:64})};g.appendChild(ts);const ts2=document.createElement('div');ts2.className='is';ts2.style.background='#544';ts2.innerHTML='<span style="font-size:9px;color:#fff">🚂 Spawn</span>';ts2.onclick=()=>{if(W.pl){const pp=W.pl.pos;const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const t=new Train(pp.x+dir.x*4,pp.y,pp.z+dir.z*4);W.trains.push(t);closeI()}};g.appendChild(ts2);const wb=document.createElement('div');wb.className='is';wb.style.background='#248';wb.innerHTML='<span style="font-size:8px;color:#fff">💧Water</span>';wb.onclick=()=>{showDrag({id:B.WATER_BUCKET,n:1})};g.appendChild(wb);const lb=document.createElement('div');lb.className='is';lb.style.background='#842';lb.innerHTML='<span style="font-size:8px;color:#fff">🔥Lava</span>';lb.onclick=()=>{showDrag({id:B.LAVA_BUCKET,n:1})};g.appendChild(lb)}else $('ciDiv').style.display='none';if(_trainMount){const tf=document.createElement('div');tf.style.cssText='display:flex;align-items:center;gap:4px;padding:4px;background:#333;border-radius:3px;margin-top:4px';tf.innerHTML='<span style="font-size:7px;color:#aaa">🚂 Fuel:</span>';const fs2=document.createElement('div');fs2.className='is';fs2.style.cssText='width:24px;height:24px;background:#554;cursor:pointer';fs2.onclick=()=>{feedCoal();rebI()};const cv=mkIcon(B.COAL_I);if(cv)fs2.appendChild(cv);tf.appendChild(fs2);const fb=document.createElement('div');fb.style.cssText='width:60px;height:8px;background:#222;border-radius:2px';const ff=document.createElement('div');ff.style.cssText='height:100%;background:#c84;border-radius:2px;width:'+mn(100,(_trainFuel/_trainFuelMax)*100)+'%';fb.appendChild(ff);tf.appendChild(fb);$('invUI').querySelector('.ip')?.appendChild(tf)||$('invUI').appendChild(tf)}rebI()}
 function closeI(){W.st='play';$('invUI').style.display='none';if(dragItm){W.pl.addI(dragItm.id,dragItm.n);showDrag(null)}for(let i=0;i<cSlots.length;i++)if(cSlots[i]){W.pl.addI(cSlots[i].id,cSlots[i].n);cSlots[i]=null}if(W.ren)W.ren.domElement.requestPointerLock()}
 function rebI(){
   const cg=$('cGrid');cg.innerHTML='';cg.style.gridTemplateColumns=`repeat(${cSz},34px)`;
@@ -3334,6 +3343,7 @@ function cheatTP(biomeId){
         if(biomeId===BI.DISCORD_DEEP)W.pl.pos.set(tx+.5,mn(h+3,50),tz+.5);
         else if(biomeId===BI.VCLANTIS)W.pl.pos.set(tx+.5,15,tz+.5);
         else if(biomeId===BI.OC||biomeId===BI.PROPS_ISLAND)W.pl.pos.set(tx+.5,WL+2,tz+.5);
+        else if(biomeId===BI.VOLCANO)W.pl.pos.set(tx+.5,mx(h+5,WL+5),tz+.5);
         else W.pl.pos.set(tx+.5,mx(h+3,WL+3),tz+.5);
         W.pl.vel.set(0,0,0);closeCheat();return;
       }

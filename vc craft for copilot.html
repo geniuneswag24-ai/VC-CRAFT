@@ -1670,38 +1670,86 @@ deco(){
   }
   // ═══ VOLCANO BIOME: lava channels, crater, ash slopes ═══
   if(chunkBio===BI.VOLCANO){
+    // Volcano terrain enhancement - create dramatic volcanic cones
+    const vScale=nD.n2(ox*.003,oz*.003); // Large scale volcano placement
+    const vPeak=nD.n2(ox*.008,oz*.008);
     for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
       const wx=ox+x,wz=oz+z,h=this.sY(x,z);
       if(h<=WL)continue;
-      // Crater: fill with lava at certain height
-      const craterN=nD.n2(wx*.006,wz*.006);
-      if(craterN>.65&&h>170){
-        for(let y=165;y<=h;y++)this.S(x,y,z,B.AIR);
-        this.S(x,165,z,B.LAVA);this.S(x,166,z,B.LAVA);this.S(x,167,z,B.LAVA);
+      // Massive crater at volcanic peaks
+      const craterN=nD.n2(wx*.005,wz*.005);
+      const craterR=nD.n2(wx*.015,wz*.015);
+      if(craterN>.55&&h>150){
+        // Blow out crater - clear top, fill with lava
+        const crDepth=mn(20,fl((craterN-.55)*120));
+        for(let y=h;y>=h-crDepth;y--)this.S(x,y,z,B.AIR);
+        // Lava pool at crater bottom
+        for(let y=h-crDepth;y<=h-crDepth+4;y++)this.S(x,y,z,B.LAVA);
       }
-      // Lava channels down slopes
-      const chN=nD.n2(wx*.04,wz*.04);
-      if(abs(chN)<.035&&h>100&&h<180){
+      // Wider secondary craters
+      if(craterR>.6&&h>120&&h<160){
+        const d2=mn(8,fl((craterR-.6)*40));
+        for(let y=h;y>=h-d2;y--)this.S(x,y,z,B.AIR);
+        if(d2>3)for(let y=h-d2;y<=h-d2+2;y++)this.S(x,y,z,B.LAVA);
+      }
+      // Lava channels flowing down slopes
+      const chN=nD.n2(wx*.035,wz*.035);
+      const chN2=nD.n2(wx*.025+100,wz*.025+100);
+      if(abs(chN)<.025&&h>90){
         this.S(x,h,z,B.LAVA);
-        if(h>120){this.S(x,h-1,z,B.LAVA);this.S(x,h-2,z,B.LAVA)}
+        if(h>110){this.S(x,h-1,z,B.LAVA);this.S(x,h-2,z,B.LAVA)}
+        if(h>140)this.S(x,h-3,z,B.LAVA);
       }
-      // Ash and scorched surface variation
+      if(abs(chN2)<.02&&h>100){
+        this.S(x,h,z,B.LAVA);this.S(x,h-1,z,B.LAVA);
+      }
+      // Surface variety
       const ashN=dh01(wx+500,wz+500);
-      if(ashN<.3)this.S(x,h,z,B.ASH_STONE);
-      else if(ashN<.5)this.S(x,h,z,B.SCORCHED);
+      const rockN=dh01(wx+600,wz+600);
+      if(ashN<.25)this.S(x,h,z,B.ASH_STONE);
+      else if(ashN<.45)this.S(x,h,z,B.SCORCHED);
       else if(ashN<.55&&h>100)this.S(x,h,z,B.OBSIDIAN);
-      // Surface lava pools in low areas
-      if(h<105&&dh01(wx+700,wz+700)<.025)this.S(x,h,z,B.LAVA);
-      // Volcanic boulders
-      if(dh01(wx+300,wz+300)<.005){for(let dy=1;dy<3+fl(dh01(wx,wz)*3);dy++)this.S(x,h+dy,z,B.BASALT)}
+      else if(rockN<.15)this.S(x,h,z,B.BASALT);
+      // Low-lying lava pools and basins
+      if(h<95&&dh01(wx+700,wz+700)<.06){
+        this.S(x,h,z,B.LAVA);
+        if(dh01(wx+701,wz+701)<.03)this.S(x,h-1,z,B.LAVA);
+      }
+      // Volcanic boulders and spires
+      if(dh01(wx+300,wz+300)<.008){
+        const bh=3+fl(dh01(wx,wz)*6);
+        for(let dy=1;dy<=bh;dy++)this.S(x,h+dy,z,B.BASALT);
+      }
+      // Obsidian spires at high elevations
+      if(h>160&&dh01(wx+400,wz+400)<.006){
+        const sh2=4+fl(dh01(wx+1,wz+1)*8);
+        for(let dy=1;dy<=sh2;dy++)this.S(x,h+dy,z,B.OBSIDIAN);
+      }
+      // Vent openings (small cave entrances)
+      if(dh01(wx+800,wz+800)<.003&&h>WL+10){
+        for(let dy=0;dy<5;dy++)for(let dx=-1;dx<=1;dx++)this.S(x+dx>=0&&x+dx<CS?x+dx:x,h-dy,z,B.AIR);
+        this.S(x,h-5,z,B.LAVA);
+      }
     }
-    // Volcanic cave entrances on slopes
+    // Large volcanic cave entrance on slope
     const caveE=dh01(this.cx*99,this.cz*88);
-    if(caveE>.7){
+    if(caveE>.55){
       const cx3=7,cz3=7,ch=this.sY(cx3,cz3);
-      if(ch>WL+5){for(let dy=0;dy<4;dy++)for(let dx=-1;dx<=1;dx++)this.S(cx3+dx,ch-dy,cz3,B.AIR);for(let dy=4;dy<12;dy++)this.S(cx3,ch-dy,cz3,B.AIR)}
+      if(ch>WL+8){
+        for(let dy=0;dy<6;dy++)for(let dx=-2;dx<=2;dx++)for(let dz2=-1;dz2<=1;dz2++){
+          if(cx3+dx>=0&&cx3+dx<CS&&cz3+dz2>=0&&cz3+dz2<CS)
+            this.S(cx3+dx,ch-dy,cz3+dz2,B.AIR);
+        }
+        // Deeper shaft
+        for(let dy=6;dy<20;dy++){
+          this.S(cx3,ch-dy,cz3,B.AIR);
+          this.S(cx3+1,ch-dy,cz3,B.AIR);
+          this.S(cx3,ch-dy,cz3+1,B.AIR);
+        }
+        // Lava at bottom of shaft
+        this.S(cx3,ch-20,cz3,B.LAVA);this.S(cx3+1,ch-20,cz3,B.LAVA);
+      }
     }
-    return;
   }
   // ═══ VCLANTIS: MASSIVE underwater ruin-city ═══
   if(chunkBio===BI.VCLANTIS){
@@ -2051,6 +2099,59 @@ deco(){
       if(y<40&&cr>.95)this.S(x,y,z,y<24?B.GOLD:B.IRON);
     }
   }
+  // ═══ FLUID FLOW PROPAGATION PASS ═══
+  // Make water and lava flow downward and spread naturally
+  for(let pass=0;pass<3;pass++){
+    for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
+      for(let y=CH-2;y>=2;y--){
+        const b=this.G(x,y,z);
+        if(b!==B.WATER&&b!==B.LAVA)continue;
+        // Flow downward: if block below is air, fill it
+        const below=this.G(x,y-1,z);
+        if(below===B.AIR){
+          this.S(x,y-1,z,b);
+          // For water, remove source if it was isolated (no water neighbor above or beside)
+          continue;
+        }
+        // Spread outward on solid ground (only 1 block out per pass)
+        if(below!==B.AIR&&below!==B.WATER&&below!==B.LAVA){
+          const spread=b===B.WATER?2:1; // water spreads further than lava
+          for(let s=0;s<spread;s++){
+            for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+              const nx=x+dx,nz=z+dz;
+              if(nx<0||nx>=CS||nz<0||nz>=CS)continue;
+              if(this.G(nx,y,nz)===B.AIR&&this.G(nx,y-1,nz)!==B.AIR){
+                this.S(nx,y,nz,b);
+              }
+              // Flow into holes beside
+              if(this.G(nx,y,nz)===B.AIR&&this.G(nx,y-1,nz)===B.AIR){
+                this.S(nx,y-1,nz,b);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  // Remove isolated floating fluid blocks (no fluid neighbor = delete)
+  for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
+    for(let y=3;y<CH-2;y++){
+      const b=this.G(x,y,z);
+      if(b!==B.WATER&&b!==B.LAVA)continue;
+      // Check if has any solid/fluid support
+      const below=this.G(x,y-1,z);
+      const above=this.G(x,y+1,z);
+      if(below===B.AIR&&above===B.AIR){
+        // Check lateral neighbors for same fluid
+        let hasNeighbor=false;
+        for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+          const nb=this.G(x+dx,y,z+dz);
+          if(nb===b){hasNeighbor=true;break}
+        }
+        if(!hasNeighbor)this.S(x,y,z,B.AIR); // Remove floating isolated block
+      }
+    }
+  }
   // ═══ LAVA-WATER INTERACTION PASS ═══
   for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
     for(let y=2;y<80;y++){
@@ -2135,22 +2236,61 @@ tree(x,y,z,t,r2){
     // Hanging vines on big jungle trees
     if(big)for(let dx=-cr;dx<=cr;dx+=cr*2)for(let dz=-1;dz<=1;dz++){const vh=1+fl(dh01(x+dx,z+dz)*3);for(let dy=0;dy<vh;dy++){if(this.G(x+dx,y+h-1-dy,z+dz)===B.AIR)this.S(x+dx,y+h-1-dy,z+dz,B.JLVS)}}
   }else if(t==='redwood'){
-    // Giant redwood: very tall trunk with high canopy
-    const h=big?16+fl(r2*6):10+fl(r2*4);
-    // Thick trunk (2x2 for big, 1x1 for small)
-    for(let i=0;i<h;i++){this.S(x,y+i,z,lg);if(big){this.S(x+1,y+i,z,lg);this.S(x,y+i,z+1,lg);this.S(x+1,y+i,z+1,lg)}}
-    // Buttress roots for big trees
-    if(big){for(const[dx,dz]of[[-1,0],[2,0],[0,-1],[0,2],[2,2],[-1,-1]]){this.S(x+dx,y,z+dz,lg);if(dh01(x+dx*7,z+dz*7)<.5)this.S(x+dx,y+1,z+dz,lg)}}
-    // High canopy layers - sparse conifer-like
-    const cx2=big?x:x,cz2=big?z:z;
-    for(let ly=fl(h*.6);ly<h;ly++){
-      const layerR=ly<h-2?(ly%2===0?(big?4:3):(big?3:2)):(big?2:1);
-      for(let dx=-layerR;dx<=layerR;dx++)for(let dz=-layerR;dz<=layerR;dz++){
-        if(abs(dx)+abs(dz)>layerR+1)continue;
-        if(this.G(cx2+dx,y+ly,cz2+dz)===B.AIR)this.S(cx2+dx,y+ly,cz2+dz,lf);
+    // MASSIVE redwood: towering trunks, thick base, dramatic canopy
+    const h=big?28+fl(r2*14):18+fl(r2*8);
+    const trunkW=big?3:2; // 3x3 or 2x2 trunk
+    const half=fl(trunkW/2);
+    // Thick trunk
+    for(let i=0;i<h;i++){
+      for(let dx=-half;dx<=half;dx++)for(let dz=-half;dz<=half;dz++){
+        if(abs(dx)===half&&abs(dz)===half&&i>h*.7)continue; // Taper top corners
+        this.S(x+dx,y+i,z+dz,lg);
       }
     }
-    this.S(cx2,y+h,cz2,lf);this.S(cx2,y+h+1,cz2,lf);
+    // Massive buttress roots spreading outward
+    if(big){
+      const rootDirs=[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[1,1],[1,-1],[-1,1]];
+      for(const[rdx,rdz]of rootDirs){
+        if(dh01(x+rdx*11,z+rdz*11)>.4)continue;
+        const rLen=2+fl(dh01(x+rdx*7,z+rdz*7)*4);
+        for(let r=1;r<=rLen;r++){
+          const ry=y-fl(r*.3);
+          this.S(x+rdx*r,mx(ry,1),z+rdz*r,lg);
+          if(r<=2)this.S(x+rdx*r,mx(ry+1,1),z+rdz*r,lg);
+        }
+      }
+      // Extra thick base ring
+      for(let dx=-half-1;dx<=half+1;dx++)for(let dz=-half-1;dz<=half+1;dz++){
+        if(abs(dx)===half+1&&abs(dz)===half+1)continue;
+        this.S(x+dx,y,z+dz,lg);this.S(x+dx,y+1,z+dz,lg);
+      }
+    }else{
+      // Smaller roots
+      for(const[dx,dz]of[[-1,0],[1,0],[0,-1],[0,1]]){
+        if(dh01(x+dx*5,z+dz*5)<.5){this.S(x+dx,y,z+dz,lg);this.S(x+dx,y+1,z+dz,lg)}
+      }
+    }
+    // Massive canopy - multiple tiers
+    const canopyStart=fl(h*.55);
+    const canopyEnd=h+2;
+    for(let ly=canopyStart;ly<=canopyEnd;ly++){
+      const progress=(ly-canopyStart)/(canopyEnd-canopyStart);
+      let layerR;
+      if(progress<.3)layerR=big?6:4;
+      else if(progress<.6)layerR=big?7:5;
+      else if(progress<.85)layerR=big?5:4;
+      else layerR=big?3:2;
+      // Add variation per layer
+      if(ly%3===0)layerR=mx(layerR-1,1);
+      for(let dx=-layerR;dx<=layerR;dx++)for(let dz=-layerR;dz<=layerR;dz++){
+        const dist=abs(dx)+abs(dz);
+        if(dist>layerR+1)continue;
+        if(dist===layerR+1&&dh01(x+dx*3+ly,z+dz*3)>.4)continue;
+        if(this.G(x+dx,y+ly,z+dz)===B.AIR)this.S(x+dx,y+ly,z+dz,lf);
+      }
+    }
+    // Crown
+    for(let dy=0;dy<3;dy++)this.S(x,y+canopyEnd+dy,z,lf);
   }else{
     const h=big?7+fl(r2*3):4+fl(r2*2);
     for(let i=0;i<h;i++)this.S(x,y+i,z,lg);
@@ -2169,7 +2309,8 @@ buildMesh(gB){
     const isW=bd.liq;
     for(const f of FACES){
       const nx2=x+f.d[0],ny=y+f.d[1],nz=z+f.d[2];let nb;
-      if(nx2<0||nx2>=CS||nz<0||nz>=CS)nb=gB(ox+nx2,ny,oz+nz);else if(ny<0||ny>=CH)nb=B.AIR;else nb=this.G(nx2,ny,nz);
+      if(nx2>=0&&nx2<CS&&nz>=0&&nz<CS&&ny>=0&&ny<CH){nb=this.G(nx2,ny,nz)}
+      else{const ck=W.ch[((this.cx*CS+nx2)>>4)+','+((this.cz*CS+nz)>>4)];nb=ck?ck.G(((nx2%CS)+CS)%CS,ny,((nz%CS)+CS)%CS):0}
       const nd=BD[nb];if(!nd)continue;
       // Water: show face unless neighbor is water/lava/solid. Solid: show if neighbor is air/non-solid/different-transparent-type
       const show=isW?(nb!==B.WATER&&nb!==B.LAVA&&!nd.sol):(nb===B.AIR||!nd.sol||(nd.tr&&b!==nb));
@@ -2532,7 +2673,7 @@ document.addEventListener('contextmenu',e=>e.preventDefault())}}
 class Hand{constructor(){this.sc=new THREE.Scene();this.cam=new THREE.PerspectiveCamera(50,1.3,.1,10);
   const dl=new THREE.DirectionalLight(0xffffff,1);dl.position.set(1,2,3);this.sc.add(dl);this.sc.add(new THREE.AmbientLight(0xbbbbbb,.6));
   const skinMat=new THREE.MeshLambertMaterial({color:0xc49a6c});
-  this.arm=mkM(new THREE.BoxGeometry(.3,.9,.3),skinMat,.35,-0.3,-0.7);
+  this.arm=mkM(new THREE.BoxGeometry(.28,.85,.28),skinMat,.4,-0.35,-0.65);
   this.arm.rotation.x=-.1;this.arm.rotation.z=.08;
   this.sc.add(this.arm);this.swT=0;this.sw=false;this.heldMesh=null;this.heldId=-1}
 swing(){this.sw=true;this.swT=0}
@@ -2546,7 +2687,7 @@ updateHeld(id){
     const cv=TC[IMAP[id]];if(!cv)return;
     const tex=new THREE.CanvasTexture(cv);tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;
     const mat=new THREE.MeshLambertMaterial({map:tex,transparent:true,alphaTest:0.1});
-    this.heldMesh=mkM(new THREE.BoxGeometry(.5,.5,.06),mat,.35,.15,-0.65);
+    this.heldMesh=mkM(new THREE.BoxGeometry(.45,.45,.06),mat,.4,.1,-0.55);
     this.heldMesh.rotation.x=-.3;this.heldMesh.rotation.z=.1;
   }else{
     // Block - render as small cube
@@ -2554,7 +2695,7 @@ updateHeld(id){
     const cv=TC[bf2[1]];if(!cv)return;
     const tex=new THREE.CanvasTexture(cv);tex.magFilter=THREE.NearestFilter;tex.minFilter=THREE.NearestFilter;
     const mat=new THREE.MeshLambertMaterial({map:tex,transparent:BD[id]?.tr||false,alphaTest:0.1});
-    this.heldMesh=mkM(new THREE.BoxGeometry(.4,.4,.4),mat,.35,.15,-0.65);
+    this.heldMesh=mkM(new THREE.BoxGeometry(.38,.38,.38),mat,.4,.1,-0.55);
     this.heldMesh.rotation.x=-.2;this.heldMesh.rotation.y=.5;
   }
   this.sc.add(this.heldMesh);
@@ -2569,7 +2710,7 @@ render(ren,dt){
   }
   // Update held item if changed
   const hb=W.pl?.hb;if(hb){const sel=W.pl?.sel||0;const heldItem=hb[sel];this.updateHeld(heldItem?heldItem.id:-1)}
-  const w=fl(window.innerWidth*.35),h=fl(window.innerHeight*.4);
+  const w=fl(window.innerWidth*.32),h=fl(window.innerHeight*.45);
   const x=window.innerWidth-w,y=0;
   ren.setScissorTest(true);ren.setScissor(x,y,w,h);ren.setViewport(x,y,w,h);
   ren.clearDepth();ren.render(this.sc,this.cam);ren.setScissorTest(false);ren.setViewport(0,0,window.innerWidth,window.innerHeight)}}
@@ -2597,7 +2738,7 @@ function slotClick(getItem,setItem){
   rebI();
 }
 function mkSlot(par,item,getter,setter){const s=document.createElement('div');s.className='is';if(item){const cv=mkIcon(item.id);if(cv){s.appendChild(cv);if(item.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=item.n;s.appendChild(sp)}}}s.onclick=()=>slotClick(getter,setter);par.appendChild(s)}
-function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.BED)continue;const s=document.createElement('div');s.className='is';const cv=mkIcon(id);if(cv)s.appendChild(cv);s.onclick=()=>{showDrag({id,n:64})};s.onmouseenter=(e)=>{const tt=$('itemTT');tt.textContent=BD[id]?.nm||'Block '+id;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};s.onmouseleave=()=>{$('itemTT').style.display='none'};s.onmousemove=(e)=>{const tt=$('itemTT');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};g.appendChild(s)}}else $('ciDiv').style.display='none';rebI()}
+function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.BED)continue;const s=document.createElement('div');s.className='is';const cv=mkIcon(id);if(cv)s.appendChild(cv);s.onclick=()=>{showDrag({id,n:64})};s.onmouseenter=(e)=>{const tt=$('itemTT');tt.textContent=BD[id]?.nm||'Block '+id;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};s.onmouseleave=()=>{$('itemTT').style.display='none'};s.onmousemove=(e)=>{const tt=$('itemTT');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};g.appendChild(s)};const ts=document.createElement('div');ts.className='is';ts.style.background='#445';ts.innerHTML='<span style="font-size:10px;color:#fff">🚂 Train</span>';ts.onclick=()=>{if(W.pl){const pp=W.pl.pos;const t=new Train(pp.x+3,pp.y,pp.z);W.trains.push(t);W.sc.add(t.mesh)}};g.appendChild(ts)}else $('ciDiv').style.display='none';rebI()}
 function closeI(){W.st='play';$('invUI').style.display='none';if(dragItm){W.pl.addI(dragItm.id,dragItm.n);showDrag(null)}for(let i=0;i<cSlots.length;i++)if(cSlots[i]){W.pl.addI(cSlots[i].id,cSlots[i].n);cSlots[i]=null}if(W.ren)W.ren.domElement.requestPointerLock()}
 function rebI(){
   const cg=$('cGrid');cg.innerHTML='';cg.style.gridTemplateColumns=`repeat(${cSz},34px)`;

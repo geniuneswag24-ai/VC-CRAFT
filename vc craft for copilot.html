@@ -1426,32 +1426,32 @@ gen(){
       else if(y<=h){
         if(y<h-1&&y>3){const c1=nC.n3(wx*.05,y*.06,wz*.05),c2=nC.n3(wx*.08+99,y*.1+99,wz*.08+99);
           const caveVal=c1*c1+c2*c2;
-          if(caveVal<.022){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10&&(bi===BI.OC||bi===BI.BE))?B.WATER:(y<80&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
+          if(caveVal<.028){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10&&(bi===BI.OC||bi===BI.BE))?B.WATER:(y<80&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
           const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
-          if(bigCave>.5&&y>8&&y<200){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10&&(bi===BI.OC||bi===BI.BE))?B.WATER:(y<80&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
+          if(bigCave>.45&&y>8&&y<200){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10&&(bi===BI.OC||bi===BI.BE))?B.WATER:(y<80&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
           // Giant cavern: very rare, huge open space
           const giantCav=nC.n3(wx*.005,y*.008,wz*.005);
-          if(giantCav>.62&&y>10&&y<160){this.blk[this.I(x,y,z)]=(y<70&&dh01(wx*333+y,wz*444)<.08)?B.LAVA:B.AIR;continue}
+          if(giantCav>.58&&y>8&&y<180){this.blk[this.I(x,y,z)]=(y<70&&dh01(wx*333+y,wz*444)<.08)?B.LAVA:B.AIR;continue}
           // Deep cavern layer below y=90
           if(y<120){const deepCave=nC.n3(wx*.04,y*.04,wz*.04);if(deepCave>.38){this.blk[this.I(x,y,z)]=(y<80&&dh01(wx*333+y,wz*444)<.06)?B.LAVA:B.AIR;continue}}
           const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
           if(ravine<.025&&y>5&&y<180){this.blk[this.I(x,y,z)]=(y<80&&dh01(wx*333+y,wz*444)<.04)?B.LAVA:B.AIR;continue}
           // Worm tunnels - longer connected cave passages
           const worm1=nC.n3(wx*.025,y*.03,wz*.025),worm2=nC.n3(wx*.025+100,y*.03+100,wz*.025+100);
-          if(worm1*worm1+worm2*worm2<.008&&y>5&&y<160){this.blk[this.I(x,y,z)]=(y<75&&dh01(wx*333+y,wz*444)<.05)?B.LAVA:B.AIR;continue}
+          if(worm1*worm1+worm2*worm2<.012&&y>5&&y<160){this.blk[this.I(x,y,z)]=(y<75&&dh01(wx*333+y,wz*444)<.05)?B.LAVA:B.AIR;continue}
           // Deep connecting tunnels (link surface to deep caves)
           const deepWorm=nC.n3(wx*.018,y*.025,wz*.018);
-          if(abs(deepWorm)<.02&&y>8&&y<150){this.blk[this.I(x,y,z)]=(y<75&&dh01(wx*333+y,wz*444)<.06)?B.LAVA:B.AIR;continue}
+          if(abs(deepWorm)<.028&&y>8&&y<150){this.blk[this.I(x,y,z)]=(y<75&&dh01(wx*333+y,wz*444)<.06)?B.LAVA:B.AIR;continue}
           // Vertical shafts connecting cave layers
           const shaft=nC.n3(wx*.04,y*.006,wz*.04);
-          if(abs(shaft)<.014&&y>5&&y<140){this.blk[this.I(x,y,z)]=(y<72&&dh01(wx*333+y,wz*444)<.08)?B.LAVA:B.AIR;continue}}
+          if(abs(shaft)<.014&&y>5&&y<140){this.blk[this.I(x,y,z)]=(y<72&&dh01(wx*333+y,wz*444)<.08)?B.LAVA:B.AIR;continue}
           // Giant caverns - rare massive underground chambers
           const giantCave=nC.n3(wx*.005,y*.008,wz*.005);
-          if(giantCave>.58&&y>10&&y<170){this.blk[this.I(x,y,z)]=(y<78&&dh01(wx*333+y,wz*444)<.1)?B.LAVA:B.AIR;continue}
+          if(giantCave>.55&&y>10&&y<170){this.blk[this.I(x,y,z)]=(y<78&&dh01(wx*333+y,wz*444)<.1)?B.LAVA:B.AIR;continue}
           // Mega connecting tunnels - link cave systems across large distances
           const megaTunnel=nC.n3(wx*.012,y*.02,wz*.012);
           const megaTunnel2=nC.n3(wx*.018+50,y*.015+50,wz*.018+50);
-          if(megaTunnel*megaTunnel+megaTunnel2*megaTunnel2<.005&&y>8&&y<160){this.blk[this.I(x,y,z)]=B.AIR;continue}
+          if(megaTunnel*megaTunnel+megaTunnel2*megaTunnel2<.008&&y>8&&y<160){this.blk[this.I(x,y,z)]=B.AIR;continue}}
           // Cave openings on steep terrain faces (mountains, cliffs, hillsides)
           if(y>=h-4&&y<=h){
             const cEntry=nC.n3(wx*.05,y*.035,wz*.05);
@@ -2792,7 +2792,7 @@ function fluidTick(sx,sy,sz,fluidId){
   while(queue.length>0){
     const{x,y,z,d}=queue.shift();
     // Flow downward first
-    for(let dy=1;dy<=8;dy++){
+    for(let dy=1;dy<=64;dy++){
       if(y-dy<1)break;const below=W.gB(x,y-dy,z);
       if(below===B.AIR){W.sB(x,y-dy,z,fluidId);const k=x+','+(y-dy)+','+z;if(!visited.has(k)){visited.add(k);queue.push({x,y:y-dy,z,d:0})}}
       else if(below===B.LAVA&&fluidId===B.WATER){W.sB(x,y-dy,z,B.OBSIDIAN);break}
@@ -2829,6 +2829,8 @@ tick(dt){if(this.hT>0)this.hT-=dt;this.aT+=dt;const I=W.inp;this.yaw-=I.dx*.002;
   const headBlock=W.gB(fl(this.pos.x),fl(this.pos.y+1.5),fl(this.pos.z));
   this.inWater=feetBlock===B.WATER;
   this.headInWater=headBlock===B.WATER;
+  const inLava=feetBlock===B.LAVA||headBlock===B.LAVA;
+  if(inLava&&this.mode==='survival'&&this.hT<=0){this.hurt(4)}
   // Underwater tint
   const wOvl=$('waterOvl');
   if(wOvl)wOvl.style.display=this.headInWater?'block':'none';

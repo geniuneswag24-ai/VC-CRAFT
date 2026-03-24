@@ -468,20 +468,24 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
   if(wx!==ox+8||wz!==oz+8)return; // only check chunk center
   const sr=dh01(chunk.cx*7+13,chunk.cz*11+7);
   // Biome-specific spawn rates
-  let threshold=.93; // default ~7% chance per chunk
-  if(bi===BI.VC_SUBURB)threshold=.72; // suburbs need lots of houses
-  else if(bi===BI.SA_PLAINS)threshold=.90;
-  else if(bi===BI.PLAINS)threshold=.92;
+  let threshold=.97; // default ~3% chance per chunk - much sparser
+  if(bi===BI.VC_SUBURB)threshold=.82; // suburbs - moderate houses
+  else if(bi===BI.SA_PLAINS)threshold=.95; // plains - rare structures
+  else if(bi===BI.PLAINS)threshold=.96;
   else if(bi===BI.GARFBOT_CITY)return; // city handled separately in deco
   else if(bi===BI.OC)return; // ocean handled separately
   if(sr<threshold)return;
   _structChunks.add(ck);
   const type=bd.structs[fl(dh01(chunk.cx+999,chunk.cz+999)*bd.structs.length)];
   // Major structures are rarer - re-roll to reject
-  if(type==='school'&&dh01(chunk.cx*31,chunk.cz*37)<.7)return;
-  if(type==='stadium'&&dh01(chunk.cx*41,chunk.cz*43)<.8)return;
-  if(type==='mall'&&dh01(chunk.cx*51,chunk.cz*53)<.6)return;
-  if(type==='gomp'&&dh01(chunk.cx*61,chunk.cz*63)<.5)return;
+  if(type==='school'&&dh01(chunk.cx*31,chunk.cz*37)<.85)return;
+  if(type==='stadium'&&dh01(chunk.cx*41,chunk.cz*43)<.90)return;
+  if(type==='mall'&&dh01(chunk.cx*51,chunk.cz*53)<.80)return;
+  if(type==='gomp'&&dh01(chunk.cx*61,chunk.cz*63)<.75)return;
+  if(type==='restaurant'&&dh01(chunk.cx*71,chunk.cz*73)<.70)return;
+  if(type==='waffle'&&dh01(chunk.cx*81,chunk.cz*83)<.65)return;
+  if(type==='temple'&&dh01(chunk.cx*91,chunk.cz*93)<.80)return;
+  if(type==='monument'&&dh01(chunk.cx*101,chunk.cz*103)<.80)return;
   const lx=8,lz=8; // always center of chunk
   const r=dh01(chunk.cx+50,chunk.cz+50);
   const wx2=chunk.cx*CS+lx,wz2=chunk.cz*CS+lz;
@@ -1400,18 +1404,14 @@ deco(){
         else if(gridX===0){this.S(x,h,z,x<2||x>13?B.SIDEWALK:B.ASPHALT)}
         else{this.S(x,h,z,z<2||z>13?B.SIDEWALK:B.ASPHALT)}
       }
-      // Street lights every 4 blocks along roads
-      for(let x=0;x<CS;x+=4)for(let z=0;z<CS;z+=4){
-        const h=this.sY(x,z);if(h<=WL)continue;
-        const wx=ox+x,wz=oz+z;
-        if((wx+wz)%8===0){for(let dy=1;dy<5;dy++)this.S(x,h+dy,z,B.METAL_PANEL);this.S(x,h+5,z,B.NEON_BLK)}
-        if((wx+wz)%16===0)this.S(x,h,z,B.SEA_LANTERN);
+      // Street lights - sparse, only at intersections and key positions
+      if(gridX===0&&gridZ===0){
+        const h=this.sY(2,2);if(h>WL){for(let dy=1;dy<5;dy++)this.S(2,h+dy,2,B.METAL_PANEL);this.S(2,h+5,2,B.NEON_BLK)}
+        const h2=this.sY(13,13);if(h2>WL){for(let dy=1;dy<5;dy++)this.S(13,h2+dy,13,B.METAL_PANEL);this.S(13,h2+5,13,B.NEON_BLK)}
+      }else if(dh01(this.cx*111,this.cz*222)>.75){
+        const lx2=gridX===0?2:8,lz2=gridZ===0?2:8;const h=this.sY(lx2,lz2);if(h>WL){for(let dy=1;dy<5;dy++)this.S(lx2,h+dy,lz2,B.METAL_PANEL);this.S(lx2,h+5,lz2,B.NEON_BLK)}
       }
-      // Street furniture: streetlights, trash cans
-      if(dh01(this.cx*333,this.cz*555)>.5){
-        for(let dy=1;dy<5;dy++)this.S(3,h0+1+dy,3,B.METAL_PANEL);
-        this.S(3,h0+6,3,B.NEON_BLK);
-      }
+      if(dh01(this.cx*77,this.cz*88)>.85)this.S(8,h0,8,B.SEA_LANTERN);
       if(dh01(this.cx*444,this.cz*666)>.6)this.S(12,h0+1,12,B.CITY_RUBBLE);
       // Parking lots at some intersections
       if(gridX===0&&gridZ===0&&dh01(this.cx*77,this.cz*88)>.6){
@@ -2639,7 +2639,7 @@ async start(seed,mode,ld){try{
   // Clouds - flat white planes at high altitude
   this.clouds=new THREE.Group();
   const cloudMat=new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.7,side:THREE.DoubleSide,fog:false,depthWrite:false});
-  for(let i=0;i<40;i++){const cw=15+dh01(i,999)*25,cd=8+dh01(i+50,999)*15;const cloud=mkM(new THREE.PlaneGeometry(cw,cd),cloudMat,dh01(i,100)*200-100,140+dh01(i,200)*8,dh01(i,300)*200-100);cloud.rotation.x=-PI/2;this.clouds.add(cloud)}
+  for(let i=0;i<60;i++){const cw=20+dh01(i,999)*40,cd=12+dh01(i+50,999)*20;const cloud=mkM(new THREE.PlaneGeometry(cw,cd),cloudMat,dh01(i,100)*800-400,180+dh01(i,200)*15,dh01(i,300)*800-400);cloud.rotation.x=-PI/2;this.clouds.add(cloud)}
   this.sc.add(this.clouds);
   this.hl=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.01,1.01,1.01)),new THREE.LineBasicMaterial({color:0,transparent:true,opacity:.35}));this.hl.visible=false;this.sc.add(this.hl);
   // Block break overlay - textured box with crack stages
@@ -2685,12 +2685,12 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);
     // Sun/moon positions follow player
     const pp=this.pl.pos;
-    this.sun.position.set(sx*80+pp.x,sy*80+pp.y,30+pp.z);
-    this.sunMesh.position.set(sx*70+pp.x,sy*70+pp.y,30+pp.z);
-    this.moonMesh.position.set(-sx*70+pp.x,-sy*70+pp.y,30+pp.z);
+    this.sun.position.set(sx*300+pp.x,sy*300+pp.y,pp.z);
+    this.sunMesh.position.set(sx*250+pp.x,sy*250+pp.y,pp.z);
+    this.moonMesh.position.set(-sx*250+pp.x,-sy*250+pp.y,pp.z);
     this.sunMesh.visible=sy>-.1;this.moonMesh.visible=sy<.1;
     // Cloud drift
-    this.clouds.position.set(pp.x+(this.dT*200%200-100),0,pp.z);
+    this.clouds.position.set(this.dT*800%1600-800,0,this.dT*200%400-200);
     const tw=mx(0,mn(1,(sy+.15)/.3));
     // Sky with sunset/sunrise tints
     let skyCol;
@@ -2715,7 +2715,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.hemiLight.intensity=.15+tw*.45;
     this.sun.color.set(tw<.4?0xff8844:0xffeedd);
     // Stars visible at night
-    this.stars.visible=tw<.4;this.stars.position.set(pp.x,pp.y,pp.z);
+    this.stars.visible=tw<.4;this.stars.position.set(pp.x,200,pp.z);
     // Night darkening of hemisphere
     if(tw<.2){this.hemiLight.color.set(0x334455);this.hemiLight.groundColor.set(0x1a1a33)}
     else{this.hemiLight.color.set(0x88bbff);this.hemiLight.groundColor.set(0x554433)}

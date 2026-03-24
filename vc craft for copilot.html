@@ -65,6 +65,16 @@
 #dragItem{position:fixed;pointer-events:none;z-index:200;display:none;width:28px;height:28px;image-rendering:pixelated}
 #dragItem canvas{width:28px;height:28px;image-rendering:pixelated}
 #dragItem .cn{position:absolute;bottom:-2px;right:0;font-size:6px;color:#fff;text-shadow:1px 1px 0 #000}
+#itemTT{position:fixed;z-index:210;display:none;background:rgba(16,0,32,.92);color:#fff;font-family:'Press Start 2P',monospace;font-size:7px;padding:4px 8px;border:1px solid #55f;pointer-events:none;white-space:nowrap;text-shadow:1px 1px 0 #000}
+#chestUI{position:fixed;inset:0;z-index:52;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+#chestP{background:#c6c6c6;border:3px solid #1a1a1a;padding:10px;box-shadow:inset 2px 2px 0 #eee,inset -2px -2px 0 #888}
+#chestP h3{font-size:8px;color:#404040;margin-bottom:6px}
+.chG{display:grid;grid-template-columns:repeat(9,34px);gap:2px}
+#trainHUD{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);z-index:15;display:none;background:rgba(0,0,0,.7);border:1px solid #555;padding:4px 10px;font-family:'Press Start 2P',monospace;font-size:7px;color:#fff;text-align:center}
+#fuelSlot{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:#8b8b8b;border:2px solid;border-color:#373737 #fff #fff #373737;vertical-align:middle;margin:0 4px;cursor:pointer;position:relative}
+#fuelSlot canvas{width:22px;height:22px;image-rendering:pixelated}
+#fuelBar{width:80px;height:6px;background:#333;border:1px solid #555;display:inline-block;vertical-align:middle;margin-left:6px}
+#fuelFill{width:0%;height:100%;background:#e84;transition:width .2s}
 </style>
 </head>
 <body>
@@ -92,6 +102,7 @@
 </div></div>
 <div id="deathUI"><div class="dbg3"></div><h1>You Died!</h1><p>GARFBOT got you...</p><div class="btn" onclick="doResp()" style="z-index:1">Respawn</div></div>
 <div id="dragItem"></div>
+<div id="itemTT"></div>
 <div id="cheatUI" style="position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)">
 <div style="background:#222;border:2px solid #555;padding:12px;max-height:70vh;overflow-y:auto;min-width:300px">
 <h3 style="font-size:9px;margin-bottom:8px;color:#aaf">/ CHEATS</h3>
@@ -105,6 +116,8 @@
 <div style="height:6px"></div>
 <div class="btn" onclick="closeCheat()" style="width:280px;font-size:8px">Close</div>
 </div></div>
+<div id="chestUI"><div id="chestP"><h3 id="chestTitle">Chest</h3><div class="chG" id="chestGrid"></div><div class="isep"></div><h3 style="font-size:7px;color:#404040;margin:4px 0">Inventory</h3><div class="chG" id="chestInv"></div><div class="isep"></div><div class="chG" id="chestHB"></div></div></div>
+<div id="trainHUD">🚂 TRAIN · <span id="trainSpd">0</span> b/s · Fuel: <div id="fuelSlot"></div><div id="fuelBar"><div id="fuelFill"></div></div> · <span style="color:#888;font-size:6px">[E] dismount · [W/S] throttle</span></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -317,9 +330,10 @@ function buildAtlas(){
   // Don't pre-fill - let transparent textures keep alpha
   for(let i=0;i<TN.length;i++){ax.drawImage(TC[TN[i]],(i%cols)*TS,fl(i/cols)*TS);uvL[TN[i]]={u:(i%cols)/cols,v:fl(i/cols)/rows,w:1/cols,h:1/rows}}
   atlas=new THREE.CanvasTexture(ac);atlas.magFilter=THREE.NearestFilter;atlas.minFilter=THREE.NearestFilter;atlas.flipY=false;
-  for(const bid in BF){if(TC[BF[bid][1]])icons[bid]=TC[BF[bid][1]].toDataURL()}
-  for(const bid in IMAP){if(TC[IMAP[bid]])icons[bid]=TC[IMAP[bid]].toDataURL()}
+  for(const bid in BF){if(TC[BF[bid][1]]){const c=document.createElement('canvas');c.width=c.height=16;c.getContext('2d').drawImage(TC[BF[bid][1]],0,0);icons[bid]=c}}
+  for(const bid in IMAP){if(TC[IMAP[bid]]){const c=document.createElement('canvas');c.width=c.height=16;c.getContext('2d').drawImage(TC[IMAP[bid]],0,0);icons[bid]=c}}
 }
+function mkIcon(id){if(!icons[id])return null;const cv=document.createElement('canvas');cv.width=cv.height=16;cv.getContext('2d').drawImage(icons[id],0,0);return cv}
 
 // BIOMES
 // VC BIOMES - unique themed biome roster
@@ -335,7 +349,7 @@ const BDt={
 [BI.VC_BADLANDS]:{n:'VC Badlands',bH:100,a:36,sf:B.CANYON_STONE,su:B.RSAND,structs:['monument','broken_tower','shrine','tower_ruin']},
 [BI.MO]:{n:'Mountains',bH:120,a:50,sf:B.STONE,su:B.STONE,tr:'spruce',tc:.005},
 [BI.DRY_COAST]:{n:'Dry Coast',bH:72,a:6,sf:B.SAND,su:B.SSTON,structs:['boardwalk','condo','restaurant']},
-[BI.RIO_LAGOON]:{n:'Rio Lagoon',bH:66,a:4,sf:B.SAND,su:B.MUD,tr:'jungle',tc:.03,structs:['boardwalk']},
+[BI.RIO_LAGOON]:{n:'Rio Lagoon',bH:66,a:4,sf:B.GRASS,su:B.MUD,tr:'jungle',tc:.065,structs:['boardwalk']},
 [BI.GARFBOT_CITY]:{n:'Garfbot City',bH:80,a:4,sf:B.ASPHALT,su:B.CONCRETE,structs:['tower','gomp']},
 [BI.DISCORD_DEEP]:{n:'Discord Depths',bH:40,a:8,sf:B.DARK_PANEL,su:B.DEEP,structs:['shrine','broken_tower']},
 [BI.TAIGA]:{n:'Taiga',bH:88,a:16,sf:B.GRASS,su:B.DIRT,tr:'spruce',tc:.035},
@@ -2316,7 +2330,12 @@ constructor(x,y,z,dirX,dirZ){
 }
 tick(dt){
   if(!this.alive)return false;
-  if(this.pauseT>0){this.pauseT-=dt;return true}
+  if(this._playerDriving){
+    // Player-controlled: speed set by _trainThrottle via player tick
+    if(abs(this.spd)<.01){this.grp.position.copy(this.pos);this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ);return true}
+  }else{
+    if(this.pauseT>0){this.pauseT-=dt;return true}
+  }
   // Move along current direction
   const nx=this.pos.x+this.dirX*this.spd*dt;
   const nz=this.pos.z+this.dirZ*this.spd*dt;
@@ -2336,12 +2355,14 @@ tick(dt){
       if(b===B.RAIL_IRON||b===B.RAIL_POWERED){this.pos.y=testY+.2;break}
     }
   }else{
-    // Reverse direction and pause briefly at end of line
-    this.dirX=-this.dirX;this.dirZ=-this.dirZ;this.pauseT=3;
+    if(this._playerDriving){this.spd=0;_trainThrottle=0}
+    else{this.dirX=-this.dirX;this.dirZ=-this.dirZ;this.pauseT=3}
   }
-  // Station detection - pause at platforms
-  const belowBlock=W.gB(fl(this.pos.x),fl(this.pos.y)-1,fl(this.pos.z));
-  if(belowBlock===B.PLATFORM_BLK&&this.pauseT<=0)this.pauseT=5;
+  // Station detection - pause at platforms (only when auto-driving)
+  if(!this._playerDriving){
+    const belowBlock=W.gB(fl(this.pos.x),fl(this.pos.y)-1,fl(this.pos.z));
+    if(belowBlock===B.PLATFORM_BLK&&this.pauseT<=0)this.pauseT=5;
+  }
   this.grp.position.copy(this.pos);
   this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ);
   return true;
@@ -2414,14 +2435,37 @@ tick(dt){if(this.hT>0)this.hT-=dt;this.aT+=dt;const I=W.inp;this.yaw-=I.dx*.002;
       const dmg=fl(this.fallDist-3);if(dmg>0)this.hurt(dmg)}
     this.fallDist=0}
   if(this.mode==='creative'&&I.spJ){I.spJ=false;const now=Date.now();if(now-this._ls<300)this.flying=!this.flying;this._ls=now}
+  // Train mounting override - player rides in cabin
+  if(_trainMount&&_trainMount.alive){
+    // W/S controls throttle
+    if(I.k.KeyW&&_trainFuel>0)_trainThrottle=mn(1,_trainThrottle+dt*1.5);
+    else if(I.k.KeyS)_trainThrottle=mx(-0.3,_trainThrottle-dt*2);
+    else _trainThrottle*=.98;
+    // Fuel consumption
+    if(_trainThrottle>0&&_trainFuel>0){_trainFuel-=dt*_trainThrottle*2;if(_trainFuel<=0){_trainFuel=0;_trainThrottle=0}}
+    // Set train speed based on throttle
+    _trainMount.spd=_trainThrottle*6;
+    // Position player in train cabin
+    const t=_trainMount;const ang=Math.atan2(t.dirX,t.dirZ);
+    // Cabin offset: slightly behind center, elevated to cabin height
+    const cabX=t.pos.x-Math.sin(ang)*1.0;const cabZ=t.pos.z-Math.cos(ang)*1.0;
+    this.pos.set(cabX,t.pos.y+1.8,cabZ);this.vel.set(0,0,0);
+    updateFuelSlot();
+    // Auto-feed coal when fuel is low
+    if(_trainFuel<5&&_trainThrottle>0)feedCoal();
+  }else if(_trainMount&&!_trainMount.alive){dismountTrain()}
   W.cam.position.set(this.pos.x,this.pos.y+1.62,this.pos.z);W.cam.quaternion.setFromEuler(new THREE.Euler(this.pitch,this.yaw,0,'YXZ'));
   this.act(dt);if(this.pos.y<-20&&this.mode==='survival')this.hurt(100);if(this.pos.y<-50)this.pos.y=160}
 col(dt){const hw=.28,sol=(a,b,c)=>BD[W.gB(a,b,c)]?.sol;let ny=this.pos.y+this.vel.y*dt;if(this.vel.y<0&&(sol(fl(this.pos.x),fl(ny),fl(this.pos.z))||sol(fl(this.pos.x-hw),fl(ny),fl(this.pos.z-hw))||sol(fl(this.pos.x+hw),fl(ny),fl(this.pos.z+hw)))){ny=fl(ny)+1;this.vel.y=0;this.gr=true}else{this.gr=false;if(this.vel.y>0&&sol(fl(this.pos.x),fl(ny+1.7),fl(this.pos.z))){this.vel.y=0;ny=this.pos.y}}this.pos.y=ny;let nx=this.pos.x+this.vel.x*dt;if(sol(fl(nx+hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx+hw),fl(this.pos.y+1),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y+1),fl(this.pos.z)))nx=this.pos.x;this.pos.x=nx;let nz=this.pos.z+this.vel.z*dt;if(sol(fl(this.pos.x),fl(this.pos.y),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y),fl(nz-hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz-hw)))nz=this.pos.z;this.pos.z=nz}
 act(dt){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const hit=this.ray(W.cam.position.clone(),dir,5.5);const bn=$('bn');
   if(hit){W.hl.visible=true;W.hl.position.set(hit.x+.5,hit.y+.5,hit.z+.5);bn.textContent=BD[hit.b]?.nm||'';
     if(W.inp.ml){if(!this.bt||this.bt.x!==hit.x||this.bt.y!==hit.y||this.bt.z!==hit.z){this.bt={x:hit.x,y:hit.y,z:hit.z};this.bp=0}const hd=this.mode==='creative'?.05:(BD[hit.b]?.hd||1);if(hd>0){this.bp+=dt/hd;W.brkS=mn(5,fl(this.bp*6));if(this.bp>=1){const dr=BD[hit.b]?.dr??hit.b;if(dr!==B.AIR&&this.mode==='survival'){W.drops.push(new ItemDrop(hit.x+.5,hit.y,hit.z+.5,dr))}W.sB(hit.x,hit.y,hit.z,B.AIR);this.bp=0;this.bt=null;W.brkS=-1}}}else{this.bp=0;this.bt=null;W.brkS=-1}
-    if(W.inp.rj){W.inp.rj=false;const it=this.hb[this.sel];if(it&&BD[it.id]&&BD[it.id].sol!==undefined&&!BD[it.id].liq){const bx=hit.x+hit.n[0],by=hit.y+hit.n[1],bz=hit.z+hit.n[2];const ex=W.gB(bx,by,bz);if((ex===B.AIR||BD[ex]?.liq)&&!(abs(bx-fl(this.pos.x))<1&&by>=fl(this.pos.y)&&by<=fl(this.pos.y+1)&&abs(bz-fl(this.pos.z))<1)){W.sB(bx,by,bz,it.id);if(this.mode!=='creative'){it.n--;if(it.n<=0)this.hb[this.sel]=null}}}}}
-  else{W.hl.visible=false;bn.textContent='';this.bp=0;this.bt=null;W.brkS=-1}
+    if(W.inp.rj){W.inp.rj=false;
+      // Chest interaction - right-click opens chest UI
+      if(hit.b===B.CHST){openChestUI(hit.x,hit.y,hit.z);return}
+      // Train interaction - right-click near a train mounts it
+      if(!_trainMount){for(const t of W.trains){if(t.pos.distanceTo(this.pos)<5){mountTrain(t);return}}}
+      const it=this.hb[this.sel];if(it&&BD[it.id]&&BD[it.id].sol!==undefined&&!BD[it.id].liq){const bx=hit.x+hit.n[0],by=hit.y+hit.n[1],bz=hit.z+hit.n[2];const ex=W.gB(bx,by,bz);if((ex===B.AIR||BD[ex]?.liq)&&!(abs(bx-fl(this.pos.x))<1&&by>=fl(this.pos.y)&&by<=fl(this.pos.y+1)&&abs(bz-fl(this.pos.z))<1)){W.sB(bx,by,bz,it.id);if(this.mode!=='creative'){it.n--;if(it.n<=0)this.hb[this.sel]=null}}}}}  else{W.hl.visible=false;bn.textContent='';this.bp=0;this.bt=null;W.brkS=-1}
   if(W.inp.lj){W.inp.lj=false;for(const m of W.mobs){if(m.dT>=0||m.pos.distanceTo(this.pos)>3.5)continue;const tm=m.pos.clone().sub(this.pos).normalize();if(dir.dot(tm)>.4)m.hit(this.mode==='creative'?100:4,tm)}}}
 ray(o,d,md){let x=fl(o.x),y=fl(o.y),z=fl(o.z);const sx=d.x>0?1:-1,sy=d.y>0?1:-1,sz=d.z>0?1:-1;let tx=d.x?((d.x>0?x+1:x)-o.x)/d.x:1e9,ty=d.y?((d.y>0?y+1:y)-o.y)/d.y:1e9,tz=d.z?((d.z>0?z+1:z)-o.z)/d.z:1e9;const ddx=d.x?abs(1/d.x):1e9,ddy=d.y?abs(1/d.y):1e9,ddz=d.z?abs(1/d.z):1e9;let n=[0,0,0];for(let i=0;i<fl(md)*3;i++){const b=W.gB(x,y,z);if(b!==B.AIR&&BD[b]?.sol)return{x,y,z,b,n};if(tx<ty){if(tx<tz){x+=sx;tx+=ddx;n=[-sx,0,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}else{if(ty<tz){y+=sy;ty+=ddy;n=[0,-sy,0]}else{z+=sz;tz+=ddz;n=[0,0,-sz]}}if(mn(tx,ty,tz)>md)break}return null}
 addI(id,c){for(let i=0;i<9;i++)if(this.hb[i]?.id===id&&this.hb[i].n<(BD[id]?.st||64)){this.hb[i].n+=c;return true}for(let i=0;i<27;i++)if(this.inv[i]?.id===id&&this.inv[i].n<(BD[id]?.st||64)){this.inv[i].n+=c;return true}for(let i=0;i<9;i++)if(!this.hb[i]){this.hb[i]={id,n:c};return true}for(let i=0;i<27;i++)if(!this.inv[i]){this.inv[i]={id,n:c};return true}return false}
@@ -2435,7 +2479,7 @@ rm(){W.sc.remove(this.mesh);this.mesh.geometry.dispose();this.mesh.material.disp
 
 // INPUT
 class Inp{constructor(){this.k={};this.ml=false;this.lj=false;this.rj=false;this.dx=0;this.dy=0;this.lk=false;this.spJ=false;
-document.addEventListener('keydown',e=>{this.k[e.code]=true;if(e.code==='KeyP'&&W.st==='play')toggleP();if(e.code==='KeyE'&&(W.st==='play'||W.st==='inv'))toggleI();if(e.code==='Escape'){if(W.st==='inv')toggleI();else if(W.st==='cheat')closeCheat();else if(W.st==='play')toggleP()}if(e.code==='Space')this.spJ=true;if(e.code.match(/^Digit[1-9]$/)&&W.pl)W.pl.sel=+e.code[5]-1;if(e.code==='Slash'&&W.st==='play'&&W.pl?.mode==='creative')openCheat()});
+document.addEventListener('keydown',e=>{this.k[e.code]=true;if(e.code==='KeyP'&&W.st==='play')toggleP();if(e.code==='KeyE'){if(W.st==='play'){if(_trainMount){dismountTrain()}else{toggleI()}}else if(W.st==='inv')toggleI();else if(W.st==='chest')closeChestUI()}if(e.code==='Escape'){if(W.st==='inv')toggleI();else if(W.st==='chest')closeChestUI();else if(W.st==='cheat')closeCheat();else if(W.st==='play')toggleP()}if(e.code==='Space')this.spJ=true;if(e.code.match(/^Digit[1-9]$/)&&W.pl)W.pl.sel=+e.code[5]-1;if(e.code==='Slash'&&W.st==='play'&&W.pl?.mode==='creative')openCheat();if(e.code==='KeyF'&&_trainMount)feedCoal()});
 document.addEventListener('keyup',e=>this.k[e.code]=false);
 document.addEventListener('mousedown',e=>{if(!this.lk)return;if(e.button===0){this.ml=true;this.lj=true}if(e.button===2)this.rj=true});
 document.addEventListener('mouseup',e=>{if(e.button===0)this.ml=false});
@@ -2472,7 +2516,7 @@ function delW(sd){localStorage.removeItem('vc_w_'+sd);saveWL(getW().filter(w=>w.
 let cSlots=[],cSz=2,dragItm=null;
 // Track mouse for drag
 document.addEventListener('mousemove',e=>{const d=$('dragItem');if(d.style.display==='block'){d.style.left=(e.clientX-14)+'px';d.style.top=(e.clientY-14)+'px'}});
-function showDrag(item){const d=$('dragItem');d.innerHTML='';if(!item){d.style.display='none';dragItm=null;return}dragItm=item;d.style.display='block';if(icons[item.id]){const cv=document.createElement('canvas');cv.width=cv.height=16;const img=new Image();img.onload=()=>cv.getContext('2d').drawImage(img,0,0);img.src=icons[item.id];d.appendChild(cv);if(item.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=item.n;d.appendChild(sp)}}}
+function showDrag(item){const d=$('dragItem');d.innerHTML='';if(!item){d.style.display='none';dragItm=null;return}dragItm=item;d.style.display='block';const cv=mkIcon(item.id);if(cv){d.appendChild(cv);if(item.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=item.n;d.appendChild(sp)}}}
 function slotClick(getItem,setItem){
   // If holding item: place into slot
   if(dragItm){const existing=getItem();
@@ -2483,17 +2527,71 @@ function slotClick(getItem,setItem){
     const item=getItem();if(item){showDrag({...item});setItem(null)}}
   rebI();
 }
-function mkSlot(par,item,getter,setter){const s=document.createElement('div');s.className='is';if(item&&icons[item.id]){const cv=document.createElement('canvas');cv.width=cv.height=16;const img=new Image();img.onload=()=>cv.getContext('2d').drawImage(img,0,0);img.src=icons[item.id];s.appendChild(cv);if(item.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=item.n;s.appendChild(sp)}}s.onclick=()=>slotClick(getter,setter);par.appendChild(s)}
-function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.WATER||id===B.BED||BD[id].liq)continue;const s=document.createElement('div');s.className='is';if(icons[id]){const cv=document.createElement('canvas');cv.width=cv.height=16;const img=new Image();img.onload=()=>cv.getContext('2d').drawImage(img,0,0);img.src=icons[id];s.appendChild(cv)}s.onclick=()=>{showDrag({id,n:64})};g.appendChild(s)}}else $('ciDiv').style.display='none';rebI()}
+function mkSlot(par,item,getter,setter){const s=document.createElement('div');s.className='is';if(item){const cv=mkIcon(item.id);if(cv){s.appendChild(cv);if(item.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=item.n;s.appendChild(sp)}}}s.onclick=()=>slotClick(getter,setter);par.appendChild(s)}
+function openI(ct){cSz=ct?3:2;cSlots=Array(cSz*cSz).fill(null);W.st='inv';$('invUI').style.display='flex';document.exitPointerLock();$('invT').textContent=ct?'Crafting':'Inventory';if(W.pl.mode==='creative'){$('ciDiv').style.display='block';const g=$('ciG');g.innerHTML='';for(const bid in BD){const id=+bid;if(id===B.AIR||id===B.WATER||id===B.BED||BD[id].liq)continue;const s=document.createElement('div');s.className='is';const cv=mkIcon(id);if(cv)s.appendChild(cv);s.onclick=()=>{showDrag({id,n:64})};s.onmouseenter=(e)=>{const tt=$('itemTT');tt.textContent=BD[id]?.nm||'Block '+id;tt.style.display='block';tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};s.onmouseleave=()=>{$('itemTT').style.display='none'};s.onmousemove=(e)=>{const tt=$('itemTT');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-8)+'px'};g.appendChild(s)}}else $('ciDiv').style.display='none';rebI()}
 function closeI(){W.st='play';$('invUI').style.display='none';if(dragItm){W.pl.addI(dragItm.id,dragItm.n);showDrag(null)}for(let i=0;i<cSlots.length;i++)if(cSlots[i]){W.pl.addI(cSlots[i].id,cSlots[i].n);cSlots[i]=null}if(W.ren)W.ren.domElement.requestPointerLock()}
 function rebI(){
   const cg=$('cGrid');cg.innerHTML='';cg.style.gridTemplateColumns=`repeat(${cSz},34px)`;
   for(let i=0;i<cSz*cSz;i++){const idx=i;mkSlot(cg,cSlots[i],()=>cSlots[idx],(v)=>{cSlots[idx]=v})}
   const grid=[];for(let y=0;y<cSz;y++){grid[y]=[];for(let x=0;x<cSz;x++)grid[y][x]=cSlots[y*cSz+x]?.id||0}
   const res=chkR(grid,cSz);const co=$('cOut');co.innerHTML='';
-  if(res){const s=document.createElement('div');s.className='is';if(icons[res.id]){const cv=document.createElement('canvas');cv.width=cv.height=16;const img=new Image();img.onload=()=>cv.getContext('2d').drawImage(img,0,0);img.src=icons[res.id];s.appendChild(cv);if(res.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=res.n;s.appendChild(sp)}}s.onclick=()=>{if(dragItm)return;showDrag({id:res.id,n:res.n});for(let i=0;i<cSlots.length;i++)if(cSlots[i]){cSlots[i].n--;if(cSlots[i].n<=0)cSlots[i]=null}rebI()};co.appendChild(s)}
+  if(res){const s=document.createElement('div');s.className='is';const cv=mkIcon(res.id);if(cv){s.appendChild(cv);if(res.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=res.n;s.appendChild(sp)}}s.onclick=()=>{if(dragItm)return;showDrag({id:res.id,n:res.n});for(let i=0;i<cSlots.length;i++)if(cSlots[i]){cSlots[i].n--;if(cSlots[i].n<=0)cSlots[i]=null}rebI()};co.appendChild(s)}
   $('iM').innerHTML='';for(let i=0;i<27;i++){const idx=i;mkSlot($('iM'),W.pl.inv[i],()=>W.pl.inv[idx],(v)=>{W.pl.inv[idx]=v})}
   $('iH').innerHTML='';for(let i=0;i<9;i++){const idx=i;mkSlot($('iH'),W.pl.hb[i],()=>W.pl.hb[idx],(v)=>{W.pl.hb[idx]=v})}
+}
+
+// CHEST STORAGE SYSTEM
+const _chestData={};
+function chestKey(x,y,z){return x+','+y+','+z}
+function getChest(x,y,z){const k=chestKey(x,y,z);if(!_chestData[k])_chestData[k]=Array(27).fill(null);return _chestData[k]}
+let _openChest=null;
+function openChestUI(x,y,z){
+  _openChest={x,y,z};W.st='chest';$('chestUI').style.display='flex';document.exitPointerLock();
+  $('chestTitle').textContent='Chest';rebChest();
+}
+function closeChestUI(){
+  W.st='play';$('chestUI').style.display='none';_openChest=null;
+  if(dragItm){W.pl.addI(dragItm.id,dragItm.n);showDrag(null)}
+  if(W.ren)W.ren.domElement.requestPointerLock();
+}
+function rebChest(){
+  if(!_openChest)return;const cd=getChest(_openChest.x,_openChest.y,_openChest.z);
+  const cg=$('chestGrid');cg.innerHTML='';
+  for(let i=0;i<27;i++){const idx=i;mkSlot(cg,cd[i],()=>cd[idx],(v)=>{cd[idx]=v;rebChest()})}
+  const ig=$('chestInv');ig.innerHTML='';
+  for(let i=0;i<27;i++){const idx=i;mkSlot(ig,W.pl.inv[i],()=>W.pl.inv[idx],(v)=>{W.pl.inv[idx]=v;rebChest()})}
+  const hg=$('chestHB');hg.innerHTML='';
+  for(let i=0;i<9;i++){const idx=i;mkSlot(hg,W.pl.hb[i],()=>W.pl.hb[idx],(v)=>{W.pl.hb[idx]=v;rebChest()})}
+}
+
+// TRAIN MOUNTING SYSTEM
+let _trainMount=null,_trainFuel=0,_trainFuelMax=100,_trainThrottle=0;
+function mountTrain(train){
+  _trainMount=train;_trainThrottle=0;train._playerDriving=true;train.spd=0;
+  $('trainHUD').style.display='block';
+  // Check if player has coal - grant fuel slot
+  updateFuelSlot();
+}
+function dismountTrain(){
+  if(!_trainMount)return;
+  _trainMount._playerDriving=false;_trainMount.spd=0;_trainMount=null;_trainThrottle=0;
+  $('trainHUD').style.display='none';
+  W.pl.pos.y+=2;
+}
+function updateFuelSlot(){
+  const fs=$('fuelSlot');fs.innerHTML='';
+  if(_trainFuel>0){
+    const cv=mkIcon(B.COAL_I);if(cv)fs.appendChild(cv);
+  }
+  $('fuelFill').style.width=mn(100,(_trainFuel/_trainFuelMax)*100)+'%';
+  $('trainSpd').textContent=(_trainMount?abs(_trainMount.spd).toFixed(1):'0');
+}
+function feedCoal(){
+  if(_trainFuel>=_trainFuelMax)return false;
+  // Check hotbar/inv for coal
+  for(let i=0;i<9;i++){if(W.pl.hb[i]?.id===B.COAL_I){W.pl.hb[i].n--;if(W.pl.hb[i].n<=0)W.pl.hb[i]=null;_trainFuel=mn(_trainFuelMax,_trainFuel+25);return true}}
+  for(let i=0;i<27;i++){if(W.pl.inv[i]?.id===B.COAL_I){W.pl.inv[i].n--;if(W.pl.inv[i].n<=0)W.pl.inv[i]=null;_trainFuel=mn(_trainFuelMax,_trainFuel+25);return true}}
+  return false;
 }
 
 // WORLD
@@ -2643,7 +2741,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     if(this.brkS>=0&&this.pl.bt){this.brkOvl.visible=true;this.brkOvl.position.set(this.pl.bt.x+.5,this.pl.bt.y+.5,this.pl.bt.z+.5);
       const stage=this.brkS/5;this.brkOvl.material.opacity=.1+stage*.45;this.brkOvl.material.color.setRGB(stage*.3,0,0);
       this.brkOvl.scale.set(1.001+stage*.003,1.001+stage*.003,1.001+stage*.003)}else{this.brkOvl.visible=false;this.brkOvl.scale.set(1,1,1)}
-    const p=this.pl;document.querySelectorAll('.hs').forEach((s,i)=>{s.className='hs'+(i===p.sel?' act':'');while(s.firstChild)s.removeChild(s.firstChild);const it=p.hb[i];if(it&&icons[it.id]){const cv=document.createElement('canvas');cv.width=cv.height=16;const img=new Image();img.onload=()=>cv.getContext('2d').drawImage(img,0,0);img.src=icons[it.id];s.appendChild(cv);if(it.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=it.n;s.appendChild(sp)}}});
+    const p=this.pl;document.querySelectorAll('.hs').forEach((s,i)=>{s.className='hs'+(i===p.sel?' act':'');while(s.firstChild)s.removeChild(s.firstChild);const it=p.hb[i];if(it){const cv=mkIcon(it.id);if(cv){s.appendChild(cv);if(it.n>1){const sp=document.createElement('span');sp.className='cn';sp.textContent=it.n;s.appendChild(sp)}}}});
     document.querySelectorAll('.ht2 svg path').forEach((h,i)=>h.setAttribute('fill',i<p.hp/2?'#e22':'#444'));
     document.querySelectorAll('.fd2 svg path').forEach((f,i)=>f.setAttribute('fill',i<p.hunger/2?'#c84':'#444'));
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';
@@ -2654,7 +2752,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
 };
 
 // UI
-function hideAll(){['menu','wsel','cwUI','mpUI','ld','hud','invUI','pauseUI','deathUI'].forEach(id=>$(id).style.display='none')}
+function hideAll(){['menu','wsel','cwUI','mpUI','ld','hud','invUI','pauseUI','deathUI','chestUI','trainHUD'].forEach(id=>$(id).style.display='none')}
 function showWSel(){hideAll();$('wsel').style.display='flex';const l=getW(),wl=$('wlist');wl.innerHTML='';if(!l.length)wl.innerHTML='<div style="text-align:center;font-size:7px;color:#666;padding:16px">No worlds yet</div>';l.forEach(w=>{const e=document.createElement('div');e.className='we';e.innerHTML=`<div>${w.nm}</div><div class="wi">${w.md} · Seed: ${w.sd}</div>`;e.onclick=()=>{const d=loadW(w.sd);W.curW=w;W.start(w.sd,w.md,d)};wl.appendChild(e)})}
 function hideWSel(){hideAll();$('menu').style.display='flex'}
 function showCW(){hideAll();$('cwUI').style.display='flex';$('cwn').value='World '+(getW().length+1);$('cws').value='';W.gMode='survival'}

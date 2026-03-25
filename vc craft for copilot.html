@@ -433,15 +433,15 @@ function htA(x,z,b){
   if(b===BI.VOLCANO){
     const coneDist=abs(nR.n2(x*.003,z*.003));
     // Main volcanic cone - dramatic peak
-    if(coneDist<.15)h+=80*(1-coneDist/.15);
-    else if(coneDist<.25)h+=30*(1-((coneDist-.15)/.1));
+    if(coneDist<.15)h+=100*(1-coneDist/.15);
+    else if(coneDist<.3)h+=45*(1-((coneDist-.15)/.15));
     // Ridge enhancement
     const ridge=abs(nR.n2(x*.01,z*.01));
-    if(ridge<.08)h+=25*(1-ridge/.08);
+    if(ridge<.08)h+=35*(1-ridge/.08);
     h+=abs(nE.n2(x*.02,z*.02))*20;
     // Crater depression at very peak
     const craterN=nD.n2(x*.006,z*.006);
-    if(craterN>.65&&h>230)h-=25*(craterN-.65)/.35;
+    if(craterN>.6&&h>220)h-=40*(craterN-.6)/.4;
     // Outer foothills transition
     if(coneDist>.2)h-=(coneDist-.2)*60;
   }
@@ -1971,12 +1971,12 @@ deco(){
       // Massive crater at volcanic peaks
       const craterN=nD.n2(wx*.005,wz*.005);
       const craterR=nD.n2(wx*.015,wz*.015);
-      if(craterN>.55&&h>210){
+      if(craterN>.5&&h>200){
         // Blow out crater - clear top, fill with broad lava basin
-        const crDepth=mn(30,fl((craterN-.55)*180));
+        const crDepth=mn(40,fl((craterN-.5)*160));
         for(let y=h;y>=h-crDepth;y--)this.S(x,y,z,B.AIR);
         // Wide flat lava lake at crater bottom
-        for(let y=h-crDepth;y<=h-crDepth+6;y++)this.S(x,y,z,B.LAVA);
+        for(let y=h-crDepth;y<=h-crDepth+10;y++)this.S(x,y,z,B.LAVA);
         // Obsidian rim around lava surface
         if(craterN>.55&&craterN<.58)this.S(x,h-crDepth+7,z,B.OBSIDIAN);
       }
@@ -2600,22 +2600,20 @@ deco(){
       // If nothing below and nothing above same fluid, check for lateral support
       if(below===B.AIR){
         const above=this.G(x,y+1,z);
-        if(above!==b){
-          let fluidNeighbors=0;let solidBelow=false;
-          for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
-            const nx=x+dx,nz=z+dz;
-            if(nx>=0&&nx<CS&&nz>=0&&nz<CS){
-              if(this.G(nx,y,nz)===b)fluidNeighbors++;
-              if(this.G(nx,y-1,nz)===b||BD[this.G(nx,y-1,nz)]?.sol)solidBelow=true;
-            }
+        let fluidNeighbors=0;let solidSupport=false;
+        for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+          const nx=x+dx,nz=z+dz;
+          if(nx>=0&&nx<CS&&nz>=0&&nz<CS){
+            if(this.G(nx,y,nz)===b)fluidNeighbors++;
+            if(BD[this.G(nx,y-1,nz)]?.sol)solidSupport=true;
           }
-          if(fluidNeighbors<2&&!solidBelow)this.S(x,y,z,B.AIR);
         }
+        if(above!==b&&fluidNeighbors<3&&!solidSupport)this.S(x,y,z,B.AIR);
       }
     }
   }
   // Cave water sources: small springs at cave ceilings (non-ocean biomes only)
-  if(chunkBio!==BI.OC&&chunkBio!==BI.BE){
+  if(!this._hasStruct&&chunkBio!==BI.OC&&chunkBio!==BI.BE){
     for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
       for(let y=WL-20;y>15;y--){
         if(this.G(x,y,z)!==B.AIR)continue;
@@ -2640,11 +2638,11 @@ deco(){
       let hasCeil=false;for(let cy=y+1;cy<y+20&&cy<CH;cy++){if(BD[this.G(x,cy,z)]?.sol){hasCeil=true;break}}
       if(!hasCeil)continue;
       // Depth-based probability: deeper = more lava
-      const prob=y<20?.14:y<35?.09:y<50?.05:y<65?.025:.012;
+      const prob=y<15?.18:y<30?.12:y<45?.07:y<60?.035:.015;
       if(dh01(ox+x*137+y*3,oz+z*251)<prob){
         // Flood-fill a flat lava pool at this Y level
         const poolQ=[[x,z]],visited=new Set();visited.add(x+','+z);
-        let poolSize=0;const maxPool=20;
+        let poolSize=0;const maxPool=40;
         while(poolQ.length>0&&poolSize<maxPool){
           const[px,pz]=poolQ.shift();
           if(this.G(px,y,pz)===B.AIR&&BD[this.G(px,y-1,pz)]?.sol){
@@ -2668,9 +2666,9 @@ deco(){
       if(!BD[this.G(x,y,z)]?.sol)continue;
       if(this.G(x,y-1,z)!==B.AIR)continue;
       // Ceiling source - rare
-      if(dh01(ox+x*431+y*7,oz+z*613)<.004){
+      if(dh01(ox+x*431+y*7,oz+z*613)<.008){
         // Drop lava down from ceiling
-        for(let dy=1;dy<=12;dy++){
+        for(let dy=1;dy<=20;dy++){
           if(y-dy<2)break;
           const below=this.G(x,y-dy,z);
           if(below===B.AIR)this.S(x,y-dy,z,B.LAVA);

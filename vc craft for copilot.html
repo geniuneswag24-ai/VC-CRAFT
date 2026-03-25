@@ -1592,163 +1592,224 @@ deco(){
   
   // ═══ GARFBOT CITY: proper city grid with district variety ═══
   if(chunkBio===BI.GARFBOT_CITY){
-    const gridX=(this.cx%3+3)%3,gridZ=(this.cz%3+3)%3;
+    const gridX=(this.cx%4+4)%4,gridZ=(this.cz%4+4)%4;
     const h0=this.sY(8,8);if(h0<=WL)return;
+    const bSeed=dh01(this.cx*123+7,this.cz*456+13);
+    // District determination based on larger-scale noise
+    const distN=dh01(fl(this.cx/3)*77,fl(this.cz/3)*99);
+    const dist=distN<.25?'industrial':distN<.5?'commercial':distN<.75?'residential':'garfbot';
+    
+    // ═══ ROADS: gridX===0 OR gridZ===0 ═══
     if(gridX===0||gridZ===0){
-      // Roads with sidewalks
       for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
-        const h=this.sY(x,z);if(h<=WL)continue;
-        if(gridX===0&&gridZ===0){this.S(x,h,z,B.ASPHALT);if(x<3||x>12||z<3||z>12)this.S(x,h,z,B.SIDEWALK)}
-        else if(gridX===0){this.S(x,h,z,x<2||x>13?B.SIDEWALK:B.ASPHALT)}
-        else{this.S(x,h,z,z<2||z>13?B.SIDEWALK:B.ASPHALT)}
+        const edge=x<2||x>13||z<2||z>13;
+        this.S(x,h0,z,edge?B.SIDEWALK:B.ASPHALT);
+        this.S(x,h0-1,z,B.CONCRETE);this.S(x,h0-2,z,B.CONCRETE);
+        // Road markings (yellow center line)
+        if(!edge&&(x===7||x===8)&&z%4===0)this.S(x,h0,z,B.CONCRETE);
       }
-      // Street lights - sparse, only at intersections and key positions
+      // Street lights at intersections and intervals
       if(gridX===0&&gridZ===0){
-        const h=this.sY(2,2);if(h>WL){for(let dy=1;dy<5;dy++)this.S(2,h+dy,2,B.METAL_PANEL);this.S(2,h+5,2,B.NEON_BLK)}
-        const h2=this.sY(13,13);if(h2>WL){for(let dy=1;dy<5;dy++)this.S(13,h2+dy,13,B.METAL_PANEL);this.S(13,h2+5,13,B.NEON_BLK)}
-      }else if(dh01(this.cx*111,this.cz*222)>.75){
-        const lx2=gridX===0?2:8,lz2=gridZ===0?2:8;const h=this.sY(lx2,lz2);if(h>WL){for(let dy=1;dy<5;dy++)this.S(lx2,h+dy,lz2,B.METAL_PANEL);this.S(lx2,h+5,lz2,B.NEON_BLK)}
-      }
-      if(dh01(this.cx*77,this.cz*88)>.85)this.S(8,h0,8,B.SEA_LANTERN);
-      if(dh01(this.cx*444,this.cz*666)>.6)this.S(12,h0+1,12,B.CITY_RUBBLE);
-      // Parking lots at some intersections
-      if(gridX===0&&gridZ===0&&dh01(this.cx*77,this.cz*88)>.6){
-        for(let x=4;x<12;x++)for(let z=4;z<12;z++)this.S(x,h0,z,B.CONCRETE);
-        for(let x=4;x<12;x+=2)this.S(x,h0+1,4,B.FENCE_BLK);
-      }
-    }else{
-      const bh=this.sY(4,4);if(bh<=WL)return;
-      const bSeed=dh01(this.cx*777,this.cz*333);
-      const bType=dh01(this.cx*123,this.cz*456); // building type selector
-      const bw=10+fl(dh01(this.cx*11,this.cz*13)*4),bd2=10+fl(dh01(this.cx*17,this.cz*19)*4);
-      const ox2=fl((CS-bw)/2),oz2=fl((CS-bd2)/2);
-      // Sidewalks around building
-      for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){const h=this.sY(x,z);if(h>WL)this.S(x,h,z,B.SIDEWALK)}
-      
-      if(bType<.25){
-        // TYPE 1: Office tower (tall glass skyscraper)
-        const floors=8+fl(bSeed*12),fh=4;
-        for(let f=0;f<floors;f++){
-          const fy=bh+1+f*fh;
-          for(let dy=0;dy<fh;dy++)for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++){
-            const w=dx===0||dx===bw-1||dz===0||dz===bd2-1;
-            if(dy===0)this.S(ox2+dx,fy+dy,oz2+dz,B.METAL_PANEL);
-            else if(w)this.S(ox2+dx,fy+dy,oz2+dz,dy===fh-1?B.CONCRETE:B.GLASS_TOWER);
-          }
-          // Stairwell
-          for(let dy=0;dy<fh;dy++){this.S(ox2+1,fy+dy,oz2+1,B.CONCRETE);this.S(ox2+2,fy+dy,oz2+1,B.STAIR_STONE)}
-          // Office partitions
-          if(f>0&&f%2===0){for(let dy=1;dy<fh-1;dy++)for(let dz=3;dz<bd2-2;dz++)this.S(ox2+fl(bw/2),fy+dy,oz2+dz,B.GLASS);
-            this.S(ox2+fl(bw/2),fy+1,oz2+fl(bd2/2),B.AIR);this.S(ox2+fl(bw/2),fy+2,oz2+fl(bd2/2),B.AIR)}
-          // Cubicle blocks
-          if(f>0){for(let dx=3;dx<bw-3;dx+=3)for(let dz=3;dz<bd2-3;dz+=4)this.S(ox2+dx,fy+1,oz2+dz,B.CABINET)}
+        for(const[lx2,lz2]of[[2,2],[13,2],[2,13],[13,13]]){
+          for(let dy=1;dy<=6;dy++)this.S(lx2,h0+dy,lz2,B.METAL_PANEL);
+          this.S(lx2,h0+7,lz2,B.NEON_BLK);this.S(lx2+1,h0+7,lz2,B.SEA_LANTERN);
         }
-        for(let dy=1;dy<4;dy++)for(let dx=fl(bw/2)-1;dx<=fl(bw/2)+1;dx++)this.S(ox2+dx,bh+1+dy,oz2,B.AIR);
-        const ry=bh+1+floors*fh;
-        for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++)this.S(ox2+dx,ry,oz2+dz,B.CONCRETE);
-        this.S(ox2+2,ry+1,oz2+2,B.METAL_PANEL);this.S(ox2+2,ry+2,oz2+2,B.METAL_PANEL);
-        // Roof corner lights
-        this.S(ox2,ry+1,oz2,B.NEON_BLK);this.S(ox2+bw-1,ry+1,oz2,B.NEON_BLK);this.S(ox2,ry+1,oz2+bd2-1,B.NEON_BLK);this.S(ox2+bw-1,ry+1,oz2+bd2-1,B.NEON_BLK);
-      }else if(bType<.45){
-        // TYPE 2: Short commercial/service building (2-3 floors)
-        const floors=2+fl(bSeed*2),fh=5;
-        for(let f=0;f<floors;f++){
-          const fy=bh+1+f*fh;
-          buildRoom(this,ox2,fy,oz2,bw,bd2,fh,f===0?B.BRK:B.CONCRETE,B.CONCRETE,B.METAL_PANEL,true);
-        }
-        for(let dy=1;dy<4;dy++)for(let dx=fl(bw/2)-1;dx<=fl(bw/2)+1;dx++)this.S(ox2+dx,bh+1+dy,oz2,B.AIR);
-        // Storefront windows
-        for(let dx=2;dx<bw-2;dx+=2)this.S(ox2+dx,bh+3,oz2,B.GLASS);
-        this.S(ox2+fl(bw/2),bh+fh+1,oz2,B.NEON_BLK);
-        // Interior furnishings
-        for(let dx=2;dx<bw-2;dx+=3)this.S(ox2+dx,bh+2,oz2+bd2-2,B.COUNTER_TOP);
-      }else if(bType<.6){
-        // TYPE 3: Parking garage (open floors)
-        const floors=3+fl(bSeed*2),fh=4;
-        for(let f=0;f<floors;f++){
-          const fy=bh+1+f*fh;
-          for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++)this.S(ox2+dx,fy,oz2+dz,B.CONCRETE);
-          // Corner pillars
-          for(let dy=0;dy<fh;dy++){this.S(ox2,fy+dy,oz2,B.CONCRETE);this.S(ox2+bw-1,fy+dy,oz2,B.CONCRETE);this.S(ox2,fy+dy,oz2+bd2-1,B.CONCRETE);this.S(ox2+bw-1,fy+dy,oz2+bd2-1,B.CONCRETE)}
-          // Mid pillars
-          this.S(ox2+fl(bw/2),fy+1,oz2,B.CONCRETE);this.S(ox2+fl(bw/2),fy+2,oz2,B.CONCRETE);
-          // Ramp stairs between floors
-          for(let dy=0;dy<fh;dy++)this.S(ox2+1,fy+dy,oz2+1,B.STAIR_COB);
-        }
-        // Half-height walls on upper floors
-        for(let f=1;f<floors;f++){const fy=bh+1+f*fh;for(let dx=0;dx<bw;dx++){this.S(ox2+dx,fy+1,oz2,B.CONCRETE);this.S(ox2+dx,fy+1,oz2+bd2-1,B.CONCRETE)}}
-      }else if(bType<.75){
-        // TYPE 4: Industrial building (warehouse/factory)
-        buildRoom(this,ox2,bh+1,oz2,bw,bd2,8,B.METAL_PANEL,B.CONCRETE,B.METAL_PANEL,false);
-        for(let dy=1;dy<4;dy++)this.S(ox2+fl(bw/2),bh+1+dy,oz2,B.AIR);
-        for(let dy=1;dy<4;dy++)this.S(ox2+fl(bw/2)+1,bh+1+dy,oz2,B.AIR);
-        // Loading dock
-        for(let dx=2;dx<6;dx++)this.S(ox2+dx,bh+2,oz2+bd2-1,B.AIR);
-        for(let dx=2;dx<6;dx++)this.S(ox2+dx,bh+3,oz2+bd2-1,B.AIR);
-        // Interior machinery
-        for(let dx=2;dx<bw-2;dx+=4){this.S(ox2+dx,bh+2,oz2+3,B.RUSTED_METAL);this.S(ox2+dx,bh+3,oz2+3,B.RUSTED_METAL)}
-        // Roof equipment
-        this.S(ox2+3,bh+9,oz2+3,B.METAL_PANEL);this.S(ox2+3,bh+10,oz2+3,B.METAL_PANEL);
-      }else if(bType<.9){
-        // TYPE 5: Medium office building (5-8 floors)
-        const floors=5+fl(bSeed*4),fh=4;
-        for(let f=0;f<floors;f++){
-          const fy=bh+1+f*fh;
-          for(let dy=0;dy<fh;dy++)for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++){
-            const w=dx===0||dx===bw-1||dz===0||dz===bd2-1;
-            if(dy===0)this.S(ox2+dx,fy+dy,oz2+dz,B.CONCRETE);
-            else if(w)this.S(ox2+dx,fy+dy,oz2+dz,f<2?B.BRK:B.GLASS_TOWER);
-          }
-          for(let dy=0;dy<fh;dy++){this.S(ox2+1,fy+dy,oz2+1,B.CONCRETE);this.S(ox2+2,fy+dy,oz2+1,B.STAIR_STONE)}
-        }
-        for(let dy=1;dy<4;dy++)for(let dx=fl(bw/2)-1;dx<=fl(bw/2)+1;dx++)this.S(ox2+dx,bh+1+dy,oz2,B.AIR);
-        const ry=bh+1+floors*fh;for(let dx=0;dx<bw;dx++)for(let dz=0;dz<bd2;dz++)this.S(ox2+dx,ry,oz2+dz,B.CONCRETE);
-        // Roof lights
-        this.S(ox2,ry+1,oz2,B.NEON_BLK);this.S(ox2+bw-1,ry+1,oz2+bd2-1,B.NEON_BLK);this.S(ox2+fl(bw/2),ry+1,oz2+fl(bd2/2),B.SEA_LANTERN);
       }else{
-        // TYPE 6: Plaza/open space with benches and rubble
-        for(let dx=1;dx<bw-1;dx++)for(let dz=1;dz<bd2-1;dz++)this.S(ox2+dx,bh,oz2+dz,B.CONCRETE);
-        for(let dx=3;dx<bw-3;dx+=4)this.S(ox2+dx,bh+1,oz2+fl(bd2/2),B.PLNK);
-        if(bSeed>.5){for(let dy=0;dy<3;dy++)this.S(ox2+fl(bw/2),bh+1+dy,oz2+fl(bd2/2),B.STATUE_STONE)}
-        for(let dx=0;dx<bw;dx++){this.S(ox2+dx,bh+1,oz2,B.FENCE_BLK);this.S(ox2+dx,bh+1,oz2+bd2-1,B.FENCE_BLK)}
+        for(const[lx2,lz2]of[[2,8],[13,8]]){
+          for(let dy=1;dy<=5;dy++)this.S(lx2,h0+dy,lz2,B.METAL_PANEL);
+          this.S(lx2,h0+6,lz2,B.SEA_LANTERN);
+        }
+      }
+      // Median barriers on wide roads
+      if(gridX===0&&gridZ!==0){
+        for(let z=3;z<13;z+=2)this.S(8,h0+1,z,B.CONCRETE);
+      }
+      // Rubble and debris
+      for(let i=0;i<3;i++){const rx=2+fl(dh01(ox+i*13,oz+i*17)*12),rz=2+fl(dh01(ox+i*19,oz+i*23)*12);this.S(rx,h0+1,rz,B.CITY_RUBBLE)}
+    }
+    // ═══ BUILDINGS: non-road chunks ═══
+    else{
+      const bType=fl(bSeed*12); // 12 building types
+      const floors=bType<3?fl(5+bSeed*18):bType<6?fl(2+bSeed*5):bType<9?fl(3+bSeed*8):fl(4+bSeed*10);
+      const flH=4; // floor height
+      const totalH=floors*flH;
+      const bx1=1,bz1=1,bx2=14,bz2=14; // building footprint
+      
+      // Building shell
+      for(let x=bx1;x<=bx2;x++)for(let z=bz1;z<=bz2;z++){
+        const isWall=x===bx1||x===bx2||z===bz1||z===bz2;
+        // Foundation
+        this.S(x,h0,z,B.CONCRETE);
+        for(let f=0;f<floors;f++){
+          const fy=h0+1+f*flH;
+          for(let dy=0;dy<flH;dy++){
+            const y=fy+dy;
+            if(dy===0){
+              // Floor slab
+              this.S(x,y,z,dist==='industrial'?B.METAL_PANEL:dist==='garfbot'?B.DARK_PANEL:B.CONCRETE);
+            }else if(isWall){
+              // Wall type varies by building and district
+              if(bType<3){
+                // Tall office: glass exterior with concrete bands
+                this.S(x,y,z,dy===flH-1?B.CONCRETE:B.GLASS_TOWER);
+              }else if(bType<5){
+                // Commercial: brick with windows
+                this.S(x,y,z,(dy===2&&(x+z)%3===0)?B.GLASS:B.BRK);
+              }else if(bType<7){
+                // Parking structure: open sides with pillars
+                const isPillar=(x===bx1||x===bx2)&&(z===bz1||z===bz2||z===7||z===8);
+                this.S(x,y,z,isPillar?B.CONCRETE:B.AIR);
+              }else if(bType<9){
+                // Industrial: metal panels
+                this.S(x,y,z,dy<flH-1?B.METAL_PANEL:B.RUSTED_METAL);
+              }else if(bType<10){
+                // Garfbot facility: dark panels with neon trim
+                this.S(x,y,z,(dy===1&&(x+z)%5===0)?B.NEON_BLK:B.DARK_PANEL);
+              }else{
+                // Residential: stucco with windows
+                this.S(x,y,z,(dy===2&&(x+z)%4===1)?B.GLASS:B.STUCCO);
+              }
+            }else{
+              // Interior - AIR
+              this.S(x,y,z,B.AIR);
+            }
+          }
+        }
+        // Roof
+        this.S(x,h0+1+totalH,z,B.CONCRETE);
+      }
+      
+      // ═══ INTERIOR DETAILS per floor ═══
+      for(let f=0;f<floors;f++){
+        const fy=h0+1+f*flH;
+        if(bType<3){
+          // Office: cubicle partitions, desks
+          for(let x=4;x<=11;x+=4)for(let z=bz1+2;z<bz2-1;z++){
+            this.S(x,fy+1,z,B.CONCRETE);this.S(x,fy+2,z,B.GLASS);
+          }
+          // Central hallway
+          for(let z=bz1+1;z<=bz2-1;z++){this.S(7,fy+1,z,B.AIR);this.S(8,fy+1,z,B.AIR)}
+          // Elevator shaft
+          for(let dy=1;dy<flH;dy++){this.S(bx2-1,fy+dy,bz2-1,B.AIR);this.S(bx2-1,fy+dy,bz2-2,B.LADDER)}
+        }else if(bType>=7&&bType<9){
+          // Industrial: heavy machinery blocks, catwalks
+          for(let x=4;x<=11;x+=3){this.S(x,fy+1,7,B.RUSTED_METAL);this.S(x,fy+2,7,B.RUSTED_METAL);this.S(x,fy+3,7,B.METAL_PANEL)}
+        }else if(bType>=9&&bType<10){
+          // Garfbot facility: storage racks, conduits, neon lighting
+          for(let z=3;z<=12;z+=3){this.S(3,fy+1,z,B.DARK_PANEL);this.S(3,fy+2,z,B.DARK_PANEL);this.S(12,fy+1,z,B.DARK_PANEL);this.S(12,fy+2,z,B.DARK_PANEL)}
+          this.S(7,fy+flH-1,7,B.SEA_LANTERN);
+          // Neon floor strips
+          for(let x=5;x<=10;x++)this.S(x,fy,4,B.NEON_BLK);
+        }else if(bType>=10){
+          // Residential: room dividers, furniture hints
+          this.S(7,fy+1,4,B.PLNK);this.S(7,fy+2,4,B.PLNK);this.S(7,fy+1,11,B.PLNK);this.S(7,fy+2,11,B.PLNK);
+          // Doorways
+          this.S(7,fy+1,7,B.AIR);this.S(7,fy+2,7,B.AIR);
+        }
+        // Floor lighting
+        if(f%2===0)this.S(7,fy+flH-1,7,B.SEA_LANTERN);
+        // Stairwell in corner (all building types)
+        if(f<floors-1){
+          for(let dy=1;dy<flH;dy++){this.S(bx1+1,fy+dy,bz1+1,B.AIR);this.S(bx1+1,fy+dy,bz1+2,B.AIR)}
+          this.S(bx1+1,fy+1,bz1+1,B.LADDER);this.S(bx1+1,fy+2,bz1+1,B.LADDER);this.S(bx1+1,fy+3,bz1+1,B.LADDER);
+        }
+        // Building entrance (ground floor doorway)
+        if(f===0){
+          for(let dy=1;dy<=3;dy++){this.S(7,fy+dy,bz1,B.AIR);this.S(8,fy+dy,bz1,B.AIR)}
+          // Back door
+          for(let dy=1;dy<=3;dy++){this.S(7,fy+dy,bz2,B.AIR);this.S(8,fy+dy,bz2,B.AIR)}
+          // Side doors
+          for(let dy=1;dy<=3;dy++){this.S(bx1,fy+dy,7,B.AIR);this.S(bx2,fy+dy,7,B.AIR)}
+        }
+      }
+      
+      // Roof access (ladder + hatch)
+      this.S(bx1+1,h0+totalH,bz1+1,B.AIR);
+      for(let dy=1;dy<=3;dy++)this.S(bx1+1,h0+totalH+dy,bz1+1,B.LADDER);
+      // Roof structures
+      if(bType<3){
+        // AC units on tall buildings
+        for(const[rx,rz]of[[5,5],[10,10],[5,10]]){this.S(rx,h0+totalH+1,rz,B.METAL_PANEL);this.S(rx,h0+totalH+2,rz,B.RUSTED_METAL)}
+      }
+      if(bType>=9&&bType<10){
+        // Antenna array on garfbot facilities
+        for(let dy=1;dy<=8;dy++)this.S(7,h0+totalH+dy,7,B.METAL_PANEL);
+        this.S(7,h0+totalH+9,7,B.NEON_BLK);
+        this.S(8,h0+totalH+5,7,B.RUSTED_METAL);this.S(6,h0+totalH+5,7,B.RUSTED_METAL);
       }
     }
-    // ── UNDERGROUND UTILITY TUNNELS ──
-    const bh2=this.sY(8,8);if(bh2>WL){
-      const tunnelY=bh2-6;
+    
+    // ═══ UNDERGROUND NETWORK (all chunks) ═══
+    // Deep utility tunnel system (2 levels)
+    for(let level=0;level<2;level++){
+      const tY=h0-6-level*8; // tunnels at -6 and -14
+      if(tY<5)continue;
       // East-west tunnel through every chunk
-      for(let x=0;x<CS;x++)for(let dy=0;dy<3;dy++)for(let dz=7;dz<=8;dz++){
-        if(BD[this.G(x,tunnelY+dy,dz)]?.sol)this.S(x,tunnelY+dy,dz,B.AIR);
-        this.S(x,tunnelY-1,dz,B.CONCRETE);this.S(x,tunnelY+3,dz,B.CONCRETE);
+      for(let x=0;x<CS;x++){
+        for(let z=6;z<=9;z++){
+          this.S(x,tY,z,B.CONCRETE); // floor
+          this.S(x,tY+1,z,B.AIR);this.S(x,tY+2,z,B.AIR);this.S(x,tY+3,z,B.AIR);
+          this.S(x,tY+4,z,B.CONCRETE); // ceiling
+        }
+        // Tunnel walls
+        this.S(x,tY+1,5,B.CONCRETE);this.S(x,tY+2,5,B.CONCRETE);this.S(x,tY+3,5,B.CONCRETE);
+        this.S(x,tY+1,10,B.CONCRETE);this.S(x,tY+2,10,B.CONCRETE);this.S(x,tY+3,10,B.CONCRETE);
       }
-      // North-south tunnel through every chunk
-      for(let z=0;z<CS;z++)for(let dy=0;dy<3;dy++)for(let dx=7;dx<=8;dx++){
-        if(BD[this.G(dx,tunnelY+dy,z)]?.sol)this.S(dx,tunnelY+dy,z,B.AIR);
-        this.S(dx,tunnelY-1,z,B.CONCRETE);this.S(dx,tunnelY+3,z,B.CONCRETE);
+      // North-south tunnel
+      for(let z=0;z<CS;z++){
+        for(let x=6;x<=9;x++){
+          this.S(x,tY,z,B.CONCRETE);
+          this.S(x,tY+1,z,B.AIR);this.S(x,tY+2,z,B.AIR);this.S(x,tY+3,z,B.AIR);
+          this.S(x,tY+4,z,B.CONCRETE);
+        }
+        this.S(5,tY+1,z,B.CONCRETE);this.S(5,tY+2,z,B.CONCRETE);this.S(5,tY+3,z,B.CONCRETE);
+        this.S(10,tY+1,z,B.CONCRETE);this.S(10,tY+2,z,B.CONCRETE);this.S(10,tY+3,z,B.CONCRETE);
       }
-      // Pipe/conduit along tunnel walls
-      if(dh01(this.cx*55,this.cz*66)>.4){
-        for(let x=0;x<CS;x++)this.S(x,tunnelY+2,6,B.RUSTED_METAL);
-        for(let z=0;z<CS;z++)this.S(6,tunnelY+2,z,B.RUSTED_METAL);
-      }
+      // Pipes and conduits
+      for(let x=0;x<CS;x+=4){this.S(x,tY+3,6,B.RUSTED_METAL);this.S(x,tY+3,9,B.RUSTED_METAL)}
+      for(let z=0;z<CS;z+=4){this.S(6,tY+3,z,B.RUSTED_METAL);this.S(9,tY+3,z,B.RUSTED_METAL)}
       // Tunnel lighting
-      for(let x=4;x<CS;x+=6)this.S(x,tunnelY+2,8,B.SEA_LANTERN);
-      for(let z=4;z<CS;z+=6)this.S(8,tunnelY+2,z,B.SEA_LANTERN);
-      // Access shafts from surface (rare, at road intersections)
-      if(gridX===0&&gridZ===0&&dh01(this.cx*111,this.cz*222)>.5){
-        for(let dy=0;dy<7;dy++){this.S(4,bh2-dy,4,B.LADDER);this.S(5,bh2-dy,4,B.AIR);this.S(4,bh2-dy,5,B.AIR)}
+      for(let x=2;x<CS;x+=5)this.S(x,tY+3,7,B.SEA_LANTERN);
+      for(let z=2;z<CS;z+=5)this.S(7,tY+3,z,B.SEA_LANTERN);
+    }
+    // Access shafts with ladders (at road intersections)
+    if(gridX===0&&gridZ===0){
+      const shaftX=4,shaftZ=4;
+      for(let y=h0-20;y<=h0;y++){
+        this.S(shaftX,y,shaftZ,B.AIR);this.S(shaftX+1,y,shaftZ,B.AIR);
+        this.S(shaftX,y,shaftZ+1,B.AIR);this.S(shaftX+1,y,shaftZ+1,B.AIR);
+        this.S(shaftX-1,y,shaftZ,B.LADDER);
       }
     }
-    // ── ALLEYWAY DETAILS ──
+    // Deep bunker level under every 3rd building chunk
+    if(gridX!==0&&gridZ!==0&&dh01(this.cx*31,this.cz*37)<.35){
+      const bkY=h0-22;if(bkY>5){
+        for(let x=2;x<=13;x++)for(let z=2;z<=13;z++){
+          this.S(x,bkY,z,B.DARK_PANEL); // floor
+          for(let dy=1;dy<=5;dy++)this.S(x,bkY+dy,z,(x===2||x===13||z===2||z===13)?B.DARK_PANEL:B.AIR);
+          this.S(x,bkY+6,z,B.DARK_PANEL); // ceiling
+        }
+        // Bunker contents
+        for(let z=4;z<=11;z+=3){this.S(3,bkY+1,z,B.RUSTED_METAL);this.S(3,bkY+2,z,B.RUSTED_METAL);this.S(12,bkY+1,z,B.RUSTED_METAL);this.S(12,bkY+2,z,B.RUSTED_METAL)}
+        this.S(7,bkY+5,7,B.SEA_LANTERN);this.S(4,bkY+5,4,B.NEON_BLK);this.S(11,bkY+5,11,B.NEON_BLK);
+        // Stairwell access from building above
+        for(let y=bkY+1;y<=h0;y++){this.S(3,y,3,B.AIR);this.S(3,y,4,B.AIR);this.S(2,y,3,B.LADDER)}
+      }
+    }
+    // ═══ ALLEYWAY DETAILS (building chunks) ═══
     if(gridX!==0&&gridZ!==0){
-      const ah=this.sY(0,8);if(ah>WL){
-        // Dumpster/crate placement in alleys between buildings
-        if(dh01(this.cx*333,this.cz*444)>.6){this.S(1,ah+1,2,B.RUSTED_METAL);this.S(1,ah+2,2,B.RUSTED_METAL)}
-        if(dh01(this.cx*555,this.cz*666)>.7){this.S(14,ah+1,13,B.CITY_RUBBLE);this.S(14,ah+1,14,B.CITY_RUBBLE)}
-        // Fire escape ladders
-        if(dh01(this.cx*777,this.cz*888)>.65){for(let dy=1;dy<12;dy++)this.S(0,ah+dy,4,B.LADDER)}
+      // Dumpsters/crates near building edges
+      for(let i=0;i<2;i++){
+        const ax=i===0?0:15,az=4+fl(dh01(ox+i*99,oz)*8);
+        this.S(ax,h0+1,az,B.RUSTED_METAL);this.S(ax,h0+2,az,B.RUSTED_METAL);
+      }
+      // Fire escapes (ladders on building exterior)
+      if(dh01(this.cx*71,this.cz*83)<.5){
+        const feX=bSeed<.5?0:15,feZ=7;
+        for(let y=h0+1;y<=h0+1+fl(bSeed*12)*4;y++)this.S(feX,y,feZ,B.LADDER);
       }
     }
+    this._hasStruct=true;
     return;
   }
   

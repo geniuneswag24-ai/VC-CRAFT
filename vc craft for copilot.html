@@ -2568,6 +2568,8 @@ deco(){
   }
   // ═══ LAVA BASIN GENERATION PASS ═══
   // Place lava as flat pools/lakes in cave floors below y=75
+  // Skip lava generation in structure chunks to avoid lava in VCLANTIS etc
+  if(!this._hasStruct)
   for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
     for(let y=6;y<75;y++){
       if(this.G(x,y,z)!==B.AIR)continue;
@@ -2599,6 +2601,7 @@ deco(){
     }
   }
   // Lavafall sources: drip from cave ceilings in deep areas
+  if(!this._hasStruct)
   for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
     for(let y=15;y<70;y++){
       if(!BD[this.G(x,y,z)]?.sol)continue;

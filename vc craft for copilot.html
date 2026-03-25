@@ -557,6 +557,10 @@ function buildRoom(ck,x,y,z,w,d,h2,wallB,floorB,ceilB,hasWindow){
     // Interior is AIR (already default)
   }
 }
+function clearVolume(ck,x,y,z,w,d,h){
+  for(let dx=0;dx<w;dx++)for(let dz=0;dz<d;dz++)for(let dy=0;dy<h;dy++)ss(ck,x+dx,y+dy,z+dz,B.AIR);
+  for(let dx=-1;dx<w+1;dx++)for(let dz=-1;dz<d+1;dz++){for(let dy=-1;dy>=-4;dy--){const bx=x+dx,bz=z+dz,by=y+dy;if(bx>=0&&bx<CS&&bz>=0&&bz<CS&&by>=0){const ex=ck.G(bx,by,bz);if(ex===B.AIR||ex===B.WATER)ss(ck,bx,by,bz,B.DIRT);else break}}}
+}
 function isNaturalSurface(b){return b===B.GRASS||b===B.DIRT||b===B.SAND||b===B.DRY_GRASS||b===B.SNOW||b===B.MUD||b===B.RSAND||b===B.CLAY||b===B.WATCHER_SAND||b===B.BASALT||b===B.ASH_STONE||b===B.SCORCHED}
 // CONDO: 3-floor building with rooms per floor
 function genCondo(ck,x,y,z,r){
@@ -613,6 +617,7 @@ function genStatue(ck,x,y,z,member){
 // HOUSE: proper suburban home with rooms
 function genHouse(ck,x,y,z,r){
   const w=8+fl(r*4),d=7+fl(r*3),h2=5;
+  clearVolume(ck,x-1,y,z-3,w+2,d+6,h2+4);
   // Foundation and floor
   for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d;dz++)ss(ck,x+dx,y,z+dz,B.CONCRETE);
   // Walls
@@ -627,7 +632,7 @@ function genHouse(ck,x,y,z,r){
   ss(ck,x+mid,y+1,z+2,B.AIR);ss(ck,x+mid,y+2,z+2,B.AIR);
   ss(ck,x+mid+2,y+1,z+fl(d/2),B.AIR);ss(ck,x+mid+2,y+2,z+fl(d/2),B.AIR);
   // Front door
-  ss(ck,x+2,y+1,z,B.AIR);ss(ck,x+2,y+2,z,B.AIR);
+  ss(ck,x+2,y+1,z,B.DOOR_OAK_C);ss(ck,x+2,y+2,z,B.DOOR_OAK_C);
   // Roof (peaked)
   for(let dx=-1;dx<=w;dx++)for(let dz=-1;dz<=d;dz++){
     const peak=mn(abs(dx-w/2),abs(w-1-dx-w/2));
@@ -641,6 +646,7 @@ function genHouse(ck,x,y,z,r){
 }
 // CABIN: rustic with porch
 function genCabin(ck,x,y,z){
+  clearVolume(ck,x-1,y,z-2,9,10,8);
   buildRoom(ck,x,y,z,7,6,4,B.CABIN_WALL,B.PLNK,B.CABIN_WALL,true);
   // Porch with posts
   for(let dx=0;dx<7;dx++)ss(ck,x+dx,y,z-1,B.PLNK);
@@ -648,7 +654,7 @@ function genCabin(ck,x,y,z){
   for(let dy=1;dy<4;dy++){ss(ck,x,y+dy,z-2,B.SLOG);ss(ck,x+6,y+dy,z-2,B.SLOG)}
   for(let dx=0;dx<7;dx++)ss(ck,x+dx,y+3,z-2,B.CABIN_WALL);
   // Door
-  ss(ck,x+3,y+1,z,B.AIR);ss(ck,x+3,y+2,z,B.AIR);
+  ss(ck,x+3,y+1,z,B.DOOR_OAK_C);ss(ck,x+3,y+2,z,B.DOOR_OAK_C);
   // Windows - larger
   ss(ck,x+1,y+2,z,B.GLASS);ss(ck,x+5,y+2,z,B.GLASS);
   ss(ck,x,y+2,z+2,B.GLASS);ss(ck,x+6,y+2,z+2,B.GLASS);
@@ -722,10 +728,11 @@ function genWatchtower(ck,x,y,z){
 function genCityTower(ck,x,y,z,r){
   const w=6+fl(r*4),d=6+fl(r*3),floors=5+fl(r*8),fh=4;
   const totalH=floors*fh;
+  clearVolume(ck,x-1,y,z-1,w+2,d+2,mn(totalH+8,120));
   // Lobby floor
   buildRoom(ck,x,y,z,w,d,5,B.CONCRETE,B.CONCRETE,B.METAL_PANEL,true);
   // Lobby interior
-  ss(ck,x+fl(w/2),y+1,z,B.AIR);ss(ck,x+fl(w/2),y+2,z,B.AIR);ss(ck,x+fl(w/2),y+3,z,B.AIR); // entrance
+  ss(ck,x+fl(w/2),y+1,z,B.DOOR_IRON_C);ss(ck,x+fl(w/2),y+2,z,B.DOOR_IRON_C);ss(ck,x+fl(w/2),y+3,z,B.AIR); // entrance
   ss(ck,x+fl(w/2)-1,y+1,z,B.AIR);ss(ck,x+fl(w/2)-1,y+2,z,B.AIR); // wider entrance
   // Reception desk
   for(let dx=2;dx<w-2;dx++)ss(ck,x+dx,y+1,z+3,B.METAL_PANEL);
@@ -742,8 +749,9 @@ function genCityTower(ck,x,y,z,r){
         else ss(ck,x+dx,fy+dy,z+dz,B.GLASS_TOWER);
       }
     }
-    // Stairwell column
-    for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.CONCRETE);ss(ck,x+1,fy+dy,z+2,B.COB)}
+    // Stairwell with ladders for vertical movement
+    for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.CONCRETE);ss(ck,x+1,fy+dy,z+2,B.LADDER)}
+    ss(ck,x+2,fy+1,z+1,B.AIR);ss(ck,x+2,fy+2,z+1,B.AIR);ss(ck,x+2,fy+3,z+1,B.AIR);
     // Office partitions on some floors
     if(f%2===0){
       for(let dy=1;dy<fh-1;dy++)for(let dz=2;dz<d-2;dz++)ss(ck,x+fl(w/2),fy+dy,z+dz,B.GLASS);
@@ -920,9 +928,10 @@ function genSchool(ck,x,y,z,r){
 // GOMP INDUSTRIES TOWER: tall corporate tower with boss arena
 function genGomp(ck,x,y,z,r){
   const w=11,d=11,floors=12+fl(r*8),fh=4;
+  clearVolume(ck,x-1,y,z-1,w+2,d+2,mn(7+(floors-1)*fh+8,120));
   // Grand lobby - double height with columns
   buildRoom(ck,x,y,z,w,d,7,B.CONCRETE,B.MARBLE,B.METAL_PANEL,true);
-  for(let dx=3;dx<w-2;dx++){ss(ck,x+dx,y+1,z,B.AIR);ss(ck,x+dx,y+2,z,B.AIR);ss(ck,x+dx,y+3,z,B.AIR);ss(ck,x+dx,y+4,z,B.AIR)}
+  for(let dx=3;dx<w-2;dx++){ss(ck,x+dx,y+1,z,dx===5?B.DOOR_IRON_C:B.AIR);ss(ck,x+dx,y+2,z,dx===5?B.DOOR_IRON_C:B.AIR);ss(ck,x+dx,y+3,z,B.AIR);ss(ck,x+dx,y+4,z,B.AIR)}
   for(let dx=2;dx<w-1;dx++)ss(ck,x+dx,y+1,z+3,B.MARBLE); // reception desk
   // Lobby pillars
   for(let dy=1;dy<6;dy++){ss(ck,x+2,y+dy,z+2,B.COLUMN_BLK);ss(ck,x+w-3,y+dy,z+2,B.COLUMN_BLK);ss(ck,x+2,y+dy,z+d-3,B.COLUMN_BLK);ss(ck,x+w-3,y+dy,z+d-3,B.COLUMN_BLK)}
@@ -937,7 +946,8 @@ function genGomp(ck,x,y,z,r){
       else if(isWall)ss(ck,x+dx,fy+dy,z+dz,dy===fh-1?B.CONCRETE:B.GLASS_TOWER);
     }
     // Stairwell core (always present)
-    for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.CONCRETE);ss(ck,x+2,fy+dy,z+1,B.STAIR_STONE);ss(ck,x+1,fy+dy,z+2,B.CONCRETE)}
+    for(let dy=0;dy<fh;dy++){ss(ck,x+1,fy+dy,z+1,B.CONCRETE);ss(ck,x+2,fy+dy,z+1,B.LADDER);ss(ck,x+1,fy+dy,z+2,B.CONCRETE)}
+    ss(ck,x+2,fy+1,z+2,B.AIR);ss(ck,x+2,fy+2,z+2,B.AIR);ss(ck,x+2,fy+3,z+2,B.AIR);
     // Elevator shaft
     for(let dy=0;dy<fh;dy++)ss(ck,x+w-2,fy+dy,z+1,B.METAL_PANEL);
     // Floor type varies:
@@ -1226,13 +1236,14 @@ function genRestaurant(ck,x,y,z){
 function genArcade(ck,x,y,z){
   const w=24,d=14;
   const ox=x-fl(w/2),oz=z;
+  clearVolume(ck,ox-1,y,oz-1,w+10,d+8,10);
   // ── Main arcade hall (24x14, 6 tall, dark panel walls) ──
   buildRoom(ck,ox,y,oz,w,d,6,B.DARK_PANEL,B.CONCRETE,B.DARK_PANEL,false);
   // ── Full neon facade (front wall entirely neon-lit) ──
   for(let dx=0;dx<w;dx++){ss(ck,ox+dx,y+3,oz,B.NEON_BLK);ss(ck,ox+dx,y+4,oz,B.NEON_BLK);ss(ck,ox+dx,y+5,oz,B.NEON_BLK)}
   for(let dy=1;dy<4;dy++){ss(ck,ox,y+dy,oz,B.NEON_BLK);ss(ck,ox+w-1,y+dy,oz,B.NEON_BLK)}
   // Front doors - triple wide
-  ss(ck,ox+fl(w/2),y+1,oz,B.AIR);ss(ck,ox+fl(w/2),y+2,oz,B.AIR);
+  ss(ck,ox+fl(w/2),y+1,oz,B.DOOR_DARK_C);ss(ck,ox+fl(w/2),y+2,oz,B.DOOR_DARK_C);
   ss(ck,ox+fl(w/2)-1,y+1,oz,B.AIR);ss(ck,ox+fl(w/2)-1,y+2,oz,B.AIR);
   ss(ck,ox+fl(w/2)+1,y+1,oz,B.AIR);ss(ck,ox+fl(w/2)+1,y+2,oz,B.AIR);
   // ── 6 rows of arcade cabinets (dark panel + glass screen + neon trim) ──
@@ -1262,7 +1273,7 @@ function genArcade(ck,x,y,z){
   ss(ck,ox+w+2,y+5,oz+7,B.NEON_BLK);ss(ck,ox+w+5,y+5,oz+7,B.NEON_BLK);
   // ── Back office (6x5) with desk and chest ──
   buildRoom(ck,ox+1,y,oz+d,6,5,5,B.CONCRETE,B.CONCRETE,B.CONCRETE,false);
-  ss(ck,ox+3,y+1,oz+d,B.AIR);ss(ck,ox+3,y+2,oz+d,B.AIR);
+  ss(ck,ox+3,y+1,oz+d,B.DOOR_DARK_C);ss(ck,ox+3,y+2,oz+d,B.DOOR_DARK_C);
   ss(ck,ox+4,y+1,oz+d+1,B.PLNK);ss(ck,ox+2,y+1,oz+d+2,B.CHST);ss(ck,ox+5,y+1,oz+d+1,B.PLNK);
   // ── Storage/utility room (6x5) ──
   buildRoom(ck,ox+7,y,oz+d,6,5,5,B.DARK_PANEL,B.CONCRETE,B.DARK_PANEL,false);

@@ -1482,6 +1482,19 @@ function genGarfDungeon(chunk,lx,sy,lz){
     for(let dy=-step+1;dy<=3;dy++)chunk.S(lx,sy+dy,lz-21-step,B.AIR);
     chunk.S(lx+1,sy-step,lz-21-step,bC);chunk.S(lx-1,sy-step,lz-21-step,bC);
   }
+  // Dormancy bay (west of assembly, 8x5x10)
+  room(-14,-5,-34,-7,0,-25,bM,bW,bW);
+  for(let dz=-33;dz>=-26;dz-=2){chunk.S(lx-10,sy-4,lz+dz,bR);chunk.S(lx-10,sy-3,lz+dz,bR)}
+  chunk.S(lx-10,sy-1,lz-30,bL);
+  // Connecting door from assembly to dormancy
+  for(let dy=-4;dy<=-1;dy++){chunk.S(lx-5,sy+dy,lz-30,B.AIR);chunk.S(lx-6,sy+dy,lz-30,B.AIR)}
+  // Control room (east of assembly, 8x5x8)
+  room(7,-5,-33,14,0,-26,bM,bM,bW);
+  // Control consoles
+  for(let dx=9;dx<=12;dx++){chunk.S(lx+dx,sy-4,lz-28,bR);chunk.S(lx+dx,sy-3,lz-28,B.GLASS)}
+  chunk.S(lx+10,sy-1,lz-30,bL);chunk.S(lx+12,sy-1,lz-28,bN);
+  // Connecting door from assembly to control room
+  for(let dy=-4;dy<=-1;dy++){chunk.S(lx+6,sy+dy,lz-30,B.AIR);chunk.S(lx+7,sy+dy,lz-30,B.AIR)}
   // ═══ CENTRAL ARENA CHAMBER (15x10x15) ═══
   room(-7,-6,-50,7,4,-36,bC,bW,bW);
   // Arena floor is deepslate with lava channels
@@ -2860,29 +2873,78 @@ an(dt){}hit(a,kd){if(this.dT>=0)return;this.hp-=a;this.hT=.3;if(kd){this.vel.x+=
 rm(){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}})}catch(e){}}}
 
 class Garfbot extends Mob{constructor(x,y,z){super(x,y,z);this.hp=20;this.spd=3.2}
-build(){const m=c=>new THREE.MeshLambertMaterial({color:c});this.grp.add(mkM(new THREE.BoxGeometry(.7,.9,.45),m(0x444455),0,.95,0));this.grp.add(mkM(new THREE.BoxGeometry(.5,.4,.46),m(0x663344),0,1.1,0));const gTxt=new THREE.MeshLambertMaterial({color:0xff4400,emissive:0xff2200,emissiveIntensity:.4});this.grp.add(mkM(new THREE.BoxGeometry(.06,.12,.01),gTxt,-.14,.98,.231));this.grp.add(mkM(new THREE.BoxGeometry(.06,.12,.01),gTxt,-.04,.98,.231));this.grp.add(mkM(new THREE.BoxGeometry(.06,.12,.01),gTxt,.06,.98,.231));this.grp.add(mkM(new THREE.BoxGeometry(.06,.12,.01),gTxt,.16,.98,.231));this.grp.add(mkM(new THREE.BoxGeometry(.18,.02,.01),gTxt,-.14,1.04,.232));this.grp.add(mkM(new THREE.BoxGeometry(.02,.06,.01),gTxt,-.17,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.12,.02,.01),gTxt,-.14,.92,.232));this.grp.add(mkM(new THREE.BoxGeometry(.10,.02,.01),gTxt,-.04,1.04,.232));this.grp.add(mkM(new THREE.BoxGeometry(.02,.12,.01),gTxt,-.07,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.10,.02,.01),gTxt,-.04,.92,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.02,.01),gTxt,.06,1.04,.232));this.grp.add(mkM(new THREE.BoxGeometry(.02,.12,.01),gTxt,.03,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.02,.01),gTxt,.06,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.02,.06,.01),gTxt,.09,.95,.232));this.grp.add(mkM(new THREE.BoxGeometry(.10,.02,.01),gTxt,.16,1.04,.232));this.grp.add(mkM(new THREE.BoxGeometry(.02,.12,.01),gTxt,.13,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.10,.02,.01),gTxt,.16,.98,.232));const gm=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.3});this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,-.15,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,-.05,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,.05,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,.15,1.12,.24));this.hd=mkM(new THREE.BoxGeometry(.55,.55,.5),m(0x222233),0,1.7,0);this.grp.add(this.hd);const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5});this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,-.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.06,.25,.06),m(0x444455),0,2.05,0));this.tip=mkM(new THREE.BoxGeometry(.1,.1,.1),new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5}),0,2.25,0);this.grp.add(this.tip);this.aL=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),-.5,1,0);this.aL.geometry.translate(0,.35,0);this.grp.add(this.aL);this.aR=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),.5,1,0);this.aR.geometry.translate(0,.35,0);this.grp.add(this.aR);this.lL=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),-.2,.3,0);this.lL.geometry.translate(0,.3,0);this.grp.add(this.lL);this.lR=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),.2,.3,0);this.lR.geometry.translate(0,.3,0);this.grp.add(this.lR)}
+build(){const m=c=>new THREE.MeshLambertMaterial({color:c});this.grp.add(mkM(new THREE.BoxGeometry(.7,.9,.45),m(0x444455),0,.95,0));this.grp.add(mkM(new THREE.BoxGeometry(.5,.4,.46),m(0x663344),0,1.1,0));const gTxt=new THREE.MeshLambertMaterial({color:0xff4400,emissive:0xff2200,emissiveIntensity:.5});this.grp.add(mkM(new THREE.BoxGeometry(.14,.025,.01),gTxt,-.17,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,-.21,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.10,.025,.01),gTxt,-.17,.92,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.05,.01),gTxt,-.13,.95,.232));this.grp.add(mkM(new THREE.BoxGeometry(.07,.025,.01),gTxt,-.15,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,-.03,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,-.07,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,.01,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,-.03,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,-.03,.92,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.11,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,.07,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.06,.01),gTxt,.15,1.03,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.11,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.05,.01),gTxt,.15,.93,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.25,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,.21,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.25,.98,.232));const gm=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.3});this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,-.15,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,-.05,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,.05,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,.15,1.12,.24));this.hd=mkM(new THREE.BoxGeometry(.55,.55,.5),m(0x222233),0,1.7,0);this.grp.add(this.hd);const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5});this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,-.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.06,.25,.06),m(0x444455),0,2.05,0));this.tip=mkM(new THREE.BoxGeometry(.1,.1,.1),new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5}),0,2.25,0);this.grp.add(this.tip);this.aL=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),-.5,1,0);this.aL.geometry.translate(0,.35,0);this.grp.add(this.aL);this.aR=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),.5,1,0);this.aR.geometry.translate(0,.35,0);this.grp.add(this.aR);this.lL=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),-.2,.3,0);this.lL.geometry.translate(0,.3,0);this.grp.add(this.lL);this.lR=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),.2,.3,0);this.lR.geometry.translate(0,.3,0);this.grp.add(this.lR)}
 ai(dt){const pp=W.pl.pos,d=this.pos.distanceTo(pp);if(d<18){const dx=pp.x-this.pos.x,dz=pp.z-this.pos.z;this.yaw=Math.atan2(dx,dz);if(d>1.8){this.vel.x=Math.sin(this.yaw)*this.spd;this.vel.z=Math.cos(this.yaw)*this.spd}else{this.vel.x*=.8;this.vel.z*=.8;if(this.aC<=0){W.pl.hurt(3);this.aC=1.2}}}else{this.wT-=dt;if(this.wT<=0){this.wD=dh01(fl(this.pos.x*100+this.aT*10),fl(this.pos.z*100))*TAU;this.wT=2+dh01(fl(this.aT*100),0)*4}this.vel.x=Math.sin(this.wD)*1.2;this.vel.z=Math.cos(this.wD)*1.2;this.yaw=this.wD}}
 an(dt){const ws=sq(this.vel.x**2+this.vel.z**2),sw=Math.sin(this.aT*8)*.5*(ws>.5?1:.15);this.lL.rotation.x=sw;this.lR.rotation.x=-sw;this.aL.rotation.x=-sw*.8;this.aR.rotation.x=sw*.8;if(this.tip)this.tip.material.emissiveIntensity=.3+Math.sin(this.aT*4)*.7}}
 
 class GarbotSentient extends Mob{
-constructor(x,y,z){super(x,y,z);this.hp=200;this.maxHp=200;this.spd=2.5;this.phase=1;this.attackT=0;this.curAtk='';this.staggerT=0;this.summonT=0;this.chargeT=0;this.isB=true}
+constructor(x,y,z){super(x,y,z);this.hp=300;this.maxHp=300;this.spd=2.8;this.phase=1;this.attackT=0;this.curAtk='';this.staggerT=0;this.summonT=0;this.chargeT=0;this.isB=true;this._wakeT=3;this._dmgAcc=0}
 build(){
-const m=c=>new THREE.MeshLambertMaterial({color:c});const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.7});
-this.grp.add(mkM(new THREE.BoxGeometry(.9,1.4,.55),m(0x333344),0,1.3,0));
-this.grp.add(mkM(new THREE.BoxGeometry(.85,.6,.56),m(0x552233),0,1.5,0));
-const gm2=new THREE.MeshLambertMaterial({color:0xff4400,emissive:0xff4400,emissiveIntensity:.5});
-this.grp.add(mkM(new THREE.BoxGeometry(.1,.15,.02),gm2,-.2,1.52,.29));this.grp.add(mkM(new THREE.BoxGeometry(.1,.15,.02),gm2,-.07,1.52,.29));this.grp.add(mkM(new THREE.BoxGeometry(.1,.15,.02),gm2,.07,1.52,.29));this.grp.add(mkM(new THREE.BoxGeometry(.1,.15,.02),gm2,.2,1.52,.29));
-this.hd=mkM(new THREE.BoxGeometry(.65,.65,.6),m(0x222233),0,2.4,0);this.grp.add(this.hd);
-this.grp.add(mkM(new THREE.BoxGeometry(.14,.08,.05),em,-.18,2.42,.31));
-this.grp.add(mkM(new THREE.BoxGeometry(.14,.08,.05),em,.18,2.42,.31));
-this.core=mkM(new THREE.BoxGeometry(.3,.3,.1),new THREE.MeshLambertMaterial({color:0xff6600,emissive:0xff6600,emissiveIntensity:.8}),0,1.2,.28);this.grp.add(this.core);
-const gTxt=new THREE.MeshLambertMaterial({color:0xff6600,emissive:0xff4400,emissiveIntensity:.6});this.grp.add(mkM(new THREE.BoxGeometry(.08,.16,.01),gTxt,-.18,1.55,.29));this.grp.add(mkM(new THREE.BoxGeometry(.08,.16,.01),gTxt,-.06,1.55,.29));this.grp.add(mkM(new THREE.BoxGeometry(.08,.16,.01),gTxt,.06,1.55,.29));this.grp.add(mkM(new THREE.BoxGeometry(.08,.16,.01),gTxt,.18,1.55,.29));this.grp.add(mkM(new THREE.BoxGeometry(.22,.03,.01),gTxt,-.18,1.63,.291));this.grp.add(mkM(new THREE.BoxGeometry(.03,.08,.01),gTxt,-.22,1.55,.291));this.grp.add(mkM(new THREE.BoxGeometry(.14,.03,.01),gTxt,-.18,1.47,.291));this.grp.add(mkM(new THREE.BoxGeometry(.14,.03,.01),gTxt,-.06,1.63,.291));this.grp.add(mkM(new THREE.BoxGeometry(.03,.16,.01),gTxt,-.09,1.55,.291));this.grp.add(mkM(new THREE.BoxGeometry(.14,.03,.01),gTxt,-.06,1.47,.291));this.grp.add(mkM(new THREE.BoxGeometry(.10,.03,.01),gTxt,.06,1.63,.291));this.grp.add(mkM(new THREE.BoxGeometry(.03,.16,.01),gTxt,.03,1.55,.291));this.grp.add(mkM(new THREE.BoxGeometry(.10,.03,.01),gTxt,.06,1.55,.291));this.grp.add(mkM(new THREE.BoxGeometry(.03,.08,.01),gTxt,.09,1.51,.291));this.grp.add(mkM(new THREE.BoxGeometry(.14,.03,.01),gTxt,.18,1.63,.291));this.grp.add(mkM(new THREE.BoxGeometry(.03,.16,.01),gTxt,.15,1.55,.291));this.grp.add(mkM(new THREE.BoxGeometry(.14,.03,.01),gTxt,.18,1.55,.291));
-this.aL=mkM(new THREE.BoxGeometry(.35,.9,.3),m(0x333344),-.65,1.4,0);this.aL.geometry.translate(0,.45,0);this.grp.add(this.aL);
-this.aR=mkM(new THREE.BoxGeometry(.35,.9,.3),m(0x333344),.65,1.4,0);this.aR.geometry.translate(0,.45,0);this.grp.add(this.aR);
-this.lL=mkM(new THREE.BoxGeometry(.35,.8,.35),m(0x222233),-.25,.4,0);this.lL.geometry.translate(0,.4,0);this.grp.add(this.lL);
-this.lR=mkM(new THREE.BoxGeometry(.35,.8,.35),m(0x222233),.25,.4,0);this.lR.geometry.translate(0,.4,0);this.grp.add(this.lR);
-this.grp.add(mkM(new THREE.BoxGeometry(.08,.4,.08),m(0x444455),0,2.9,0));
-this.tip=mkM(new THREE.BoxGeometry(.14,.14,.14),em,0,3.15,0);this.grp.add(this.tip);
+const m=c=>new THREE.MeshLambertMaterial({color:c});const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.8});
+// Torso - taller and wider
+this.grp.add(mkM(new THREE.BoxGeometry(1.1,1.8,.65),m(0x2a2a3a),0,1.6,0));
+// Upper chest plate - darker, more angular
+this.grp.add(mkM(new THREE.BoxGeometry(1.0,.7,.66),m(0x441122),0,2.0,0));
+// Core energy source (glowing center chest)
+this.core=mkM(new THREE.BoxGeometry(.35,.35,.12),new THREE.MeshLambertMaterial({color:0xff6600,emissive:0xff6600,emissiveIntensity:.9}),0,1.5,.34);this.grp.add(this.core);
+// ═══ GARF TEXT ON CHEST ═══ (clear block letters)
+const gTxt=new THREE.MeshLambertMaterial({color:0xff6600,emissive:0xff4400,emissiveIntensity:.7});
+// G letter (5 segments)
+this.grp.add(mkM(new THREE.BoxGeometry(.22,.03,.01),gTxt,-.28,2.15,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.18,.01),gTxt,-.36,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.16,.03,.01),gTxt,-.28,1.91,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.08,.01),gTxt,-.20,1.95,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.10,.03,.01),gTxt,-.24,1.99,.34));
+// A letter (5 segments)
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,-.08,2.15,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.18,.01),gTxt,-.14,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.18,.01),gTxt,-.02,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,-.08,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,-.08,1.91,.34));
+// R letter (5 segments)
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,.08,2.15,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.18,.01),gTxt,.02,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.08,.01),gTxt,.14,2.11,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,.08,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.08,.01),gTxt,.14,1.95,.34));
+// F letter (4 segments)
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,.26,2.15,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.18,.01),gTxt,.20,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,.26,2.03,.34));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,.26,1.91,.34));
+// Backlit GARF panel
+const gBack=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.2});
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.14,.02),gBack,-.28,2.03,.33));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.14,.02),gBack,-.08,2.03,.33));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.14,.02),gBack,.08,2.03,.33));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.14,.02),gBack,.26,2.03,.33));
+// Head - larger, angular, intimidating
+this.hd=mkM(new THREE.BoxGeometry(.75,.75,.7),m(0x1a1a2a),0,3.1,0);this.grp.add(this.hd);
+// Visor eyes - wide glowing red
+this.grp.add(mkM(new THREE.BoxGeometry(.18,.1,.06),em,-.2,3.12,.36));
+this.grp.add(mkM(new THREE.BoxGeometry(.18,.1,.06),em,.2,3.12,.36));
+// Central eye
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.08,.06),new THREE.MeshLambertMaterial({color:0xff0000,emissive:0xff0000,emissiveIntensity:1}),0,3.2,.36));
+// Jaw/chin
+this.grp.add(mkM(new THREE.BoxGeometry(.5,.15,.3),m(0x222233),0,2.65,0));
+// Antenna mast
+this.grp.add(mkM(new THREE.BoxGeometry(.1,.5,.1),m(0x444455),0,3.6,0));
+this.tip=mkM(new THREE.BoxGeometry(.16,.16,.16),em,0,3.9,0);this.grp.add(this.tip);
+// Shoulder pauldrons
+this.grp.add(mkM(new THREE.BoxGeometry(.45,.25,.45),m(0x333344),-.75,2.5,0));
+this.grp.add(mkM(new THREE.BoxGeometry(.45,.25,.45),m(0x333344),.75,2.5,0));
+// Arms - thicker, longer
+this.aL=mkM(new THREE.BoxGeometry(.4,1.1,.35),m(0x333344),-.8,1.7,0);this.aL.geometry.translate(0,.55,0);this.grp.add(this.aL);
+this.aR=mkM(new THREE.BoxGeometry(.4,1.1,.35),m(0x333344),.8,1.7,0);this.aR.geometry.translate(0,.55,0);this.grp.add(this.aR);
+// Hands/claws
+this.grp.add(mkM(new THREE.BoxGeometry(.25,.2,.3),m(0x444455),-.8,.95,0));
+this.grp.add(mkM(new THREE.BoxGeometry(.25,.2,.3),m(0x444455),.8,.95,0));
+// Legs - heavier, mechanical
+this.lL=mkM(new THREE.BoxGeometry(.4,1.0,.4),m(0x1a1a2a),-.3,.5,0);this.lL.geometry.translate(0,.5,0);this.grp.add(this.lL);
+this.lR=mkM(new THREE.BoxGeometry(.4,1.0,.4),m(0x1a1a2a),.3,.5,0);this.lR.geometry.translate(0,.5,0);this.grp.add(this.lR);
+// Feet
+this.grp.add(mkM(new THREE.BoxGeometry(.45,.15,.5),m(0x222233),-.3,.15,.05));
+this.grp.add(mkM(new THREE.BoxGeometry(.45,.15,.5),m(0x222233),.3,.15,.05));
 }
 ai(dt){
 const pp=W.pl.pos,d=this.pos.distanceTo(pp);

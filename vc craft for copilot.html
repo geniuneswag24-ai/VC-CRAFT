@@ -152,7 +152,8 @@ SCHOOL_WALL:81,LOCKER_BLK:82,GYM_FLOOR:83,BOARDWALK:84,RESORT_WALL:85,
 POOL_TILE:86,CABIN_WALL:87,TRAIL_STONE:88,CHAPEL_STONE:89,SIDING:90,
 SHINGLE:91,FENCE_BLK:92,DRIVEWAY:93,WATCHER_SAND:94,TOWER_BRICK:95,
 ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112,LAVA:113,STAIR_COB:114,STAIR_PLNK:115,STAIR_BRK:116,STAIR_SBK:117,STAIR_STONE:118,STAIR_MARBLE:119,
-LADDER:120,BASALT:121,ASH_STONE:122,SCORCHED:123,OBSIDIAN:124,LOCKER2:125,BOOTH_SEAT:126,CABINET:127,NEON_TRIM:128,CARPET:129,COUNTER_TOP:130,MENU_BOARD:131,REDWOOD_LOG:132,REDWOOD_LVS:133,WATER_BUCKET:134,LAVA_BUCKET:135};
+LADDER:120,BASALT:121,ASH_STONE:122,SCORCHED:123,OBSIDIAN:124,LOCKER2:125,BOOTH_SEAT:126,CABINET:127,NEON_TRIM:128,CARPET:129,COUNTER_TOP:130,MENU_BOARD:131,REDWOOD_LOG:132,REDWOOD_LVS:133,WATER_BUCKET:134,LAVA_BUCKET:135,
+DOOR_OAK_C:136,DOOR_OAK_O:137,DOOR_IRON_C:138,DOOR_IRON_O:139,DOOR_DARK_C:140,DOOR_DARK_O:141};
 const BD={};function db(id,nm,o={}){BD[id]={nm,sol:o.s!==0,tr:!!o.t,liq:!!o.l,hd:o.h||1,dr:o.d!==undefined?o.d:id,st:o.st||64}}
 db(B.AIR,'Air',{s:0,t:1});db(B.GRASS,'Grass Block',{h:.6});db(B.DIRT,'Dirt',{h:.5});db(B.STONE,'Stone',{h:1.5,d:B.COB});db(B.SAND,'Sand',{h:.5});db(B.WATER,'Water',{s:0,t:1,l:1,h:-1});db(B.BED,'Bedrock',{h:-1});db(B.OLOG,'Oak Log',{h:2});db(B.OLVS,'Oak Leaves',{h:.2,t:1});db(B.BLOG,'Birch Log',{h:2});db(B.BLVS,'Birch Leaves',{h:.2,t:1});db(B.SLOG,'Spruce Log',{h:2});db(B.SLVS,'Spruce Leaves',{h:.2,t:1});db(B.SNOW,'Snow',{h:.3});db(B.COB,'Cobblestone',{h:1.5});db(B.SSTON,'Sandstone',{h:1.2});db(B.PLNK,'Oak Planks',{h:1.5});db(B.GLASS,'Glass',{h:.3,t:1,d:B.AIR});db(B.GRAV,'Gravel',{h:.6});db(B.CLAY,'Clay',{h:.6});db(B.RSAND,'Red Sand',{h:.5});db(B.MUD,'Mud',{h:.5});db(B.CACT,'Cactus',{h:.4});db(B.DEEP,'Deepslate',{h:2});db(B.COAL,'Coal Ore',{h:1.8,d:B.COAL_I});db(B.IRON,'Iron Ore',{h:2.2});db(B.GOLD,'Gold Ore',{h:2.5});db(B.DIAM,'Diamond Ore',{h:3});db(B.MOSS,'Mossy Stone',{h:1.5});db(B.BRK,'Bricks',{h:2});db(B.SBK,'Stone Bricks',{h:1.5});db(B.DLOG,'Dark Oak Log',{h:2});db(B.DLVS,'Dark Leaves',{h:.2,t:1});db(B.JLOG,'Jungle Log',{h:2});db(B.JLVS,'Jungle Leaves',{h:.2,t:1});db(B.ALOG,'Acacia Log',{h:2});db(B.ALVS,'Acacia Leaves',{h:.2,t:1});db(B.CRFT,'Crafting Table',{h:1.5});db(B.FURN,'Furnace',{h:2});db(B.CHST,'Chest',{h:1.5});db(B.ICE,'Ice',{h:.5,t:1});db(B.STICK,'Stick',{s:0,t:1,st:64});db(B.COAL_I,'Coal',{s:0,t:1,st:64});db(B.IRON_I,'Iron Ingot',{s:0,t:1,st:64});db(B.WPICK,'Wood Pickaxe',{s:0,t:1,st:1});db(B.SPICK,'Stone Pickaxe',{s:0,t:1,st:1});db(B.WSWD,'Wood Sword',{s:0,t:1,st:1});
 // VC World block defs
@@ -163,6 +164,7 @@ db(B.LAVA,'Lava',{s:0,t:1,l:1,h:-1});
 db(B.STAIR_COB,'Cobblestone Stairs',{h:1.5});db(B.STAIR_PLNK,'Oak Plank Stairs',{h:1});db(B.STAIR_BRK,'Brick Stairs',{h:2});db(B.STAIR_SBK,'Stone Brick Stairs',{h:1.5});db(B.STAIR_STONE,'Stone Stairs',{h:1.5});db(B.STAIR_MARBLE,'Marble Stairs',{h:2});
 db(B.LADDER,'Ladder',{h:.5,s:0,t:1});db(B.BASALT,'Basalt',{h:2});db(B.ASH_STONE,'Ash Stone',{h:1.5});db(B.SCORCHED,'Scorched Rock',{h:2});db(B.OBSIDIAN,'Obsidian',{h:3});db(B.LOCKER2,'Locker',{h:1});db(B.BOOTH_SEAT,'Booth Seat',{h:1});db(B.CABINET,'Cabinet',{h:1});db(B.NEON_TRIM,'Neon Trim',{h:1});db(B.CARPET,'Carpet',{h:.5,s:0,t:1});db(B.COUNTER_TOP,'Counter Top',{h:1.5});db(B.MENU_BOARD,'Menu Board',{h:1});
 db(B.REDWOOD_LOG,'Redwood Log',{h:2.5});db(B.REDWOOD_LVS,'Redwood Leaves',{h:.2,t:1});db(B.WATER_BUCKET,'Water Bucket',{s:0,t:1,st:1});db(B.LAVA_BUCKET,'Lava Bucket',{s:0,t:1,st:1});
+db(B.DOOR_OAK_C,'Oak Door',{h:1.5});db(B.DOOR_OAK_O,'Oak Door (Open)',{h:.5,s:0,t:1});db(B.DOOR_IRON_C,'Iron Door',{h:2});db(B.DOOR_IRON_O,'Iron Door (Open)',{h:.5,s:0,t:1});db(B.DOOR_DARK_C,'Dark Door',{h:1.5});db(B.DOOR_DARK_O,'Dark Door (Open)',{h:.5,s:0,t:1});
 
 // RECIPES
 const RCP=[];function addR(g,r,n){RCP.push({g,r,n:n||1})}
@@ -174,6 +176,7 @@ addR([[0,B.PLNK,0],[0,B.STICK,0],[0,B.STICK,0]],B.WSWD,1);
 addR([[B.COB,B.COB,B.COB],[B.COB,0,B.COB],[B.COB,B.COB,B.COB]],B.FURN,1);
 addR([[B.PLNK,B.PLNK,B.PLNK],[B.PLNK,0,B.PLNK],[B.PLNK,B.PLNK,B.PLNK]],B.CHST,1);
 addR([[B.COB,0,0],[B.COB,B.COB,0],[B.COB,B.COB,B.COB]],B.STAIR_COB,4);addR([[B.PLNK,0,0],[B.PLNK,B.PLNK,0],[B.PLNK,B.PLNK,B.PLNK]],B.STAIR_PLNK,4);addR([[B.BRK,0,0],[B.BRK,B.BRK,0],[B.BRK,B.BRK,B.BRK]],B.STAIR_BRK,4);addR([[B.SBK,0,0],[B.SBK,B.SBK,0],[B.SBK,B.SBK,B.SBK]],B.STAIR_SBK,4);addR([[B.STONE,0,0],[B.STONE,B.STONE,0],[B.STONE,B.STONE,B.STONE]],B.STAIR_STONE,4);addR([[B.MARBLE,0,0],[B.MARBLE,B.MARBLE,0],[B.MARBLE,B.MARBLE,B.MARBLE]],B.STAIR_MARBLE,4);
+addR([[B.PLNK,B.PLNK],[B.PLNK,B.PLNK],[B.PLNK,B.PLNK]],B.DOOR_OAK_C,3);addR([[B.IRON_I,B.IRON_I],[B.IRON_I,B.IRON_I],[B.IRON_I,B.IRON_I]],B.DOOR_IRON_C,3);addR([[B.DLOG,B.DLOG],[B.DLOG,B.DLOG],[B.DLOG,B.DLOG]],B.DOOR_DARK_C,3);
 function chkR(grid,sz){for(const r of RCP){const rH=r.g.length,rW=r.g[0].length;if(rW>sz||rH>sz)continue;for(let oy=0;oy<=sz-rH;oy++)for(let ox=0;ox<=sz-rW;ox++){let ok=true;for(let y=0;y<sz&&ok;y++)for(let x=0;x<sz&&ok;x++){const gv=grid[y]?.[x]||0,ry=y-oy,rx=x-ox;const rv=(ry>=0&&ry<rH&&rx>=0&&rx<rW)?r.g[ry][rx]||0:0;if(gv!==rv)ok=false}if(ok)return{id:r.r,n:r.n}}}return null}
 
 // TEXTURES - using seeded RNG, all opaque (no transparency issues)
@@ -311,6 +314,13 @@ mt('iron_ii',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#D8D0C
 mt('wpick_i',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#B89050';c.fillRect(4,2,8,3);c.fillStyle='#8A6C3A';c.fillRect(7,5,2,9)});
 mt('spick_i',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#808080';c.fillRect(4,2,8,3);c.fillStyle='#8A6C3A';c.fillRect(7,5,2,9)});
 mt('wswd_i',c=>{c.fillStyle='#c6c6c6';c.fillRect(0,0,16,16);c.fillStyle='#B89050';c.fillRect(7,1,2,7);c.fillStyle='#8A6C3A';c.fillRect(7,8,2,7);c.fillRect(5,8,6,1)});
+// Door textures
+mt('dokc',c=>{nf(c,'#9A7040','#B08848',.3);c.fillStyle='#7A5828';c.fillRect(0,0,1,16);c.fillRect(15,0,1,16);c.fillRect(0,0,16,1);c.fillRect(0,15,16,1);c.fillStyle='#6A4820';c.fillRect(1,2,14,1);c.fillRect(1,13,14,1);c.fillStyle='#B8964A';c.fillRect(11,7,2,2);c.fillStyle='#8A6830';c.fillRect(7,0,1,16)});
+mt('doko',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(154,112,64,0.3)';c.fillRect(0,0,4,16);c.fillStyle='#7A5828';c.fillRect(0,0,1,16);c.fillRect(3,0,1,16);c.fillRect(0,0,4,1);c.fillRect(0,15,4,1)});
+mt('dikc',c=>{nf(c,'#8A8A90','#9A9AA0',.3);c.fillStyle='#606468';c.fillRect(0,0,1,16);c.fillRect(15,0,1,16);c.fillRect(0,0,16,1);c.fillRect(0,15,16,1);c.fillStyle='#70747A';c.fillRect(1,2,14,1);c.fillRect(1,13,14,1);c.fillStyle='#C0C0C8';c.fillRect(11,7,2,2);c.fillStyle='#505458';c.fillRect(7,0,1,16);c.fillRect(8,4,1,8)});
+mt('diko',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(138,138,144,0.3)';c.fillRect(0,0,4,16);c.fillStyle='#606468';c.fillRect(0,0,1,16);c.fillRect(3,0,1,16);c.fillRect(0,0,4,1);c.fillRect(0,15,4,1)});
+mt('ddkc',c=>{nf(c,'#3A2818','#4A3828',.3);c.fillStyle='#2A1808';c.fillRect(0,0,1,16);c.fillRect(15,0,1,16);c.fillRect(0,0,16,1);c.fillRect(0,15,16,1);c.fillStyle='#1A0A00';c.fillRect(1,2,14,1);c.fillRect(1,13,14,1);c.fillStyle='#6A4A20';c.fillRect(11,7,2,2);c.fillStyle='#3A2010';c.fillRect(7,0,1,16)});
+mt('ddko',c=>{c.clearRect(0,0,16,16);c.fillStyle='rgba(58,40,24,0.3)';c.fillRect(0,0,4,16);c.fillStyle='#2A1808';c.fillRect(0,0,1,16);c.fillRect(3,0,1,16);c.fillRect(0,0,4,1);c.fillRect(0,15,4,1)});
 }
 
 // Block face textures [top,side,bottom]
@@ -323,6 +333,7 @@ bf(B.TALL_GRASS,'tgrss');bf(B.FLOWER_RED,'flrd');bf(B.FLOWER_BLUE,'flbl');bf(B.F
 bf(B.STAIR_COB,'co');bf(B.STAIR_PLNK,'pk');bf(B.STAIR_BRK,'bk');bf(B.STAIR_SBK,'sb');bf(B.STAIR_STONE,'st');bf(B.STAIR_MARBLE,'mrbl');
 bf(B.LADDER,'pk');bf(B.BASALT,'bslt');bf(B.ASH_STONE,'ashst');bf(B.SCORCHED,'scor');bf(B.OBSIDIAN,'obsi');bf(B.LOCKER2,'lock2');bf(B.BOOTH_SEAT,'bseat');bf(B.CABINET,'cabnt');bf(B.NEON_TRIM,'ntrim');bf(B.CARPET,'crpet');bf(B.COUNTER_TOP,'cntop');bf(B.MENU_BOARD,'menbrd');
 bf(B.REDWOOD_LOG,'rwlt','rwl');bf(B.REDWOOD_LVS,'rwlv');
+bf(B.DOOR_OAK_C,'dokc');bf(B.DOOR_OAK_O,'doko');bf(B.DOOR_IRON_C,'dikc');bf(B.DOOR_IRON_O,'diko');bf(B.DOOR_DARK_C,'ddkc');bf(B.DOOR_DARK_O,'ddko');
 
 const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPICK]:'wpick_i',[B.SPICK]:'spick_i',[B.WSWD]:'wswd_i'};
 
@@ -3357,6 +3368,9 @@ act(dt){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);co
     if(W.inp.rj){W.inp.rj=false;
       // Chest interaction - right-click opens chest UI
       if(hit.b===B.CHST){openChestUI(hit.x,hit.y,hit.z);return}
+      // Door interaction - right-click toggles open/closed
+      const _doorToggle={[B.DOOR_OAK_C]:B.DOOR_OAK_O,[B.DOOR_OAK_O]:B.DOOR_OAK_C,[B.DOOR_IRON_C]:B.DOOR_IRON_O,[B.DOOR_IRON_O]:B.DOOR_IRON_C,[B.DOOR_DARK_C]:B.DOOR_DARK_O,[B.DOOR_DARK_O]:B.DOOR_DARK_C};
+      if(_doorToggle[hit.b]!==undefined){W.sB(hit.x,hit.y,hit.z,_doorToggle[hit.b]);const above=W.gB(hit.x,hit.y+1,hit.z);if(_doorToggle[above]!==undefined)W.sB(hit.x,hit.y+1,hit.z,_doorToggle[above]);const below=W.gB(hit.x,hit.y-1,hit.z);if(_doorToggle[below]!==undefined)W.sB(hit.x,hit.y-1,hit.z,_doorToggle[below]);return}
       // Train interaction - right-click near a train mounts it
       if(!_trainMount){for(const t of W.trains){if(t.pos.distanceTo(this.pos)<5){mountTrain(t);return}}}
       const it=this.hb[this.sel];if(it){

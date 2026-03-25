@@ -3362,28 +3362,42 @@ function fluidTick(sx,sy,sz,fluidId){
 }
 function processFluidQueue(){
   const q=window._fluidQ;if(!q||q.length===0)return;
-  const maxPerFrame=80;let processed=0;const now=performance.now();
+  const maxPerFrame=100;let processed=0;const now=performance.now();
   const newQ=[];
   for(let i=0;i<q.length;i++){
     const f=q[i];
-    const delay=f.id===B.WATER?50:150;
+    const delay=f.id===B.WATER?40:120;
     if(now-f.t<delay){newQ.push(f);continue}
     if(processed>=maxPerFrame){newQ.push(f);continue}
+    // Check if source still exists (prevent orphan flow)
+    const cur=W.gB(f.x,f.y,f.z);
+    if(cur!==f.id)continue; // block was removed/changed, skip
     processed++;
     const maxSpread=f.id===B.WATER?7:3;
-    // Flow down first
+    // Flow down first (priority: gravity)
     const below=W.gB(f.x,f.y-1,f.z);
     if(f.y>1&&below===B.AIR){
       W.sB(f.x,f.y-1,f.z,f.id);
       newQ.push({x:f.x,y:f.y-1,z:f.z,id:f.id,d:0,t:now});
+      // Continue flowing down from new position
+      const below2=W.gB(f.x,f.y-2,f.z);
+      if(f.y>2&&below2===B.AIR){newQ.push({x:f.x,y:f.y-1,z:f.z,id:f.id,d:0,t:now+delay})}
     }else if(below===B.LAVA&&f.id===B.WATER){W.sB(f.x,f.y-1,f.z,B.OBSIDIAN)}
     else if(below===B.WATER&&f.id===B.LAVA){W.sB(f.x,f.y-1,f.z,B.COB)}
     else if(f.d<maxSpread&&below!==B.AIR){
-      // Spread laterally
+      // Check for downhill flow opportunity - prefer spreading toward edges where it can fall
+      let spread=false;
       for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
         const nx=f.x+dx,nz=f.z+dz;
         const nb=W.gB(nx,f.y,nz);
-        if(nb===B.AIR){W.sB(nx,f.y,nz,f.id);newQ.push({x:nx,y:f.y,z:nz,id:f.id,d:f.d+1,t:now})}
+        if(nb===B.AIR){
+          // Check if flowing here would let it fall (prefer this direction)
+          const nbBelow=W.gB(nx,f.y-1,nz);
+          W.sB(nx,f.y,nz,f.id);
+          const newD=nbBelow===B.AIR?0:f.d+1; // reset depth if it can fall
+          newQ.push({x:nx,y:f.y,z:nz,id:f.id,d:newD,t:now});
+          spread=true;
+        }
         else if(nb===B.LAVA&&f.id===B.WATER){W.sB(nx,f.y,nz,B.OBSIDIAN)}
         else if(nb===B.WATER&&f.id===B.LAVA){W.sB(nx,f.y,nz,B.COB)}
       }
@@ -3473,7 +3487,9 @@ tick(dt){if(this.hT>0)this.hT-=dt;this.aT+=dt;const I=W.inp;this.yaw-=I.dx*.002;
 col(dt){const hw=.28,sol=(a,b,c)=>BD[W.gB(a,b,c)]?.sol;let ny=this.pos.y+this.vel.y*dt;if(this.vel.y<0&&(sol(fl(this.pos.x),fl(ny),fl(this.pos.z))||sol(fl(this.pos.x-hw),fl(ny),fl(this.pos.z-hw))||sol(fl(this.pos.x+hw),fl(ny),fl(this.pos.z+hw)))){ny=fl(ny)+1;this.vel.y=0;this.gr=true}else{this.gr=false;if(this.vel.y>0&&sol(fl(this.pos.x),fl(ny+1.7),fl(this.pos.z))){this.vel.y=0;ny=this.pos.y}}this.pos.y=ny;let nx=this.pos.x+this.vel.x*dt;if(sol(fl(nx+hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx+hw),fl(this.pos.y+1),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y),fl(this.pos.z))||sol(fl(nx-hw),fl(this.pos.y+1),fl(this.pos.z)))nx=this.pos.x;this.pos.x=nx;let nz=this.pos.z+this.vel.z*dt;if(sol(fl(this.pos.x),fl(this.pos.y),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz+hw))||sol(fl(this.pos.x),fl(this.pos.y),fl(nz-hw))||sol(fl(this.pos.x),fl(this.pos.y+1),fl(nz-hw)))nz=this.pos.z;this.pos.z=nz}
 act(dt){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const hit=this.ray(W.cam.position.clone(),dir,5.5);const bn=$('bn');
   if(hit){W.hl.visible=true;W.hl.position.set(hit.x+.5,hit.y+.5,hit.z+.5);bn.textContent=BD[hit.b]?.nm||'';
-    if(W.inp.ml){if(!this.bt||this.bt.x!==hit.x||this.bt.y!==hit.y||this.bt.z!==hit.z){this.bt={x:hit.x,y:hit.y,z:hit.z};this.bp=0}const hd=this.mode==='creative'?.05:(BD[hit.b]?.hd||1);if(hd>0){this.bp+=dt/hd;W.brkS=mn(5,fl(this.bp*6));if(this.bp>=1){const dr=BD[hit.b]?.dr??hit.b;if(dr!==B.AIR&&this.mode==='survival'){W.drops.push(new ItemDrop(hit.x+.5,hit.y,hit.z+.5,dr))}W.sB(hit.x,hit.y,hit.z,B.AIR);this.bp=0;this.bt=null;W.brkS=-1}}}else{this.bp=0;this.bt=null;W.brkS=-1}
+    if(W.inp.ml){if(!this.bt||this.bt.x!==hit.x||this.bt.y!==hit.y||this.bt.z!==hit.z){this.bt={x:hit.x,y:hit.y,z:hit.z};this.bp=0}const hd=this.mode==='creative'?.05:(BD[hit.b]?.hd||1);if(hd>0){this.bp+=dt/hd;W.brkS=mn(5,fl(this.bp*6));if(this.bp>=1){const dr=BD[hit.b]?.dr??hit.b;if(dr!==B.AIR&&this.mode==='survival'){W.drops.push(new ItemDrop(hit.x+.5,hit.y,hit.z+.5,dr))}W.sB(hit.x,hit.y,hit.z,B.AIR);// Check neighbors for fluid that should flow into this gap
+for(const[fdx,fdy,fdz]of[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]){const fb=W.gB(hit.x+fdx,hit.y+fdy,hit.z+fdz);if(fb===B.WATER||fb===B.LAVA)fluidTick(hit.x,hit.y,hit.z,fb)}
+this.bp=0;this.bt=null;W.brkS=-1}}}else{this.bp=0;this.bt=null;W.brkS=-1}
     if(W.inp.rj){W.inp.rj=false;
       // Chest interaction - right-click opens chest UI
       if(hit.b===B.CHST){openChestUI(hit.x,hit.y,hit.z);return}
@@ -3823,7 +3839,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
 
 // UI
 function hideAll(){['menu','wsel','cwUI','mpUI','ld','hud','invUI','pauseUI','deathUI','chestUI','trainHUD'].forEach(id=>$(id).style.display='none')}
-function showWSel(){hideAll();$('wsel').style.display='flex';const l=getW(),wl=$('wlist');wl.innerHTML='';if(!l.length)wl.innerHTML='<div style="text-align:center;font-size:7px;color:#666;padding:16px">No worlds yet</div>';l.forEach(w=>{const e=document.createElement('div');e.className='we';e.innerHTML=`<div>${w.nm}</div><div class="wi">${w.md} · Seed: ${w.sd}</div>`;e.onclick=()=>{const d=loadW(w.sd);W.curW=w;W.start(w.sd,w.md,d)};wl.appendChild(e)})}
+function showWSel(){hideAll();$('wsel').style.display='flex';const l=getW(),wl=$('wlist');wl.innerHTML='';if(!l.length)wl.innerHTML='<div style="text-align:center;font-size:7px;color:#666;padding:16px">No worlds yet</div>';l.forEach(w=>{const e=document.createElement('div');e.className='we';e.style.position='relative';e.innerHTML=`<div>${w.nm}</div><div class="wi">${w.md} · Seed: ${w.sd}</div>`;const db=document.createElement('div');db.textContent='✕';db.style.cssText='position:absolute;right:4px;top:50%;transform:translateY(-50%);color:#f55;font-size:12px;cursor:pointer;padding:2px 6px;border-radius:3px;background:rgba(0,0,0,.3)';db.title='Delete world';db.onclick=(ev)=>{ev.stopPropagation();if(confirm('Delete "'+w.nm+'"? This cannot be undone.')){delW(w.sd);showWSel()}};e.appendChild(db);e.onclick=()=>{const d=loadW(w.sd);W.curW=w;W.start(w.sd,w.md,d)};wl.appendChild(e)})}
 function hideWSel(){hideAll();$('menu').style.display='flex'}
 function showCW(){hideAll();$('cwUI').style.display='flex';$('cwn').value='World '+(getW().length+1);$('cws').value='';W.gMode='survival'}
 function hideCW(){showWSel()}

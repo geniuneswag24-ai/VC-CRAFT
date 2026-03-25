@@ -1470,118 +1470,163 @@ function genGarfDungeon(chunk,lx,sy,lz){
       _ds(dx,dy,dz,isF?fl:isC?ce:isW?wl:B.AIR);
     }
   }
-  // Entry breach chamber (9x6x9)
-  room(-4,0,-4,4,6,4,bC,bW,bW);
+  // ═══ DUNGEON SHELL: 1-block thick DEEP shell around entire bounding box ═══
+  for(let dx=-16;dx<=16;dx++)for(let dz=-55;dz<=6;dz++){
+    _ds(dx,-8,dz,bW);_ds(dx,8,dz,bW); // top/bottom shell
+  }
+  for(let dy=-8;dy<=8;dy++)for(let dz=-55;dz<=6;dz++){
+    _ds(-16,dy,dz,bW);_ds(16,dy,dz,bW); // side shells
+  }
+  for(let dy=-8;dy<=8;dy++)for(let dx=-16;dx<=16;dx++){
+    _ds(dx,dy,-55,bW);_ds(dx,dy,6,bW); // front/back shells
+  }
+  // Entry breach chamber (12x8x12)
+  room(-6,0,-6,5,7,5,bC,bW,bW);
   // Entry shaft from above - vertical access
-  for(let dy=7;dy<=14;dy++){for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)_ds(dx,dy,dz,B.AIR)}
-  for(let dy=0;dy<=14;dy++)_ds(-2,dy,-2,B.LADDER);
-  // Entry lighting
-  _ds(0,5,0,bL);_ds(-3,5,-3,bN);_ds(3,5,3,bN);
-  // Main security corridor heading south (3 wide, 5 tall, 16 long)
-  for(let dz=-5;dz>=-20;dz--)for(let dx=-1;dx<=1;dx++)for(let dy=0;dy<=4;dy++){
-    const isW=dx===-1||dx===1;const isC=dy===4;const isF=dy===0;
+  for(let dy=8;dy<=16;dy++){for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)_ds(dx,dy,dz,B.AIR)}
+  for(let dy=0;dy<=16;dy++)_ds(-3,dy,-3,B.LADDER);
+  _ds(-3,0,-3,bC);
+  // Entry lighting and detail
+  _ds(0,6,0,bL);_ds(-4,6,-4,bN);_ds(4,6,4,bN);_ds(-4,6,4,bN);_ds(4,6,-4,bN);
+  // Entry furniture
+  _ds(3,1,3,bR);_ds(3,2,3,bM);_ds(-4,1,-4,B.CHST);
+  // Main security corridor heading south (5 wide, 5 tall, 18 long)
+  for(let dz=-7;dz>=-24;dz--)for(let dx=-2;dx<=2;dx++)for(let dy=0;dy<=4;dy++){
+    const isW=dx===-2||dx===2;const isC=dy===4;const isF=dy===0;
     _ds(dx,dy,dz,isF?bM:isC?bW:isW?(dy<4?bR:bW):B.AIR);
   }
-  // Security corridor lighting
-  for(let dz=-7;dz>=-18;dz-=5)_ds(0,4,dz,bL);
-  // Machine hall (east side, 10x6x8)
-  room(2,0,-8,11,-1+7,-8+7,bM,bR,bW);
-  // Machine hall interior details - rusted machinery
-  for(let dx=4;dx<=9;dx+=3){_ds(dx,1,-5,bR);_ds(dx,2,-5,bR);_ds(dx,3,-5,bM)}
-  _ds(6,6,-5,bL);
+  // Security corridor lighting and neon conduits
+  for(let dz=-9;dz>=-22;dz-=4){_ds(0,4,dz,bL);_ds(-2,3,dz,bN);_ds(2,3,dz,bN)}
+  // Machine hall (east side, 14x8x12)
+  room(3,0,-10,16,7,-10+11,bM,bR,bW);
+  // Machine hall interior - rusted machinery rows
+  for(let dx=5;dx<=14;dx+=3){_ds(dx,1,-7,bR);_ds(dx,2,-7,bR);_ds(dx,3,-7,bM);_ds(dx,1,-4,bR);_ds(dx,2,-4,bM)}
+  // Machine hall consoles
+  for(let dx=5;dx<=12;dx+=2){_ds(dx,1,-9,bM);_ds(dx,2,-9,B.GLASS)}
+  _ds(8,6,-7,bL);_ds(12,6,-4,bL);_ds(5,6,-7,bL);
   // Corridor from main to machine hall
-  for(let dx=1;dx<=3;dx++)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-8,B.AIR);
-  _ds(2,1,-8,B.DOOR_IRON_C);_ds(2,2,-8,B.DOOR_IRON_C);
-  // Storage vault (west side, 8x5x8)
-  room(-10,0,-9,-3,5,-2,bC,bW,bW);
-  _ds(-6,4,-5,bL);
+  for(let dx=2;dx<=4;dx++)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-10,B.AIR);
+  _ds(3,1,-10,B.DOOR_IRON_C);_ds(3,2,-10,B.DOOR_IRON_C);
+  // Storage vault (west side, 12x7x10)
+  room(-14,0,-11,-3,6,-2,bC,bW,bW);
+  // Storage vault shelving and chests
+  for(let dz=-9;dz>=-4;dz-=2){_ds(-12,1,dz,bM);_ds(-12,2,dz,bM);_ds(-5,1,dz,bM);_ds(-5,2,dz,bM)}
+  _ds(-8,1,-3,B.CHST);_ds(-10,1,-8,B.CHST);_ds(-6,1,-6,B.CHST);
+  _ds(-8,5,-6,bL);_ds(-12,5,-4,bL);
   // Corridor from main to storage
-  for(let dx=-2;dx>=-3;dx--)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-7,B.AIR);
-  _ds(-2,1,-7,B.DOOR_IRON_C);_ds(-2,2,-7,B.DOOR_IRON_C);
-  // Power conduit room (east, deeper, 7x6x7)
-  room(3,-3,-18,9,3,-12,bM,bM,bR);
-  for(let dz=-14;dz>=-16;dz-=2){_ds(5,-2,dz,bN);_ds(7,-2,dz,bN)}
-  _ds(6,2,-15,bL);
+  for(let dx=-3;dx>=-4;dx--)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-9,B.AIR);
+  _ds(-3,1,-9,B.DOOR_IRON_C);_ds(-3,2,-9,B.DOOR_IRON_C);
+  // Power conduit room (east, deeper, 10x7x10)
+  room(3,-4,-22,12,3,-13,bM,bM,bR);
+  // Power conduits running along walls
+  for(let dz=-20;dz>=-14;dz-=2){_ds(5,-3,dz,bN);_ds(10,-3,dz,bN);_ds(5,-2,dz,bN);_ds(10,-2,dz,bN)}
+  _ds(7,2,-17,bL);_ds(5,2,-14,bL);_ds(10,2,-20,bL);
   // Steps down to power room
-  for(let dy=0;dy>=-3;dy--)_ds(2,dy,-16+dy,B.AIR);
-  // Catwalk overlook chamber (west, 8x8x6)
-  room(-10,-2,-20,-3,6,-14,bW,bR,bM);
+  for(let dy=0;dy>=-4;dy--){_ds(2,dy,-18+dy,B.AIR);_ds(3,dy,-18+dy,bC)}
+  // Corridor to power room
+  for(let dy=1;dy<=3;dy++){_ds(2,dy,-22,B.AIR);_ds(3,dy,-22,B.AIR)}
+  _ds(2,1,-22,B.DOOR_IRON_C);_ds(2,2,-22,B.DOOR_IRON_C);
+  // Catwalk overlook chamber (west, 10x10x8)
+  room(-14,-3,-24,-5,7,-16,bW,bR,bM);
   // Catwalk (floor at sy+3 across the room)
-  for(let dx=-9;dx<=-4;dx++)for(let dz=-19;dz>=-15;dz--)_ds(dx,3,dz,bM);
+  for(let dx=-13;dx<=-6;dx++)for(let dz=-23;dz>=-17;dz--)_ds(dx,3,dz,bM);
   // Railing
-  for(let dx=-9;dx<=-4;dx++){_ds(dx,4,-15,B.FENCE_BLK);_ds(dx,4,-19,B.FENCE_BLK)}
-  _ds(-7,5,-17,bL);
+  for(let dx=-13;dx<=-6;dx++){_ds(dx,4,-17,B.FENCE_BLK);_ds(dx,4,-23,B.FENCE_BLK)}
+  for(let dz=-23;dz>=-17;dz--){_ds(-13,4,dz,B.FENCE_BLK);_ds(-6,4,dz,B.FENCE_BLK)}
+  _ds(-9,6,-20,bL);_ds(-7,6,-18,bL);
   // Corridor from main to catwalk
-  for(let dy=1;dy<=3;dy++)for(let dz=-19;dz>=-20;dz--)_ds(-2,dy,dz,B.AIR);
-  _ds(-2,1,-19,B.DOOR_IRON_C);_ds(-2,2,-19,B.DOOR_IRON_C);
-  // Garfbot holding cells (3 cells along east corridor)
+  for(let dy=1;dy<=3;dy++)for(let dz=-23;dz>=-24;dz--){_ds(-3,dy,dz,B.AIR);_ds(-4,dy,dz,B.AIR)}
+  _ds(-3,1,-23,B.DOOR_IRON_C);_ds(-3,2,-23,B.DOOR_IRON_C);
+  // Garfbot holding cells (3 cells along east corridor, with bunks and lights)
   for(let ci=0;ci<3;ci++){
-    const cz=-22-ci*4;
-    room(3,0,cz,7,4,cz+3,bC,bR,bW);
+    const cz=-26-ci*5;
+    room(3,0,cz,8,4,cz+3,bC,bR,bW);
     // Cell door (iron bars = fence)
     for(let dy=1;dy<=3;dy++)_ds(3,dy,cz+1,B.FENCE_BLK);
-    _ds(5,3,cz+1,bL);
+    // Cell bunk and light
+    _ds(6,1,cz+1,B.PLNK);_ds(7,1,cz+1,B.PLNK);
+    _ds(5,3,cz+2,bL);
   }
   // Hidden chest alcove (secret room behind storage vault)
-  room(-13,0,-6,-11,4,-3,bW,bW,bW);
-  // Hidden entrance (1-block gap behind wall)
-  _ds(-10,1,-4,B.AIR);_ds(-10,2,-4,B.AIR);
-  // Assembly floor (large room, 12x7x10, below main level)
-  room(-5,-5,-34,6,2,-25,bM,bR,bW);
-  for(let dx=-3;dx<=4;dx+=2){_ds(dx,-4,-30,bR);_ds(dx,-3,-30,bM)}
-  _ds(0,1,-30,bL);_ds(-4,1,-28,bL);_ds(4,1,-28,bL);
+  room(-16,0,-8,-15,4,-3,bW,bW,bW);
+  _ds(-14,1,-4,B.AIR);_ds(-14,2,-4,B.AIR);
+  _ds(-15,1,-5,B.CHST);
+  // Assembly floor (large room, 16x9x14, below main level)
+  room(-7,-6,-40,8,3,-27,bM,bR,bW);
+  // Assembly floor interior - equipment rows
+  for(let dx=-5;dx<=6;dx+=3){_ds(dx,-5,-34,bR);_ds(dx,-4,-34,bR);_ds(dx,-3,-34,bM)}
+  for(let dx=-4;dx<=5;dx+=4){_ds(dx,-5,-30,bM);_ds(dx,-4,-30,B.GLASS)}
+  _ds(0,2,-34,bL);_ds(-6,2,-30,bL);_ds(7,2,-30,bL);_ds(0,2,-28,bL);
   // Stairs connecting main level to assembly floor
-  for(let step=0;step<5;step++){
-    _ds(0,-step,-21-step,bC);
-    for(let dy=-step+1;dy<=3;dy++)_ds(0,dy,-21-step,B.AIR);
-    _ds(1,-step,-21-step,bC);_ds(-1,-step,-21-step,bC);
-  }
-  // Dormancy bay (west of assembly, 8x5x10)
-  room(-14,-5,-34,-7,0,-25,bM,bW,bW);
-  for(let dz=-33;dz>=-26;dz-=2){_ds(-10,-4,dz,bR);_ds(-10,-3,dz,bR)}
-  _ds(-10,-1,-30,bL);
-  // Connecting door from assembly to dormancy
-  for(let dy=-4;dy<=-1;dy++){_ds(-5,dy,-30,B.AIR);_ds(-6,dy,-30,B.AIR)}
-  // Control room (east of assembly, 8x5x8)
-  room(7,-5,-33,14,0,-26,bM,bM,bW);
-  // Control consoles
-  for(let dx=9;dx<=12;dx++){_ds(dx,-4,-28,bR);_ds(dx,-3,-28,B.GLASS)}
-  _ds(10,-1,-30,bL);_ds(12,-1,-28,bN);
-  // Connecting door from assembly to control room
-  for(let dy=-4;dy<=-1;dy++){_ds(6,dy,-30,B.AIR);_ds(7,dy,-30,B.AIR)}
-  // ═══ CENTRAL ARENA CHAMBER (15x10x15) ═══
-  room(-7,-6,-50,7,4,-36,bC,bW,bW);
-  // Arena floor is deepslate with lava channels
-  for(let dx=-6;dx<=6;dx++)for(let dz=-49;dz>=-37;dz--)_ds(dx,-6,dz,bW);
-  // Lava channels running along arena walls
-  for(let dz=-48;dz>=-38;dz--){_ds(-6,-5,dz,B.LAVA);_ds(6,-5,dz,B.LAVA)}
-  for(let dx=-5;dx<=5;dx++){_ds(dx,-5,-48,B.LAVA);_ds(dx,-5,-38,B.LAVA)}
-  // Arena pillars (4 large pillars)
-  for(const[px,pz]of[[-5,-40],[5,-40],[-5,-46],[5,-46]]){
-    for(let dy=-5;dy<=3;dy++)_ds(px,dy,pz,bW);
-  }
-  // Central mechanism platform (3x2x3 raised platform)
-  for(let dx=-1;dx<=1;dx++)for(let dz=-44;dz>=-42;dz--){
-    _ds(dx,-5,dz,bM);_ds(dx,-4,dz,bM);
-  }
-  _ds(0,-3,-43,bN); // activation point
-  // Arena lighting
-  _ds(0,3,-43,bL);_ds(-5,3,-38,bL);_ds(5,3,-38,bL);
-  _ds(-5,3,-48,bL);_ds(5,3,-48,bL);
-  // Corridor connecting assembly floor to arena (ramp down)
-  for(let step=0;step<3;step++){
+  for(let step=0;step<6;step++){
     for(let dx=-1;dx<=1;dx++){
-      _ds(dx,-5-step,-35+step,bC);
-      for(let dy=-4-step;dy<=2;dy++)_ds(dx,dy,-35+step,B.AIR);
+      _ds(dx,-step,-25-step,bC);
+      for(let dy=-step+1;dy<=3;dy++)_ds(dx,dy,-25-step,B.AIR);
     }
   }
+  // Assembly floor doors
+  _ds(0,1,-27,B.DOOR_IRON_C);_ds(0,2,-27,B.DOOR_IRON_C);
+  // Dormancy bay (west of assembly, 10x6x14)
+  room(-16,-6,-40,-9,0,-27,bM,bW,bW);
+  for(let dz=-39;dz>=-28;dz-=2){_ds(-13,-5,dz,bR);_ds(-13,-4,dz,bR);_ds(-11,-5,dz,B.PLNK)}
+  _ds(-12,-1,-34,bL);_ds(-14,-1,-30,bL);
+  // Connecting door from assembly to dormancy
+  for(let dy=-5;dy<=-1;dy++){_ds(-7,dy,-34,B.AIR);_ds(-8,dy,-34,B.AIR)}
+  _ds(-7,-5,-34,B.DOOR_IRON_C);_ds(-7,-4,-34,B.DOOR_IRON_C);
+  // Control room (east of assembly, 10x6x10)
+  room(9,-6,-37,16,0,-28,bM,bM,bW);
+  // Control console wall
+  for(let dx=11;dx<=14;dx++){_ds(dx,-5,-30,bR);_ds(dx,-4,-30,B.DARK_PANEL);_ds(dx,-3,-30,B.GLASS);_ds(dx,-2,-30,bN)}
+  // Control room chairs and lighting
+  _ds(12,-5,-32,B.PLNK);_ds(13,-5,-32,B.PLNK);
+  _ds(12,-1,-33,bL);_ds(14,-1,-30,bN);_ds(10,-1,-35,bL);
+  // Connecting door from assembly to control room
+  for(let dy=-5;dy<=-1;dy++){_ds(8,dy,-34,B.AIR);_ds(9,dy,-34,B.AIR)}
+  _ds(8,-5,-34,B.DOOR_IRON_C);_ds(8,-4,-34,B.DOOR_IRON_C);
+  // ═══ CENTRAL ARENA CHAMBER (20x12x20) ═══
+  room(-10,-7,-60,9,5,-41,bC,bW,bW);
+  // Arena floor is deepslate
+  for(let dx=-9;dx<=8;dx++)for(let dz=-59;dz>=-42;dz--)_ds(dx,-7,dz,bW);
+  // Lava channels in 1-block-deep trenches along arena walls
+  for(let dx=-9;dx<=8;dx++)for(let dz=-59;dz>=-42;dz--){
+    if(dx===-9||dx===8||dz===-59||dz===-42)_ds(dx,-6,dz,B.LAVA);
+  }
+  // Trench walls
+  for(let dx=-8;dx<=7;dx++)for(let dz=-58;dz>=-43;dz--){
+    if(dx===-8||dx===7||dz===-58||dz===-43){
+      if(!((dx===-8||dx===7)&&(dz===-58||dz===-43)))_ds(dx,-6,dz,bW);
+    }
+  }
+  // Arena pillars (8 grand pillars around perimeter)
+  for(const[px,pz]of[[-7,-45],[7,-45],[-7,-56],[7,-56],[-7,-50],[7,-50],[0,-45],[0,-56]]){
+    for(let dy=-6;dy<=4;dy++)_ds(px,dy,pz,B.COLUMN_BLK);
+  }
+  // Central mechanism platform (5x3x5 raised platform with neon and lanterns)
+  for(let dx=-2;dx<=2;dx++)for(let dz=-52;dz>=-48;dz--){
+    _ds(dx,-6,dz,bM);_ds(dx,-5,dz,bM);
+  }
+  _ds(0,-4,-50,bN);_ds(-2,-4,-50,bN);_ds(2,-4,-50,bN);
+  _ds(0,-4,-48,bL);_ds(0,-4,-52,bL);
+  _ds(0,-3,-50,bN); // activation point (top of mechanism)
+  // Arena lighting
+  _ds(0,4,-50,bL);_ds(-8,4,-43,bL);_ds(8,4,-43,bL);
+  _ds(-8,4,-58,bL);_ds(8,4,-58,bL);_ds(-4,4,-50,bL);_ds(4,4,-50,bL);
+  // Corridor connecting assembly floor to arena (wider ramp down)
+  for(let step=0;step<4;step++){
+    for(let dx=-2;dx<=2;dx++){
+      _ds(dx,-6-step,-40+step,bC);
+      for(let dy=-5-step;dy<=3;dy++)_ds(dx,dy,-40+step,B.AIR);
+    }
+  }
+  // Arena entrance door
+  _ds(0,-6,-41,B.DOOR_IRON_C);_ds(0,-5,-41,B.DOOR_IRON_C);
   // Place 3 key chests in different dungeon areas
-  _ds(8,1,-4,B.CHST); // machine hall chest
-  _ds(-12,1,-5,B.CHST); // hidden alcove chest
-  _ds(-3,-4,-32,B.CHST); // assembly floor chest
+  _ds(10,1,-6,B.CHST); // machine hall chest
+  _ds(-15,1,-6,B.CHST); // hidden alcove chest
+  _ds(-4,-5,-38,B.CHST); // assembly floor chest
   // Spawn garfbots throughout the dungeon
   if(W&&W.mobs){
-    const gSpawns=[[2,-6],[8,-5],[-7,-5],[-7,-17],[5,-14],[5,-24],[5,-28],[-3,-29],[0,-42],[4,-45],[-4,-45]];
+    const gSpawns=[[2,-8],[10,-7],[-8,-7],[-9,-20],[6,-17],[6,-28],[6,-32],[-4,-35],[0,-48],[5,-54],[-5,-54],[-12,-34],[12,-32]];
     for(const[gx,gz]of gSpawns){
       const g=new Garfbot(ox+lx+gx,sy+2,oz+lz+gz);W.mobs.push(g)
     }

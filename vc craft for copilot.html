@@ -2385,6 +2385,32 @@ deco(){
         for(let dx=0;dx<CS;dx++){const rf=this.sY(dx,7);if(rf<WL&&rf>vy+23){this.S(dx,rf,7,B.MARBLE);this.S(dx,rf,8,B.MARBLE)}}
       }
     }
+    // ── ZONE CONNECTIONS: archways on chunk edges facing other VCLANTIS chunks ──
+    const checkDirs=[[0,-1,8,0],[0,1,8,15],[1,0,15,8],[-1,0,0,8]];
+    for(const[dcx,dcz,ax,az] of checkDirs){
+      const nbi=bio((this.cx+dcx)*CS+8,(this.cz+dcz)*CS+8);
+      if(nbi===BI.VCLANTIS){
+        // Cut 3-wide 5-tall archway at main floor level
+        for(let dy=1;dy<=5;dy++){
+          if(dcx===0){for(let ddx=-1;ddx<=1;ddx++){const px=ax+ddx;if(px>=0&&px<CS)this.S(px,vy+dy,az,B.AIR)}}
+          else{for(let ddz=-1;ddz<=1;ddz++){const pz=az+ddz;if(pz>=0&&pz<CS)this.S(ax,vy+dy,pz,B.AIR)}}
+        }
+        // Archway frame
+        if(dcx===0){
+          for(let ddx=-2;ddx<=2;ddx++){const px=ax+ddx;if(px>=0&&px<CS){this.S(px,vy+6,az,B.MARBLE);this.S(px,vy,az,B.MARBLE)}}
+          this.S(ax-2,vy+1,az,B.COLUMN_BLK);this.S(ax+2,vy+1,az,B.COLUMN_BLK);
+          for(let dy=2;dy<=5;dy++){if(ax-2>=0)this.S(ax-2,vy+dy,az,B.SEA_MARBLE);if(ax+2<CS)this.S(ax+2,vy+dy,az,B.SEA_MARBLE)}
+        }else{
+          for(let ddz=-2;ddz<=2;ddz++){const pz=az+ddz;if(pz>=0&&pz<CS){this.S(ax,vy+6,pz,B.MARBLE);this.S(ax,vy,pz,B.MARBLE)}}
+          this.S(ax,vy+1,az-2,B.COLUMN_BLK);this.S(ax,vy+1,az+2,B.COLUMN_BLK);
+          for(let dy=2;dy<=5;dy++){if(az-2>=0)this.S(ax,vy+dy,az-2,B.SEA_MARBLE);if(az+2<CS)this.S(ax,vy+dy,az+2,B.SEA_MARBLE)}
+        }
+      }
+    }
+    // Mosaic floor patterns in central area
+    for(let dx=4;dx<12;dx++)for(let dz=4;dz<12;dz++){
+      if((dx+dz)%2===0)this.S(dx,vy,dz,B.SEA_MARBLE);
+    }
     regStruct('VCLANTIS',ox+8,vy+2,oz+8);
     return;
   }

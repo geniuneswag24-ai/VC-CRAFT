@@ -827,6 +827,7 @@ function genWaffle(ck,x,y,z){
 function genSchool(ck,x,y,z,r){
   const fh=6,mainW=32,mainD=16,hw=fl(mainD/2);
   const ox=x-fl(mainW/2),oz=z;
+  clearVolume(ck,ox-1,y,oz-1,mainW+2,mainD+20,fh*2+6);
   // ── Main building shell: 2 floors ──
   for(let f=0;f<2;f++){
     const fy=y+f*fh;
@@ -845,8 +846,8 @@ function genSchool(ck,x,y,z,r){
       for(let dy=1;dy<fh-1;dy++)for(let dz=side===0?1:hw+2;dz<(side===0?hw-1:mainD-1);dz++)
         ss(ck,ox+rx,fy+dy,oz+dz,B.SCHOOL_WALL);
       // Doorway
-      ss(ck,ox+rx,fy+1,oz+(side===0?hw-2:hw+2),B.AIR);
-      ss(ck,ox+rx,fy+2,oz+(side===0?hw-2:hw+2),B.AIR);
+      ss(ck,ox+rx,fy+1,oz+(side===0?hw-2:hw+2),(room===0||room===4)?B.DOOR_OAK_C:B.AIR);
+      ss(ck,ox+rx,fy+2,oz+(side===0?hw-2:hw+2),(room===0||room===4)?B.DOOR_OAK_C:B.AIR);
       ss(ck,ox+rx,fy+3,oz+(side===0?hw-2:hw+2),B.AIR);
       // Desks in grid layout
       const cdz=side===0?2:hw+3;
@@ -882,6 +883,7 @@ function genSchool(ck,x,y,z,r){
   // ── Wide front entrance ──
   for(let dx=fl(mainW/2)-2;dx<=fl(mainW/2)+2;dx++)
     for(let dy=1;dy<=4;dy++)ss(ck,ox+dx,y+dy,oz,B.AIR);
+  ss(ck,ox+fl(mainW/2),y+1,oz,B.DOOR_OAK_C);ss(ck,ox+fl(mainW/2),y+2,oz,B.DOOR_OAK_C);
   // Front steps
   for(let dx=fl(mainW/2)-3;dx<=fl(mainW/2)+3;dx++)ss(ck,ox+dx,y,oz-1,B.STAIR_COB);
   // ── Admin/Office wing (east, 12x8) ──
@@ -1130,13 +1132,14 @@ function genStadium(ck,x,y,z,r){
 function genRestaurant(ck,x,y,z){
   const w=32,d=16,kd=10;
   const ox=x-fl(w/2),oz=z;
+  clearVolume(ck,ox-1,y,oz-1,w+2,d+kd+4,10);
   // ── Main dining hall (32x16, 7 tall, brick walls) ──
   buildRoom(ck,ox,y,oz,w,d,7,B.BRK,B.CONCRETE,B.CONCRETE,true);
   // Massive front window facade (4 rows of glass)
   for(let dx=2;dx<w-2;dx++){ss(ck,ox+dx,y+2,oz,B.GLASS);ss(ck,ox+dx,y+3,oz,B.GLASS);ss(ck,ox+dx,y+4,oz,B.GLASS);ss(ck,ox+dx,y+5,oz,B.GLASS)}
   // Front doors - triple wide main + side entrance
   const mc=fl(w/2);
-  ss(ck,ox+mc,y+1,oz,B.AIR);ss(ck,ox+mc,y+2,oz,B.AIR);ss(ck,ox+mc-1,y+1,oz,B.AIR);ss(ck,ox+mc-1,y+2,oz,B.AIR);
+  ss(ck,ox+mc,y+1,oz,B.DOOR_DARK_C);ss(ck,ox+mc,y+2,oz,B.DOOR_DARK_C);ss(ck,ox+mc-1,y+1,oz,B.AIR);ss(ck,ox+mc-1,y+2,oz,B.AIR);
   ss(ck,ox+mc+1,y+1,oz,B.AIR);ss(ck,ox+mc+1,y+2,oz,B.AIR);
   ss(ck,ox+mc+6,y+1,oz,B.AIR);ss(ck,ox+mc+6,y+2,oz,B.AIR);
   // ── 8 booth sections along walls (4 per side with booth backs) ──
@@ -1184,7 +1187,7 @@ function genRestaurant(ck,x,y,z){
   ss(ck,ox+w+14,y+6,oz+3,B.NEON_BLK);ss(ck,ox+w+17,y+6,oz+3,B.NEON_BLK);
   // ── Large kitchen (32x10 behind dining) ──
   buildRoom(ck,ox,y,oz+d,w,kd,7,B.STUCCO,B.CONCRETE,B.CONCRETE,false);
-  ss(ck,ox+5,y+1,oz+d,B.AIR);ss(ck,ox+5,y+2,oz+d,B.AIR);
+  ss(ck,ox+5,y+1,oz+d,B.DOOR_DARK_C);ss(ck,ox+5,y+2,oz+d,B.DOOR_DARK_C);
   ss(ck,ox+12,y+1,oz+d,B.AIR);ss(ck,ox+12,y+2,oz+d,B.AIR);
   ss(ck,ox+20,y+1,oz+d,B.AIR);ss(ck,ox+20,y+2,oz+d,B.AIR);
   ss(ck,ox+8,y+2,oz+d,B.GLASS);ss(ck,ox+15,y+2,oz+d,B.GLASS);ss(ck,ox+24,y+2,oz+d,B.GLASS);
@@ -1351,6 +1354,8 @@ function genMall(ck,x,y,z,r){
   ss(ck,ox+w-10,y+1,oz+d-7,B.METAL_PANEL);ss(ck,ox+w-5,y+1,oz+d-7,B.METAL_PANEL);
   // ── Grand entrance (7 wide, 5 tall) ──
   for(let dx=fl(w/2)-3;dx<=fl(w/2)+3;dx++)for(let dy=1;dy<=5;dy++)ss(ck,ox+dx,y+dy,oz,B.AIR);
+  ss(ck,ox+fl(w/2),y+1,oz,B.DOOR_DARK_C);ss(ck,ox+fl(w/2),y+2,oz,B.DOOR_DARK_C);
+  ss(ck,ox+fl(w/2)-1,y+1,oz,B.DOOR_DARK_C);ss(ck,ox+fl(w/2)-1,y+2,oz,B.DOOR_DARK_C);
   // ── Back entrance (5 wide) ──
   for(let dx=fl(w/2)-2;dx<=fl(w/2)+2;dx++){ss(ck,ox+dx,y+1,oz+d-1,B.AIR);ss(ck,ox+dx,y+2,oz+d-1,B.AIR)}
   // ── Food court on top floor with 8 food counters + 12 seating tables ──
@@ -1467,11 +1472,13 @@ function genGarfDungeon(chunk,lx,sy,lz){
   _ds(6,6,-5,bL);
   // Corridor from main to machine hall
   for(let dx=1;dx<=3;dx++)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-8,B.AIR);
+  _ds(2,1,-8,B.DOOR_IRON_C);_ds(2,2,-8,B.DOOR_IRON_C);
   // Storage vault (west side, 8x5x8)
   room(-10,0,-9,-3,5,-2,bC,bW,bW);
   _ds(-6,4,-5,bL);
   // Corridor from main to storage
   for(let dx=-2;dx>=-3;dx--)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-7,B.AIR);
+  _ds(-2,1,-7,B.DOOR_IRON_C);_ds(-2,2,-7,B.DOOR_IRON_C);
   // Power conduit room (east, deeper, 7x6x7)
   room(3,-3,-18,9,3,-12,bM,bM,bR);
   for(let dz=-14;dz>=-16;dz-=2){_ds(5,-2,dz,bN);_ds(7,-2,dz,bN)}
@@ -1487,6 +1494,7 @@ function genGarfDungeon(chunk,lx,sy,lz){
   _ds(-7,5,-17,bL);
   // Corridor from main to catwalk
   for(let dy=1;dy<=3;dy++)for(let dz=-19;dz>=-20;dz--)_ds(-2,dy,dz,B.AIR);
+  _ds(-2,1,-19,B.DOOR_IRON_C);_ds(-2,2,-19,B.DOOR_IRON_C);
   // Garfbot holding cells (3 cells along east corridor)
   for(let ci=0;ci<3;ci++){
     const cz=-22-ci*4;

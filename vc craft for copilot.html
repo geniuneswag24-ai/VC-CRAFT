@@ -1558,9 +1558,9 @@ genTerrain(){
       else if(y<=h){
         if(y<h-1&&y>3){const c1=nC.n3(wx*.05,y*.06,wz*.05),c2=nC.n3(wx*.08+99,y*.1+99,wz*.08+99);
           const caveVal=c1*c1+c2*c2;
-          if(caveVal<.028){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
+          if(caveVal<.028){this.blk[this.I(x,y,z)]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
           const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
-          if(bigCave>.45&&y>8&&y<200){this.blk[this.I(x,y,z)]=(y<=WL&&y<h-10&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
+          if(bigCave>.45&&y>8&&y<200){this.blk[this.I(x,y,z)]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
           // Giant cavern: very rare, huge open space
           const giantCav=nC.n3(wx*.005,y*.008,wz*.005);
           if(giantCav>.58&&y>8&&y<180){this.blk[this.I(x,y,z)]=B.AIR;continue}
@@ -1605,6 +1605,8 @@ genTerrain(){
       this.blk[this.I(x,y,z)]=b;
     }
   }
+// Water cleanup: remove floating water (water with air below)
+for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){for(let y=CH-1;y>=1;y--){if(this.G(x,y,z)===B.WATER&&this.G(x,y-1,z)===B.AIR)this.S(x,y,z,B.AIR)}}
 }
 sY(x,z){for(let y=CH-1;y>=0;y--){const b=this.G(x,y,z);if(b!==B.AIR&&b!==B.WATER)return y}return 0}
 deco(){
@@ -2646,6 +2648,31 @@ deco(){
       }
     }
   }
+  // ═══ UNDERGROUND WATER POOL PASS ═══
+    if(!this._hasStruct&&chunkBio!==BI.VCLANTIS&&chunkBio!==BI.PROPS_ISLAND&&chunkBio!==BI.DISCORD_DEEP){
+      for(let x=0;x<CS;x++)for(let z=0;z<CS;z++)for(let y=30;y<100;y++){
+        if(this.G(x,y,z)!==B.AIR)continue;const floorB=this.G(x,y-1,z);
+        if(floorB===B.AIR||floorB===B.WATER||floorB===B.LAVA)continue;
+        if(!BD[floorB]?.sol)continue;
+        const abv=this.G(x,y+1,z);if(abv!==B.AIR)continue;
+        const prob=y<50?.03:y<75?.02:.01;
+        if(dh01(ox+x+y*13,oz+z+y*17)<prob){
+          // Flood-fill small water pool
+          const pool=[{x,y,z}];const vis=new Set();vis.add(x+','+y+','+z);
+          let ct=0;const maxP=30;
+          while(pool.length>0&&ct<maxP){
+            const p=pool.shift();this.S(p.x,p.y,p.z,B.WATER);ct++;
+            for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+              const nx=p.x+dx,nz=p.z+dz;
+              if(nx<0||nx>=CS||nz<0||nz>=CS)continue;
+              const k=nx+','+p.y+','+nz;if(vis.has(k))continue;vis.add(k);
+              if(this.G(nx,p.y,nz)===B.AIR&&this.G(nx,p.y-1,nz)!==B.AIR&&BD[this.G(nx,p.y-1,nz)]?.sol)
+                pool.push({x:nx,y:p.y,z:nz});
+            }
+          }
+        }
+      }
+    }
   // ═══ LAVA BASIN GENERATION PASS ═══
   // Place lava as flat pools/lakes in cave floors below y=75
   // Skip lava generation in structure chunks to avoid lava in VCLANTIS etc
@@ -3206,38 +3233,42 @@ onMsg(m,from){const pid=from.peer;if(m.t==='seed'){this.wSeed=m.s;W.pendSeed=m.s
 sendBlk(x,y,z,v){for(const c of this.conns)try{c.send({t:'b',x,y,z,v})}catch(e){}}
 stop(){if(this.intv)clearInterval(this.intv);for(const c of this.conns)c.close();if(this.peer)this.peer.destroy();for(const id in this.rp)W.sc.remove(this.rp[id].g);this.rp={}}}
 
-// REAL-TIME FLUID FLOW - Minecraft-style source placement and flow
+// Global fluid update queue for gradual spread
+if(!window._fluidQ)window._fluidQ=[];
 function fluidTick(sx,sy,sz,fluidId){
-  const maxSpread=fluidId===B.WATER?7:4;
-  const queue=[{x:sx,y:sy,z:sz,d:0}];const visited=new Set();visited.add(sx+','+sy+','+sz);
-  while(queue.length>0){
-    const{x,y,z,d}=queue.shift();
-    // Flow downward first
-    for(let dy=1;dy<=64;dy++){
-      if(y-dy<1)break;const below=W.gB(x,y-dy,z);
-      if(below===B.AIR){W.sB(x,y-dy,z,fluidId);const k=x+','+(y-dy)+','+z;if(!visited.has(k)){visited.add(k);queue.push({x,y:y-dy,z,d:0})}}
-      else if(below===B.LAVA&&fluidId===B.WATER){W.sB(x,y-dy,z,B.OBSIDIAN);break}
-      else if(below===B.WATER&&fluidId===B.LAVA){W.sB(x,y-dy,z,B.COB);break}
-      else break;
-    }
-    // Spread outward if on solid ground and within spread range
-    if(d<maxSpread){
-      const belowCur=W.gB(x,y-1,z);
-      if(belowCur!==B.AIR&&belowCur!==fluidId){
-        for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
-          const nx=x+dx,nz=z+dz,k=nx+','+y+','+nz;
-          if(visited.has(k))continue;visited.add(k);
-          const nb=W.gB(nx,y,nz);
-          if(nb===B.AIR){
-            const belowN=W.gB(nx,y-1,nz);
-            if(belowN===B.AIR){W.sB(nx,y,nz,fluidId);queue.push({x:nx,y,z:nz,d:d+1})}
-            else{W.sB(nx,y,nz,fluidId);queue.push({x:nx,y,z:nz,d:d+1})}
-          }else if(nb===B.LAVA&&fluidId===B.WATER){W.sB(nx,y,nz,B.OBSIDIAN)}
-          else if(nb===B.WATER&&fluidId===B.LAVA){W.sB(nx,y,nz,B.COB)}
-        }
+  W.sB(sx,sy,sz,fluidId);
+  window._fluidQ.push({x:sx,y:sy,z:sz,id:fluidId,d:0,t:performance.now()});
+}
+function processFluidQueue(){
+  const q=window._fluidQ;if(!q||q.length===0)return;
+  const maxPerFrame=80;let processed=0;const now=performance.now();
+  const newQ=[];
+  for(let i=0;i<q.length;i++){
+    const f=q[i];
+    const delay=f.id===B.WATER?50:150;
+    if(now-f.t<delay){newQ.push(f);continue}
+    if(processed>=maxPerFrame){newQ.push(f);continue}
+    processed++;
+    const maxSpread=f.id===B.WATER?7:3;
+    // Flow down first
+    const below=W.gB(f.x,f.y-1,f.z);
+    if(f.y>1&&below===B.AIR){
+      W.sB(f.x,f.y-1,f.z,f.id);
+      newQ.push({x:f.x,y:f.y-1,z:f.z,id:f.id,d:0,t:now});
+    }else if(below===B.LAVA&&f.id===B.WATER){W.sB(f.x,f.y-1,f.z,B.OBSIDIAN)}
+    else if(below===B.WATER&&f.id===B.LAVA){W.sB(f.x,f.y-1,f.z,B.COB)}
+    else if(f.d<maxSpread&&below!==B.AIR){
+      // Spread laterally
+      for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+        const nx=f.x+dx,nz=f.z+dz;
+        const nb=W.gB(nx,f.y,nz);
+        if(nb===B.AIR){W.sB(nx,f.y,nz,f.id);newQ.push({x:nx,y:f.y,z:nz,id:f.id,d:f.d+1,t:now})}
+        else if(nb===B.LAVA&&f.id===B.WATER){W.sB(nx,f.y,nz,B.OBSIDIAN)}
+        else if(nb===B.WATER&&f.id===B.LAVA){W.sB(nx,f.y,nz,B.COB)}
       }
     }
   }
+  window._fluidQ=newQ;
 }
 
 // PLAYER
@@ -3521,7 +3552,7 @@ async start(seed,mode,ld){try{
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.5});
   const wAtlas=atlas.clone();wAtlas.needsUpdate=true;wAtlas.wrapS=THREE.RepeatWrapping;wAtlas.wrapT=THREE.RepeatWrapping;
-  this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.82,side:THREE.FrontSide,depthWrite:true,shininess:8,specular:new THREE.Color(0x113355),color:new THREE.Color(0x2255aa),fog:true,flatShading:false});this.wMat.renderOrder=2;
+  this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.75,side:THREE.FrontSide,depthWrite:true,shininess:6,specular:new THREE.Color(0x081828),color:new THREE.Color(0x1a5fa8),fog:true,flatShading:false});this.wMat.renderOrder=2;
   const lAtlas=atlas.clone();lAtlas.needsUpdate=true;
   this.lMat=new THREE.MeshPhongMaterial({map:lAtlas,transparent:true,opacity:.95,side:THREE.DoubleSide,depthWrite:true,shininess:10,specular:0x442200,emissive:0xff3300,emissiveIntensity:.6});
   this._frustum=new THREE.Frustum();this._projScreenMatrix=new THREE.Matrix4();
@@ -3661,7 +3692,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';const _pt=this._perfT;const _pStr=_pt?` W:${_pt.worstF.toFixed(0)}ms S:${_pt.stutC}`:'';
     $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}${_pStr}`;
   }
-  if(this.ren){if(this.wMat&&this.wMat.map){const _wt=Date.now()*.0000001;this.wMat.map.offset.y=(_wt%0.02)}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt);if(!this._perfT)this._perfT={frames:0,lastT:performance.now(),stutC:0,worstF:0};this._perfT.frames++;const _now=performance.now(),_ft=_now-this._perfT._lastF||16;this._perfT._lastF=_now;if(_ft>this._perfT.worstF)this._perfT.worstF=_ft;if(_ft>50)this._perfT.stutC++;if(_now-this._perfT.lastT>2000){const fps=this._perfT.frames/(((_now-this._perfT.lastT)/1000));const dd=$('dbg');if(dd)dd.textContent=dd.textContent.replace(/ F:.*$/,'')+' F:'+fps.toFixed(0)+' W:'+this._perfT.worstF.toFixed(0)+'ms S:'+this._perfT.stutC;this._perfT.frames=0;this._perfT.lastT=_now;this._perfT.worstF=0;this._perfT.stutC=0}}
+  if(this.ren){if(this.wMat&&this.wMat.map){const _wt=Date.now()*.000003;this.wMat.map.offset.y=(_wt%0.02)}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();processFluidQueue();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt);if(!this._perfT)this._perfT={frames:0,lastT:performance.now(),stutC:0,worstF:0};this._perfT.frames++;const _now=performance.now(),_ft=_now-this._perfT._lastF||16;this._perfT._lastF=_now;if(_ft>this._perfT.worstF)this._perfT.worstF=_ft;if(_ft>50)this._perfT.stutC++;if(_now-this._perfT.lastT>2000){const fps=this._perfT.frames/(((_now-this._perfT.lastT)/1000));const dd=$('dbg');if(dd)dd.textContent=dd.textContent.replace(/ F:.*$/,'')+' F:'+fps.toFixed(0)+' W:'+this._perfT.worstF.toFixed(0)+'ms S:'+this._perfT.stutC;this._perfT.frames=0;this._perfT.lastT=_now;this._perfT.worstF=0;this._perfT.stutC=0}}
   requestAnimationFrame(()=>this.loop())}
 };
 

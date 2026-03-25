@@ -460,6 +460,9 @@ function htA(x,z,b){
 const _structChunks=new Set();
 const _structRegistry={};
 function regStruct(nm,x,y,z){if(!_structRegistry[nm])_structRegistry[nm]=[];_structRegistry[nm].push({x,y,z})}
+const _pendingBlocks={};
+function _applyPending(chunk){const k=chunk.cx+','+chunk.cz;if(_pendingBlocks[k]){for(const[lx,y,lz,b]of _pendingBlocks[k])chunk.S(lx,y,lz,b);delete _pendingBlocks[k];chunk.dirty=true}}
+function _dungeonSet(wx,wy,wz,b,src){const cx=fl(wx/CS),cz=fl(wz/CS),lx=((wx%CS)+CS)%CS,lz=((wz%CS)+CS)%CS;if(src&&cx===src.cx&&cz===src.cz){src.S(lx,wy,lz,b)}else{const k=cx+','+cz,c=W.ch[k];if(c){c.S(lx,wy,lz,b);c.dirty=true}else{if(!_pendingBlocks[k])_pendingBlocks[k]=[];_pendingBlocks[k].push([lx,wy,lz,b])}}}
 function genStructure(chunk,ox,oz,wx,wz,h,bi){
   const bd=BDt[bi];if(!bd.structs)return;
   // Only ONE structure per chunk, checked at chunk center
@@ -1413,123 +1416,125 @@ const FACES=[{d:[0,1,0],v:[[0,1,1],[1,1,1],[1,1,0],[0,1,0]],n:[0,1,0],f:0},{d:[0
 
 function genGarfDungeon(chunk,lx,sy,lz){
   const bW=B.DEEP,bC=B.COB,bM=B.METAL_PANEL,bR=B.RUSTED_METAL,bN=B.NEON_BLK,bL=B.SEA_LANTERN;
+  const ox=chunk.cx*CS,oz=chunk.cz*CS;
+  const _ds=(dx,dy,dz,b)=>_dungeonSet(ox+lx+dx,sy+dy,oz+lz+dz,b,chunk);
   function room(x1,y1,z1,x2,y2,z2,fl,wl,ce){
     for(let dx=x1;dx<=x2;dx++)for(let dz=z1;dz<=z2;dz++)for(let dy=y1;dy<=y2;dy++){
       const isW=dx===x1||dx===x2||dz===z1||dz===z2;const isF=dy===y1;const isC=dy===y2;
-      chunk.S(lx+dx,sy+dy,lz+dz,isF?fl:isC?ce:isW?wl:B.AIR);
+      _ds(dx,dy,dz,isF?fl:isC?ce:isW?wl:B.AIR);
     }
   }
   // Entry breach chamber (9x6x9)
   room(-4,0,-4,4,6,4,bC,bW,bW);
   // Entry shaft from above - vertical access
-  for(let dy=7;dy<=14;dy++){for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)chunk.S(lx+dx,sy+dy,lz+dz,B.AIR)}
-  for(let dy=0;dy<=14;dy++)chunk.S(lx-2,sy+dy,lz-2,B.LADDER);
+  for(let dy=7;dy<=14;dy++){for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++)_ds(dx,dy,dz,B.AIR)}
+  for(let dy=0;dy<=14;dy++)_ds(-2,dy,-2,B.LADDER);
   // Entry lighting
-  chunk.S(lx,sy+5,lz,bL);chunk.S(lx-3,sy+5,lz-3,bN);chunk.S(lx+3,sy+5,lz+3,bN);
+  _ds(0,5,0,bL);_ds(-3,5,-3,bN);_ds(3,5,3,bN);
   // Main security corridor heading south (3 wide, 5 tall, 16 long)
   for(let dz=-5;dz>=-20;dz--)for(let dx=-1;dx<=1;dx++)for(let dy=0;dy<=4;dy++){
     const isW=dx===-1||dx===1;const isC=dy===4;const isF=dy===0;
-    chunk.S(lx+dx,sy+dy,lz+dz,isF?bM:isC?bW:isW?(dy<4?bR:bW):B.AIR);
+    _ds(dx,dy,dz,isF?bM:isC?bW:isW?(dy<4?bR:bW):B.AIR);
   }
   // Security corridor lighting
-  for(let dz=-7;dz>=-18;dz-=5)chunk.S(lx,sy+4,lz+dz,bL);
+  for(let dz=-7;dz>=-18;dz-=5)_ds(0,4,dz,bL);
   // Machine hall (east side, 10x6x8)
   room(2,0,-8,11,-1+7,-8+7,bM,bR,bW);
   // Machine hall interior details - rusted machinery
-  for(let dx=4;dx<=9;dx+=3){chunk.S(lx+dx,sy+1,lz-5,bR);chunk.S(lx+dx,sy+2,lz-5,bR);chunk.S(lx+dx,sy+3,lz-5,bM)}
-  chunk.S(lx+6,sy+6,lz-5,bL);
+  for(let dx=4;dx<=9;dx+=3){_ds(dx,1,-5,bR);_ds(dx,2,-5,bR);_ds(dx,3,-5,bM)}
+  _ds(6,6,-5,bL);
   // Corridor from main to machine hall
-  for(let dx=1;dx<=3;dx++)for(let dy=1;dy<=3;dy++)chunk.S(lx+dx,sy+dy,lz-8,B.AIR);
+  for(let dx=1;dx<=3;dx++)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-8,B.AIR);
   // Storage vault (west side, 8x5x8)
   room(-10,0,-9,-3,5,-2,bC,bW,bW);
-  chunk.S(lx-6,sy+4,lz-5,bL);
+  _ds(-6,4,-5,bL);
   // Corridor from main to storage
-  for(let dx=-2;dx>=-3;dx--)for(let dy=1;dy<=3;dy++)chunk.S(lx+dx,sy+dy,lz-7,B.AIR);
+  for(let dx=-2;dx>=-3;dx--)for(let dy=1;dy<=3;dy++)_ds(dx,dy,-7,B.AIR);
   // Power conduit room (east, deeper, 7x6x7)
   room(3,-3,-18,9,3,-12,bM,bM,bR);
-  for(let dz=-14;dz>=-16;dz-=2){chunk.S(lx+5,sy-2,lz+dz,bN);chunk.S(lx+7,sy-2,lz+dz,bN)}
-  chunk.S(lx+6,sy+2,lz-15,bL);
+  for(let dz=-14;dz>=-16;dz-=2){_ds(5,-2,dz,bN);_ds(7,-2,dz,bN)}
+  _ds(6,2,-15,bL);
   // Steps down to power room
-  for(let dy=0;dy>=-3;dy--)chunk.S(lx+2,sy+dy,lz-16+dy,B.AIR);
+  for(let dy=0;dy>=-3;dy--)_ds(2,dy,-16+dy,B.AIR);
   // Catwalk overlook chamber (west, 8x8x6)
   room(-10,-2,-20,-3,6,-14,bW,bR,bM);
   // Catwalk (floor at sy+3 across the room)
-  for(let dx=-9;dx<=-4;dx++)for(let dz=-19;dz>=-15;dz--)chunk.S(lx+dx,sy+3,lz+dz,bM);
+  for(let dx=-9;dx<=-4;dx++)for(let dz=-19;dz>=-15;dz--)_ds(dx,3,dz,bM);
   // Railing
-  for(let dx=-9;dx<=-4;dx++){chunk.S(lx+dx,sy+4,lz-15,B.FENCE_BLK);chunk.S(lx+dx,sy+4,lz-19,B.FENCE_BLK)}
-  chunk.S(lx-7,sy+5,lz-17,bL);
+  for(let dx=-9;dx<=-4;dx++){_ds(dx,4,-15,B.FENCE_BLK);_ds(dx,4,-19,B.FENCE_BLK)}
+  _ds(-7,5,-17,bL);
   // Corridor from main to catwalk
-  for(let dy=1;dy<=3;dy++)for(let dz=-19;dz>=-20;dz--)chunk.S(lx-2,sy+dy,lz+dz,B.AIR);
+  for(let dy=1;dy<=3;dy++)for(let dz=-19;dz>=-20;dz--)_ds(-2,dy,dz,B.AIR);
   // Garfbot holding cells (3 cells along east corridor)
   for(let ci=0;ci<3;ci++){
     const cz=-22-ci*4;
     room(3,0,cz,7,4,cz+3,bC,bR,bW);
     // Cell door (iron bars = fence)
-    for(let dy=1;dy<=3;dy++)chunk.S(lx+3,sy+dy,lz+cz+1,B.FENCE_BLK);
-    chunk.S(lx+5,sy+3,lz+cz+1,bL);
+    for(let dy=1;dy<=3;dy++)_ds(3,dy,cz+1,B.FENCE_BLK);
+    _ds(5,3,cz+1,bL);
   }
   // Hidden chest alcove (secret room behind storage vault)
   room(-13,0,-6,-11,4,-3,bW,bW,bW);
   // Hidden entrance (1-block gap behind wall)
-  chunk.S(lx-10,sy+1,lz-4,B.AIR);chunk.S(lx-10,sy+2,lz-4,B.AIR);
+  _ds(-10,1,-4,B.AIR);_ds(-10,2,-4,B.AIR);
   // Assembly floor (large room, 12x7x10, below main level)
   room(-5,-5,-34,6,2,-25,bM,bR,bW);
-  for(let dx=-3;dx<=4;dx+=2){chunk.S(lx+dx,sy-4,lz-30,bR);chunk.S(lx+dx,sy-3,lz-30,bM)}
-  chunk.S(lx,sy+1,lz-30,bL);chunk.S(lx-4,sy+1,lz-28,bL);chunk.S(lx+4,sy+1,lz-28,bL);
+  for(let dx=-3;dx<=4;dx+=2){_ds(dx,-4,-30,bR);_ds(dx,-3,-30,bM)}
+  _ds(0,1,-30,bL);_ds(-4,1,-28,bL);_ds(4,1,-28,bL);
   // Stairs connecting main level to assembly floor
   for(let step=0;step<5;step++){
-    chunk.S(lx,sy-step,lz-21-step,bC);
-    for(let dy=-step+1;dy<=3;dy++)chunk.S(lx,sy+dy,lz-21-step,B.AIR);
-    chunk.S(lx+1,sy-step,lz-21-step,bC);chunk.S(lx-1,sy-step,lz-21-step,bC);
+    _ds(0,-step,-21-step,bC);
+    for(let dy=-step+1;dy<=3;dy++)_ds(0,dy,-21-step,B.AIR);
+    _ds(1,-step,-21-step,bC);_ds(-1,-step,-21-step,bC);
   }
   // Dormancy bay (west of assembly, 8x5x10)
   room(-14,-5,-34,-7,0,-25,bM,bW,bW);
-  for(let dz=-33;dz>=-26;dz-=2){chunk.S(lx-10,sy-4,lz+dz,bR);chunk.S(lx-10,sy-3,lz+dz,bR)}
-  chunk.S(lx-10,sy-1,lz-30,bL);
+  for(let dz=-33;dz>=-26;dz-=2){_ds(-10,-4,dz,bR);_ds(-10,-3,dz,bR)}
+  _ds(-10,-1,-30,bL);
   // Connecting door from assembly to dormancy
-  for(let dy=-4;dy<=-1;dy++){chunk.S(lx-5,sy+dy,lz-30,B.AIR);chunk.S(lx-6,sy+dy,lz-30,B.AIR)}
+  for(let dy=-4;dy<=-1;dy++){_ds(-5,dy,-30,B.AIR);_ds(-6,dy,-30,B.AIR)}
   // Control room (east of assembly, 8x5x8)
   room(7,-5,-33,14,0,-26,bM,bM,bW);
   // Control consoles
-  for(let dx=9;dx<=12;dx++){chunk.S(lx+dx,sy-4,lz-28,bR);chunk.S(lx+dx,sy-3,lz-28,B.GLASS)}
-  chunk.S(lx+10,sy-1,lz-30,bL);chunk.S(lx+12,sy-1,lz-28,bN);
+  for(let dx=9;dx<=12;dx++){_ds(dx,-4,-28,bR);_ds(dx,-3,-28,B.GLASS)}
+  _ds(10,-1,-30,bL);_ds(12,-1,-28,bN);
   // Connecting door from assembly to control room
-  for(let dy=-4;dy<=-1;dy++){chunk.S(lx+6,sy+dy,lz-30,B.AIR);chunk.S(lx+7,sy+dy,lz-30,B.AIR)}
+  for(let dy=-4;dy<=-1;dy++){_ds(6,dy,-30,B.AIR);_ds(7,dy,-30,B.AIR)}
   // ═══ CENTRAL ARENA CHAMBER (15x10x15) ═══
   room(-7,-6,-50,7,4,-36,bC,bW,bW);
   // Arena floor is deepslate with lava channels
-  for(let dx=-6;dx<=6;dx++)for(let dz=-49;dz>=-37;dz--)chunk.S(lx+dx,sy-6,lz+dz,bW);
+  for(let dx=-6;dx<=6;dx++)for(let dz=-49;dz>=-37;dz--)_ds(dx,-6,dz,bW);
   // Lava channels running along arena walls
-  for(let dz=-48;dz>=-38;dz--){chunk.S(lx-6,sy-5,lz+dz,B.LAVA);chunk.S(lx+6,sy-5,lz+dz,B.LAVA)}
-  for(let dx=-5;dx<=5;dx++){chunk.S(lx+dx,sy-5,lz-48,B.LAVA);chunk.S(lx+dx,sy-5,lz-38,B.LAVA)}
+  for(let dz=-48;dz>=-38;dz--){_ds(-6,-5,dz,B.LAVA);_ds(6,-5,dz,B.LAVA)}
+  for(let dx=-5;dx<=5;dx++){_ds(dx,-5,-48,B.LAVA);_ds(dx,-5,-38,B.LAVA)}
   // Arena pillars (4 large pillars)
   for(const[px,pz]of[[-5,-40],[5,-40],[-5,-46],[5,-46]]){
-    for(let dy=-5;dy<=3;dy++)chunk.S(lx+px,sy+dy,lz+pz,bW);
+    for(let dy=-5;dy<=3;dy++)_ds(px,dy,pz,bW);
   }
   // Central mechanism platform (3x2x3 raised platform)
   for(let dx=-1;dx<=1;dx++)for(let dz=-44;dz>=-42;dz--){
-    chunk.S(lx+dx,sy-5,lz+dz,bM);chunk.S(lx+dx,sy-4,lz+dz,bM);
+    _ds(dx,-5,dz,bM);_ds(dx,-4,dz,bM);
   }
-  chunk.S(lx,sy-3,lz-43,bN); // activation point
+  _ds(0,-3,-43,bN); // activation point
   // Arena lighting
-  chunk.S(lx,sy+3,lz-43,bL);chunk.S(lx-5,sy+3,lz-38,bL);chunk.S(lx+5,sy+3,lz-38,bL);
-  chunk.S(lx-5,sy+3,lz-48,bL);chunk.S(lx+5,sy+3,lz-48,bL);
+  _ds(0,3,-43,bL);_ds(-5,3,-38,bL);_ds(5,3,-38,bL);
+  _ds(-5,3,-48,bL);_ds(5,3,-48,bL);
   // Corridor connecting assembly floor to arena (ramp down)
   for(let step=0;step<3;step++){
     for(let dx=-1;dx<=1;dx++){
-      chunk.S(lx+dx,sy-5-step,lz-35+step,bC);
-      for(let dy=-4-step;dy<=2;dy++)chunk.S(lx+dx,sy+dy,lz-35+step,B.AIR);
+      _ds(dx,-5-step,-35+step,bC);
+      for(let dy=-4-step;dy<=2;dy++)_ds(dx,dy,-35+step,B.AIR);
     }
   }
   // Place 3 key chests in different dungeon areas
-  chunk.S(lx+8,sy+1,lz-4,B.CHST); // machine hall chest
-  chunk.S(lx-12,sy+1,lz-5,B.CHST); // hidden alcove chest
-  chunk.S(lx-3,sy-4,lz-32,B.CHST); // assembly floor chest
+  _ds(8,1,-4,B.CHST); // machine hall chest
+  _ds(-12,1,-5,B.CHST); // hidden alcove chest
+  _ds(-3,-4,-32,B.CHST); // assembly floor chest
   // Spawn garfbots throughout the dungeon
   if(W&&W.mobs){
     const gSpawns=[[2,-6],[8,-5],[-7,-5],[-7,-17],[5,-14],[5,-24],[5,-28],[-3,-29],[0,-42],[4,-45],[-4,-45]];
     for(const[gx,gz]of gSpawns){
-      const g=new Garfbot(chunk.cx*CS+lx+gx,sy+2,chunk.cz*CS+lz+gz);W.mobs.push(g)
+      const g=new Garfbot(ox+lx+gx,sy+2,oz+lz+gz);W.mobs.push(g)
     }
   }
 }
@@ -2641,9 +2646,9 @@ deco(){
   // ═══ LAVA BASIN GENERATION PASS ═══
   // Place lava as flat pools/lakes in cave floors below y=75
   // Skip lava generation in structure chunks to avoid lava in VCLANTIS etc
-  if(!this._hasStruct)
+  if(!this._hasStruct&&chunkBio!==BI.VCLANTIS&&chunkBio!==BI.PROPS_ISLAND&&chunkBio!==BI.DISCORD_DEEP)
   for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
-    for(let y=6;y<75;y++){
+    for(let y=6;y<60;y++){
       if(this.G(x,y,z)!==B.AIR)continue;
       // Must have solid floor below
       if(!BD[this.G(x,y-1,z)]?.sol)continue;
@@ -2651,11 +2656,11 @@ deco(){
       let hasCeil=false;for(let cy=y+1;cy<y+20&&cy<CH;cy++){if(BD[this.G(x,cy,z)]?.sol){hasCeil=true;break}}
       if(!hasCeil)continue;
       // Depth-based probability: deeper = more lava
-      const prob=y<15?.18:y<30?.12:y<45?.07:y<60?.035:.015;
+      const prob=y<15?.04:y<30?.02:y<45?.008:y<60?.003:0;
       if(dh01(ox+x*137+y*3,oz+z*251)<prob){
         // Flood-fill a flat lava pool at this Y level
         const poolQ=[[x,z]],visited=new Set();visited.add(x+','+z);
-        let poolSize=0;const maxPool=40;
+        let poolSize=0;const maxPool=20;
         while(poolQ.length>0&&poolSize<maxPool){
           const[px,pz]=poolQ.shift();
           if(this.G(px,y,pz)===B.AIR&&BD[this.G(px,y-1,pz)]?.sol){
@@ -2673,13 +2678,13 @@ deco(){
     }
   }
   // Lavafall sources: drip from cave ceilings in deep areas
-  if(!this._hasStruct)
+  if(!this._hasStruct&&chunkBio!==BI.VCLANTIS&&chunkBio!==BI.PROPS_ISLAND&&chunkBio!==BI.DISCORD_DEEP)
   for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
-    for(let y=15;y<70;y++){
+    for(let y=15;y<60;y++){
       if(!BD[this.G(x,y,z)]?.sol)continue;
       if(this.G(x,y-1,z)!==B.AIR)continue;
       // Ceiling source - rare
-      if(dh01(ox+x*431+y*7,oz+z*613)<.008){
+      if(dh01(ox+x*431+y*7,oz+z*613)<.002){
         // Drop lava down from ceiling
         for(let dy=1;dy<=20;dy++){
           if(y-dy<2)break;
@@ -3570,7 +3575,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=1||performance.now()-_genStart>12)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.gen();this.ch[p.k]=c;_gc++}}
+    let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=1||performance.now()-_genStart>12)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.gen();_applyPending(c);this.ch[p.k]=c;_gc++}}
     let b2=0;{const _meshStart=performance.now();const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD)dirty.push({c,dd})}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=2||performance.now()-_meshStart>8)break;d.c.buildMesh((x,y,z)=>this.gB(x,y,z));b2++}}
     for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}else if(this._frustum){const _cx=c.cx*CS+8,_cz=c.cz*CS+8,_bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(_bb);if(c.m)c.m.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);

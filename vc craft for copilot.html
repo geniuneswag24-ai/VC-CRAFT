@@ -2860,9 +2860,9 @@ tree(x,y,z,t,r2){
   }
 }
 buildMesh(gB){
-  const P=[],N=[],U=[],IX=[];const WP=[],WN=[],WU=[],WI2=[];const LP=[],LN=[],LU=[],LI2=[];let vi=0,wvi=0,lvi=0;const ox=this.cx*CS,oz=this.cz*CS;
+  const P=[],N=[],U=[],IX=[];const TP=[],TN2=[],TU=[],TI2=[];const WP=[],WN=[],WU=[],WI2=[];const LP=[],LN=[],LU=[],LI2=[];let vi=0,tvi=0,wvi=0,lvi=0;const ox=this.cx*CS,oz=this.cz*CS;
   let minY=CH,maxY=0;for(let y=0;y<CH;y++)for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){if(this.G(x,y,z)!==B.AIR){if(y<minY)minY=y;if(y>maxY)maxY=y}}
-  if(minY>maxY){if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}this.m=null;this.wm=null;this.lm=null;this.dirty=false;return}
+  if(minY>maxY){if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.tm){W.sc.remove(this.tm);this.tm.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}this.m=null;this.tm=null;this.wm=null;this.lm=null;this.dirty=false;return}
   maxY=Math.min(maxY+1,CH-1);minY=Math.max(minY-1,0);
   for(let y=minY;y<=maxY;y++)for(let z=0;z<CS;z++)for(let x=0;x<CS;x++){
     const b=this.G(x,y,z);if(b===B.AIR)continue;const bd=BD[b];if(!bd)continue;const bf2=BF[b];if(!bf2)continue;
@@ -2875,7 +2875,7 @@ buildMesh(gB){
       const show=isW?(nb!==B.WATER&&nb!==B.LAVA&&!nd.sol):(nb===B.AIR||(!nd.sol&&!nd.liq&&!nd.tr)||(nd.tr&&b!==nb));
       if(!show)continue;if(isW&&nd.liq)continue;
       const uv=uvL[bf2[f.f]];if(!uv)continue;
-      const p=isLava?LP:isW?WP:P,n=isLava?LN:isW?WN:N,u=isLava?LU:isW?WU:U,idx=isLava?LI2:isW?WI2:IX,base=isLava?lvi:isW?wvi:vi;
+      const isTr=bd.tr&&!isW&&!isLava;const p=isLava?LP:isW?WP:isTr?TP:P,n=isLava?LN:isW?WN:isTr?TN2:N,u=isLava?LU:isW?WU:isTr?TU:U,idx=isLava?LI2:isW?WI2:isTr?TI2:IX,base=isLava?lvi:isW?wvi:isTr?tvi:vi;
       const isStair = b>=B.STAIR_COB&&b<=B.STAIR_MARBLE;
       const isRail = b===B.RAIL_IRON||b===B.RAIL_POWERED||b===B.RAIL_BED;
       const isLadder = b===B.LADDER;
@@ -2891,16 +2891,17 @@ buildMesh(gB){
         n.push(f.n[0],f.n[1],f.n[2]);
       }
       u.push(uv.u,uv.v+uv.h,uv.u+uv.w,uv.v+uv.h,uv.u+uv.w,uv.v,uv.u,uv.v);
-      idx.push(base,base+1,base+2,base,base+2,base+3);if(isLava)lvi+=4;else if(isW)wvi+=4;else vi+=4;
+      idx.push(base,base+1,base+2,base,base+2,base+3);if(isLava)lvi+=4;else if(isW)wvi+=4;else if(isTr)tvi+=4;else vi+=4;
     }
   }
-  if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}this.m=null;this.wm=null;this.lm=null;
+  if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.tm){W.sc.remove(this.tm);this.tm.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}this.m=null;this.tm=null;this.wm=null;this.lm=null;
   if(P.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(U,2));g.setIndex(IX);this.m=new THREE.Mesh(g,W.bMat);W.sc.add(this.m)}
+  if(TP.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(TP,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(TN2,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(TU,2));g.setIndex(TI2);this.tm=new THREE.Mesh(g,W.tMat);this.tm.renderOrder=1;W.sc.add(this.tm)}
   if(WP.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(WP,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(WN,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(WU,2));g.setIndex(WI2);this.wm=new THREE.Mesh(g,W.wMat);this.wm.renderOrder=2;W.sc.add(this.wm)}
   if(LP.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(LP,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(LN,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(LU,2));g.setIndex(LI2);this.lm=new THREE.Mesh(g,W.lMat);W.sc.add(this.lm)}
   this.dirty=false;
 }
-disp(){if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}}
+disp(){if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.tm){W.sc.remove(this.tm);this.tm.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}}
 }
 
 // MOBS
@@ -3550,7 +3551,8 @@ async start(seed,mode,ld){try{
   this.ren=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(mn(devicePixelRatio,2));this.ren.autoClear=false;
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
   document.getElementById('gc').appendChild(this.ren.domElement);
-  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.5});
+  this.bMat=new THREE.MeshPhongMaterial({map:atlas,shininess:2,specular:0x111111,transparent:false});
+  const tAtlas=atlas.clone();tAtlas.needsUpdate=true;this.tMat=new THREE.MeshPhongMaterial({map:tAtlas,shininess:2,specular:0x111111,transparent:true,alphaTest:0.3,depthWrite:true,side:THREE.DoubleSide});this.tMat.renderOrder=1;
   const wAtlas=atlas.clone();wAtlas.needsUpdate=true;wAtlas.wrapS=THREE.RepeatWrapping;wAtlas.wrapT=THREE.RepeatWrapping;
   this.wMat=new THREE.MeshPhongMaterial({map:wAtlas,transparent:true,opacity:.75,side:THREE.FrontSide,depthWrite:true,shininess:6,specular:new THREE.Color(0x081828),color:new THREE.Color(0x1a5fa8),fog:true,flatShading:false});this.wMat.renderOrder=2;
   const lAtlas=atlas.clone();lAtlas.needsUpdate=true;
@@ -3616,7 +3618,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     {let _dc=0;const _decoStart=performance.now();for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>8)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}
     let b2=0;{const _meshStart=performance.now();const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD)dirty.push({c,dd})}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=2||performance.now()-_meshStart>12)break;d.c.buildMesh((x,y,z)=>this.gB(x,y,z));b2++}}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
-    if(this._frmC%4===0&&this._frustum){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
+    if(this._frmC%4===0&&this._frustum){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);
     // Sun/moon positions follow player
     const pp=this.pl.pos;

@@ -2516,59 +2516,7 @@ deco(){
       }
     }
   }
-  // ═══ LAVA BASIN PASS: Fill deep cave floors with lava pools/lakes ═══
-  // Find low points in caves and flood-fill them with lava at a specific level
-  for(let y=4;y<72;y++){
-    for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
-      if(this.G(x,y,z)!==B.AIR)continue;
-      const below=this.G(x,y-1,z);
-      if(below===B.AIR||below===B.LAVA||below===B.WATER)continue;
-      // Must have ceiling (inside cave)
-      let hasCeiling=false;for(let cy=y+1;cy<y+30&&cy<CH;cy++){if(BD[this.G(x,cy,z)]?.sol){hasCeiling=true;break}}
-      if(!hasCeiling)continue;
-      // Must be a low point - check if surrounded by solid or lava at same level
-      let walled=0;
-      for(const[dx2,dz2]of[[1,0],[-1,0],[0,1],[0,-1]]){
-        const nx2=x+dx2,nz2=z+dz2;
-        if(nx2<0||nx2>=CS||nz2<0||nz2>=CS){walled++;continue}
-        const nb2=this.G(nx2,y,nz2);
-        if(BD[nb2]?.sol||nb2===B.LAVA)walled++;
-      }
-      // Use depth-based probability - deeper = more lava, but MUCH lower chance to avoid spam
-      const lavaChance=y<30?.12:y<50?.06:y<65?.03:.01;
-      if(dh01(ox+x+y*111,oz+z+y*222)<lavaChance){
-        // Flood-fill a flat lava pool at this Y level
-        const poolQ=[{x,z}],poolV=new Set();poolV.add(x+','+z);
-        const maxPool=y<30?12:y<50?8:5;
-        while(poolQ.length>0&&poolV.size<=maxPool){
-          const p=poolQ.shift();
-          if(this.G(p.x,y,p.z)===B.AIR&&this.G(p.x,y-1,p.z)!==B.AIR&&this.G(p.x,y-1,p.z)!==B.WATER){
-            this.S(p.x,y,p.z,B.LAVA);
-            for(const[dx2,dz2]of[[1,0],[-1,0],[0,1],[0,-1]]){
-              const nx2=p.x+dx2,nz2=p.z+dz2,k=nx2+','+nz2;
-              if(nx2>=0&&nx2<CS&&nz2>=0&&nz2<CS&&!poolV.has(k)){
-                poolV.add(k);
-                if(this.G(nx2,y,nz2)===B.AIR&&this.G(nx2,y-1,nz2)!==B.AIR)poolQ.push({x:nx2,z:nz2})
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  // ═══ LAVAFALL PASS: Lava flows down from existing sources ═══
-  for(let x=1;x<CS-1;x++)for(let z=1;z<CS-1;z++){
-    for(let y=8;y<72;y++){
-      if(this.G(x,y,z)===B.LAVA&&BD[this.G(x,y+1,z)]?.sol){
-        for(let dy=1;dy<=12;dy++){
-          if(y-dy<1)break;
-          const bl=this.G(x,y-dy,z);
-          if(bl===B.AIR)this.S(x,y-dy,z,B.LAVA);
-          else break;
-        }
-      }
-    }
-  }
+
   // ═══ GARFBOT DUNGEON PLACEMENT ═══
   if(!this._hasStruct&&dh01(this.cx*999,this.cz*777)<.008){
     for(let sy=20;sy<60;sy++){

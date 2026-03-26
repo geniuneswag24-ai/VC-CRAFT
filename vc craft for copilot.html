@@ -1687,10 +1687,11 @@ I(x,y,z){return(y*CS+z)*CS+x}
 G(x,y,z){return(x>=0&&x<CS&&y>=0&&y<CH&&z>=0&&z<CS)?this.blk[this.I(x,y,z)]:B.AIR}
 S(x,y,z,v){if(x>=0&&x<CS&&y>=0&&y<CH&&z>=0&&z<CS){this.blk[this.I(x,y,z)]=v;this.dirty=true}}
 gen(){
-  this.genTerrain();
+  this.genTerrainFill();
+  this.genTerrainCavesAll();
   this.deco();
 }
-genTerrain(){
+genTerrainFill(){
   const ox=this.cx*CS,oz=this.cz*CS;
   for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
     const wx=ox+x,wz=oz+z,bi=bio(wx,wz),bd=BDt[bi],h=htA(wx,wz,bi);
@@ -1698,47 +1699,6 @@ genTerrain(){
       let b=B.AIR;const rv=dh01(wx*999+y,wz*777);
       if(y===0)b=B.BED;else if(y<5&&rv<.5)b=B.BED;
       else if(y<=h){
-        if(y<h-1&&y>3){const c1=nC.n3(wx*.05,y*.06,wz*.05),c2=nC.n3(wx*.08+99,y*.1+99,wz*.08+99);
-          const caveVal=c1*c1+c2*c2;
-          if(caveVal<.028){this.blk[this.I(x,y,z)]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
-          const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
-          if(bigCave>.45&&y>8&&y<200){this.blk[this.I(x,y,z)]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
-          // Giant cavern: very rare, huge open space
-          const giantCav=nC.n3(wx*.005,y*.008,wz*.005);
-          if(giantCav>.58&&y>8&&y<180){this.blk[this.I(x,y,z)]=B.AIR;continue}
-          // Deep cavern layer below y=90
-          if(y<120){const deepCave=nC.n3(wx*.04,y*.04,wz*.04);if(deepCave>.38){this.blk[this.I(x,y,z)]=B.AIR;continue}}
-          const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
-          if(ravine<.025&&y>5&&y<180){this.blk[this.I(x,y,z)]=B.AIR;continue}
-          // Worm tunnels - longer connected cave passages
-          const worm1=nC.n3(wx*.025,y*.03,wz*.025),worm2=nC.n3(wx*.025+100,y*.03+100,wz*.025+100);
-          if(worm1*worm1+worm2*worm2<.012&&y>5&&y<160){this.blk[this.I(x,y,z)]=B.AIR;continue}
-          // Deep connecting tunnels (link surface to deep caves)
-          const deepWorm=nC.n3(wx*.018,y*.025,wz*.018);
-          if(abs(deepWorm)<.028&&y>8&&y<150){this.blk[this.I(x,y,z)]=B.AIR;continue}
-          // Vertical shafts connecting cave layers
-          const shaft=nC.n3(wx*.04,y*.006,wz*.04);
-          if(abs(shaft)<.014&&y>5&&y<140){this.blk[this.I(x,y,z)]=B.AIR;continue}
-          // Giant caverns - rare massive underground chambers
-          const giantCave=nC.n3(wx*.005,y*.008,wz*.005);
-          if(giantCave>.55&&y>10&&y<170){this.blk[this.I(x,y,z)]=B.AIR;continue}
-          // Mega connecting tunnels - link cave systems across large distances
-          const megaTunnel=nC.n3(wx*.012,y*.02,wz*.012);
-          const megaTunnel2=nC.n3(wx*.018+50,y*.015+50,wz*.018+50);
-          if(megaTunnel*megaTunnel+megaTunnel2*megaTunnel2<.008&&y>8&&y<160){this.blk[this.I(x,y,z)]=B.AIR;continue}}
-          // Cave openings on steep terrain faces (mountains, cliffs, hillsides)
-          if(y>=h-4&&y<=h){
-            const cEntry=nC.n3(wx*.05,y*.035,wz*.05);
-            const cEntry2=nC.n3(wx*.08+20,y*.06+20,wz*.08+20);
-            // Mountain caves - very common
-            if(abs(cEntry)<.035&&bi===BI.MO){this.blk[this.I(x,y,z)]=B.AIR;continue}
-            // Volcano caves
-            if(abs(cEntry)<.03&&bi===BI.VOLCANO){this.blk[this.I(x,y,z)]=B.AIR;continue}
-            // Badlands and forest caves
-            if(abs(cEntry)<.025&&(bi===BI.VC_BADLANDS||bi===BI.CAMGROVE)&&y<h){this.blk[this.I(x,y,z)]=B.AIR;continue}
-            // General hillside caves (any biome with elevation)
-            if(abs(cEntry2)<.012&&h>WL+20&&y<h){this.blk[this.I(x,y,z)]=B.AIR;continue}
-          }
         if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>200?B.SNOW:bi===BI.VOLCANO&&y>220?B.SCORCHED:bd.sf;
         else if(y>h-4)b=bi===BI.VOLCANO?B.BASALT:bd.su;
         else if(y<76)b=bi===BI.VOLCANO?B.SCORCHED:B.DEEP;
@@ -1747,8 +1707,80 @@ genTerrain(){
       this.blk[this.I(x,y,z)]=b;
     }
   }
-// Water cleanup: remove floating water (water with air below)
-for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){for(let y=CH-1;y>=1;y--){if(this.G(x,y,z)===B.WATER&&this.G(x,y-1,z)===B.AIR)this.S(x,y,z,B.AIR)}}
+}
+genTerrainCavesAll(){this._caveCol=0;this._carveCaves(256);delete this._caveCol}
+_carveCaves(maxCols){
+  const ox=this.cx*CS,oz=this.cz*CS;
+  const end=mn(this._caveCol+maxCols,CS*CS);
+  for(;this._caveCol<end;this._caveCol++){
+    const x=this._caveCol&15,z=this._caveCol>>4;
+    const wx=ox+x,wz=oz+z,bi=bio(wx,wz),h=htA(wx,wz,bi);
+    for(let y=4;y<h-1;y++){
+      const idx=this.I(x,y,z);
+      const c1=nC.n3(wx*.05,y*.06,wz*.05),c2=nC.n3(wx*.08+99,y*.1+99,wz*.08+99);
+      if(c1*c1+c2*c2<.028){this.blk[idx]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
+      const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
+      if(bigCave>.45&&y>8&&y<200){this.blk[idx]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
+      const giantCav=nC.n3(wx*.005,y*.008,wz*.005);
+      if(giantCav>.55&&y>8&&y<180){this.blk[idx]=B.AIR;continue}
+      if(y<120){const deepCave=nC.n3(wx*.04,y*.04,wz*.04);if(deepCave>.38){this.blk[idx]=B.AIR;continue}}
+      const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
+      if(ravine<.025&&y>5&&y<180){this.blk[idx]=B.AIR;continue}
+      const worm1=nC.n3(wx*.025,y*.03,wz*.025),worm2=nC.n3(wx*.025+100,y*.03+100,wz*.025+100);
+      if(worm1*worm1+worm2*worm2<.012&&y>5&&y<160){this.blk[idx]=B.AIR;continue}
+      const shaft=nC.n3(wx*.04,y*.006,wz*.04);
+      if(abs(shaft)<.014&&y>5&&y<140){this.blk[idx]=B.AIR;continue}
+      if(y>=h-4&&y<=h){
+        const cEntry=nC.n3(wx*.05,y*.035,wz*.05);
+        if(abs(cEntry)<.035&&bi===BI.MO){this.blk[idx]=B.AIR;continue}
+        if(abs(cEntry)<.03&&bi===BI.VOLCANO){this.blk[idx]=B.AIR;continue}
+        if(abs(cEntry)<.025&&(bi===BI.VC_BADLANDS||bi===BI.CAMGROVE)&&y<h){this.blk[idx]=B.AIR;continue}
+        const cEntry2=nC.n3(wx*.08+20,y*.06+20,wz*.08+20);
+        if(abs(cEntry2)<.012&&h>WL+20&&y<h){this.blk[idx]=B.AIR;continue}
+      }
+    }
+  }
+  if(this._caveCol>=CS*CS){for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){for(let y=CH-1;y>=1;y--){if(this.G(x,y,z)===B.WATER&&this.G(x,y-1,z)===B.AIR)this.S(x,y,z,B.AIR)}}}
+  return this._caveCol>=CS*CS;
+}
+genTerrainCavesIncr(budget){
+  if(this._caveCol===undefined)this._caveCol=0;
+  const start=performance.now();
+  const ox=this.cx*CS,oz=this.cz*CS;
+  const end=CS*CS;
+  while(this._caveCol<end){
+    const x=this._caveCol&15,z=this._caveCol>>4;
+    const wx=ox+x,wz=oz+z,bi=bio(wx,wz),h=htA(wx,wz,bi);
+    for(let y=4;y<h-1;y++){
+      const idx=this.I(x,y,z);
+      const c1=nC.n3(wx*.05,y*.06,wz*.05),c2=nC.n3(wx*.08+99,y*.1+99,wz*.08+99);
+      if(c1*c1+c2*c2<.028){this.blk[idx]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
+      const bigCave=nC.n3(wx*.015,y*.02,wz*.015);
+      if(bigCave>.45&&y>8&&y<200){this.blk[idx]=(y<=WL&&y>h-5&&(bi===BI.OC||bi===BI.BE))?B.WATER:B.AIR;continue}
+      const giantCav=nC.n3(wx*.005,y*.008,wz*.005);
+      if(giantCav>.55&&y>8&&y<180){this.blk[idx]=B.AIR;continue}
+      if(y<120){const deepCave=nC.n3(wx*.04,y*.04,wz*.04);if(deepCave>.38){this.blk[idx]=B.AIR;continue}}
+      const ravine=abs(nC.n3(wx*.03,y*.005,wz*.03));
+      if(ravine<.025&&y>5&&y<180){this.blk[idx]=B.AIR;continue}
+      const worm1=nC.n3(wx*.025,y*.03,wz*.025),worm2=nC.n3(wx*.025+100,y*.03+100,wz*.025+100);
+      if(worm1*worm1+worm2*worm2<.012&&y>5&&y<160){this.blk[idx]=B.AIR;continue}
+      const shaft=nC.n3(wx*.04,y*.006,wz*.04);
+      if(abs(shaft)<.014&&y>5&&y<140){this.blk[idx]=B.AIR;continue}
+      if(y>=h-4&&y<=h){
+        const cEntry=nC.n3(wx*.05,y*.035,wz*.05);
+        if(abs(cEntry)<.035&&bi===BI.MO){this.blk[idx]=B.AIR;continue}
+        if(abs(cEntry)<.03&&bi===BI.VOLCANO){this.blk[idx]=B.AIR;continue}
+        if(abs(cEntry)<.025&&(bi===BI.VC_BADLANDS||bi===BI.CAMGROVE)&&y<h){this.blk[idx]=B.AIR;continue}
+        const cEntry2=nC.n3(wx*.08+20,y*.06+20,wz*.08+20);
+        if(abs(cEntry2)<.012&&h>WL+20&&y<h){this.blk[idx]=B.AIR;continue}
+      }
+    }
+    this._caveCol++;
+    if((this._caveCol&7)===0&&performance.now()-start>budget)return false;
+  }
+  for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){for(let y=CH-1;y>=1;y--){if(this.G(x,y,z)===B.WATER&&this.G(x,y-1,z)===B.AIR)this.S(x,y,z,B.AIR)}}
+  delete this._caveCol;
+  return true;
 }
 sY(x,z){for(let y=CH-1;y>=0;y--){const b=this.G(x,y,z);if(b!==B.AIR&&b!==B.WATER)return y}return 0}
 deco(){
@@ -4031,15 +4063,16 @@ async start(seed,mode,ld){try{
   this.lt=performance.now();this.loop();
 }catch(e){console.error(e);$('ltx').textContent='Error: '+e.message}},
 loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;this.fps=Math.round(1/mx(dt,.001));if(!this._frmC)this._frmC=0;this._frmC++;
-  if(!this._perfD)this._perfD={gen:0,deco:0,mesh:0,mob:0,train:0,fluid:0};
+  if(!this._perfD)this._perfD={gen:0,cave:0,deco:0,mesh:0,mob:0,train:0,fluid:0};
   if(this.st==='play'){
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    const _worldBudget=5;let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=1||performance.now()-_genStart>3)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrain();c._needDeco=true;c.dirty=false;_applyPending(c);this.ch[p.k]=c;_gc++}}
+    const _worldBudget=3;let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=1||performance.now()-_genStart>2)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=false;_applyPending(c);this.ch[p.k]=c;_gc++}}
     this._perfD.gen=performance.now()-_genStart;const _afterGen=performance.now()-now;
-    {let _dc=0;const _decoStart=performance.now();if(_afterGen<2){for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>3||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
-    const _afterDeco=performance.now()-now;let b2=0;{const _meshStart=performance.now();if(_afterDeco<3){const dirty=[];const _gBf=(x,y,z)=>this.gB(x,y,z);for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){if(this._frustum&&c._bb&&!this._frustum.intersectsBox(c._bb))continue;dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=2||performance.now()-_meshStart>4||performance.now()-now>_worldBudget)break;d.c.buildMesh(_gBf);b2++}}this._perfD.mesh=performance.now()-_meshStart}
+    {let _cc=0;const _caveStart=performance.now();if(_afterGen<1.5){for(const k in this.ch){if(_cc>=1||performance.now()-_caveStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){const done=c.genTerrainCavesIncr(1.5);if(done){delete c._needCaves;c._needDeco=true}_cc++}}}this._perfD.cave=performance.now()-_caveStart}
+    {let _dc=0;const _decoStart=performance.now();const _afterCave=performance.now()-now;if(_afterCave<1.5){for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
+    const _afterDeco=performance.now()-now;let b2=0;{const _meshStart=performance.now();if(_afterDeco<1.5){const dirty=[];const _gBf=(x,y,z)=>this.gB(x,y,z);for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){if(this._frustum&&c._bb&&!this._frustum.intersectsBox(c._bb))continue;dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=1||performance.now()-_meshStart>2||performance.now()-now>_worldBudget)break;d.c.buildMesh(_gBf);b2++}}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frustum&&this._frmC%2===0){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);
@@ -4138,7 +4171,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     document.getElementById('bossHP').style.width=(boss.hp/boss.maxHp*100)+'%'}
     else if(_bossBar){_bossBar.remove()}}
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';const _pt=this._perfT;const _pStr=_pt?` W:${_pt.worstF.toFixed(0)}ms S:${_pt.stutC}`:'';
-    const _pd=this._perfD;const _pdStr=_pd?`<br><span style="font-size:5px;color:#888">G:${_pd.gen.toFixed(1)} D:${_pd.deco.toFixed(1)} M:${_pd.mesh.toFixed(1)} Mob:${_pd.mob.toFixed(1)} T:${_pd.train.toFixed(1)} F:${_pd.fluid.toFixed(1)}</span>`:'';
+    const _pd=this._perfD;const _pdStr=_pd?`<br><span style="font-size:5px;color:#888">G:${_pd.gen.toFixed(1)} C:${(_pd.cave||0).toFixed(1)} D:${_pd.deco.toFixed(1)} M:${_pd.mesh.toFixed(1)} Mob:${_pd.mob.toFixed(1)} T:${_pd.train.toFixed(1)} F:${_pd.fluid.toFixed(1)}</span>`:'';
     $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}${_pStr}${_pdStr}`;
   }
   if(this.ren){if(this.wMat&&this.wMat.map){const _wt=Date.now()*.000003;this.wMat.map.offset.y=(_wt%0.02)}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();const _fStart=performance.now();const _frameSoFar=_fStart-now;if(_frameSoFar<8)processFluidQueue();if(this._perfD)this._perfD.fluid=performance.now()-_fStart;this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt);if(!this._perfT)this._perfT={frames:0,lastT:performance.now(),stutC:0,worstF:0};this._perfT.frames++;const _now=performance.now(),_ft=_now-this._perfT._lastF||16;this._perfT._lastF=_now;if(_ft>this._perfT.worstF)this._perfT.worstF=_ft;if(_ft>50)this._perfT.stutC++;if(_now-this._perfT.lastT>2000){const fps=this._perfT.frames/(((_now-this._perfT.lastT)/1000));const dd=$('dbg');if(dd)dd.textContent=dd.textContent.replace(/ F:.*$/,'')+' F:'+fps.toFixed(0)+' W:'+this._perfT.worstF.toFixed(0)+'ms S:'+this._perfT.stutC;this._perfT.frames=0;this._perfT.lastT=_now;this._perfT.worstF=0;this._perfT.stutC=0}}

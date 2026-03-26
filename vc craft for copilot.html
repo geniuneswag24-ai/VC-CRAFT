@@ -485,26 +485,29 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
   // Structure spawns are per-CHUNK not per-block (checked at center of chunk only)
   if(wx!==ox+8||wz!==oz+8)return; // only check chunk center
   const sr=dh01(chunk.cx*7+13,chunk.cz*11+7);
-  // Biome-specific spawn rates
-  let threshold=.97; // default ~3% chance per chunk - much sparser
-  if(bi===BI.VC_SUBURB)threshold=.90; // suburbs - reduced density, less cluttered
-  else if(bi===BI.SA_PLAINS)threshold=.95; // plains - rare structures
-  else if(bi===BI.PLAINS)threshold=.96;
+  // Biome-specific spawn rates (higher threshold = rarer structures)
+  let threshold=.975; // default ~2.5% chance per chunk
+  if(bi===BI.VC_SUBURB)threshold=.965; // suburbs - moderately built-up, not spammed
+  else if(bi===BI.SA_PLAINS)threshold=.97;
+  else if(bi===BI.PLAINS)threshold=.975;
   else if(bi===BI.GARFBOT_CITY)return; // city handled separately in deco
   else if(bi===BI.OC)return; // ocean handled separately
   if(sr<threshold)return;
+  // Inter-structure spacing check: no structures within 2 chunks of another
+  for(const sk of _structChunks){const[scx,scz]=sk.split(',').map(Number);const ddx=abs(chunk.cx-scx),ddz=abs(chunk.cz-scz);if(ddx<=2&&ddz<=2&&(ddx+ddz)>0)return}
   _structChunks.add(ck);
   const type=bd.structs[fl(dh01(chunk.cx+999,chunk.cz+999)*bd.structs.length)];
-  // Major structures are rarer - re-roll to reject
-  if(type==='school'&&dh01(chunk.cx*31,chunk.cz*37)<.85)return;
-  if(type==='stadium'&&dh01(chunk.cx*41,chunk.cz*43)<.90)return;
-  if(type==='mall'&&dh01(chunk.cx*51,chunk.cz*53)<.80)return;
-  if(type==='gomp'&&dh01(chunk.cx*61,chunk.cz*63)<.75)return;
-  if(type==='restaurant'&&dh01(chunk.cx*71,chunk.cz*73)<.70)return;
-  if(type==='waffle'&&dh01(chunk.cx*81,chunk.cz*83)<.65)return;
-  if(type==='temple'&&dh01(chunk.cx*91,chunk.cz*93)<.80)return;
-  if(type==='monument'&&dh01(chunk.cx*101,chunk.cz*103)<.80)return;
-  if(type==='arcade'&&dh01(chunk.cx*111,chunk.cz*113)<.70)return;
+  // Major structures are rarer - re-roll to reject (higher = more likely rejected)
+  if(type==='house'&&dh01(chunk.cx*21,chunk.cz*23)<.40)return; // houses also have rejection now
+  if(type==='school'&&dh01(chunk.cx*31,chunk.cz*37)<.90)return;
+  if(type==='stadium'&&dh01(chunk.cx*41,chunk.cz*43)<.93)return;
+  if(type==='mall'&&dh01(chunk.cx*51,chunk.cz*53)<.88)return;
+  if(type==='gomp'&&dh01(chunk.cx*61,chunk.cz*63)<.85)return;
+  if(type==='restaurant'&&dh01(chunk.cx*71,chunk.cz*73)<.75)return;
+  if(type==='waffle'&&dh01(chunk.cx*81,chunk.cz*83)<.72)return;
+  if(type==='temple'&&dh01(chunk.cx*91,chunk.cz*93)<.88)return;
+  if(type==='monument'&&dh01(chunk.cx*101,chunk.cz*103)<.90)return;
+  if(type==='arcade'&&dh01(chunk.cx*111,chunk.cz*113)<.78)return;
   const lx=8,lz=8; // always center of chunk
   const r=dh01(chunk.cx+50,chunk.cz+50);
   const wx2=chunk.cx*CS+lx,wz2=chunk.cz*CS+lz;
@@ -1471,14 +1474,14 @@ function genGarfDungeon(chunk,lx,sy,lz){
     }
   }
   // ═══ DUNGEON SHELL: 1-block thick DEEP shell around entire bounding box ═══
-  for(let dx=-16;dx<=16;dx++)for(let dz=-55;dz<=6;dz++){
-    _ds(dx,-8,dz,bW);_ds(dx,8,dz,bW); // top/bottom shell
+  for(let dx=-18;dx<=18;dx++)for(let dz=-66;dz<=6;dz++){
+    _ds(dx,-9,dz,bW);_ds(dx,9,dz,bW); // top/bottom shell
   }
-  for(let dy=-8;dy<=8;dy++)for(let dz=-55;dz<=6;dz++){
-    _ds(-16,dy,dz,bW);_ds(16,dy,dz,bW); // side shells
+  for(let dy=-9;dy<=9;dy++)for(let dz=-66;dz<=6;dz++){
+    _ds(-18,dy,dz,bW);_ds(18,dy,dz,bW); // side shells
   }
-  for(let dy=-8;dy<=8;dy++)for(let dx=-16;dx<=16;dx++){
-    _ds(dx,dy,-55,bW);_ds(dx,dy,6,bW); // front/back shells
+  for(let dy=-9;dy<=9;dy++)for(let dx=-18;dx<=18;dx++){
+    _ds(dx,dy,-66,bW);_ds(dx,dy,6,bW); // front/back shells
   }
   // Entry breach chamber (12x8x12)
   room(-6,0,-6,5,7,5,bC,bW,bW);
@@ -1583,50 +1586,86 @@ function genGarfDungeon(chunk,lx,sy,lz){
   // Connecting door from assembly to control room
   for(let dy=-5;dy<=-1;dy++){_ds(8,dy,-34,B.AIR);_ds(9,dy,-34,B.AIR)}
   _ds(8,-5,-34,B.DOOR_IRON_C);_ds(8,-4,-34,B.DOOR_IRON_C);
-  // ═══ CENTRAL ARENA CHAMBER (20x12x20) ═══
-  room(-10,-7,-60,9,5,-41,bC,bW,bW);
+  // ═══ CENTRAL ARENA CHAMBER (24x14x24 - MUCH LARGER BOSS ROOM) ═══
+  room(-12,-8,-64,11,6,-41,bC,bW,bW);
   // Arena floor is deepslate
-  for(let dx=-9;dx<=8;dx++)for(let dz=-59;dz>=-42;dz--)_ds(dx,-7,dz,bW);
+  for(let dx=-11;dx<=10;dx++)for(let dz=-63;dz>=-42;dz--)_ds(dx,-8,dz,bW);
   // Lava channels in 1-block-deep trenches along arena walls
-  for(let dx=-9;dx<=8;dx++)for(let dz=-59;dz>=-42;dz--){
-    if(dx===-9||dx===8||dz===-59||dz===-42)_ds(dx,-6,dz,B.LAVA);
+  for(let dx=-11;dx<=10;dx++)for(let dz=-63;dz>=-42;dz--){
+    if(dx===-11||dx===10||dz===-63||dz===-42)_ds(dx,-7,dz,B.LAVA);
   }
   // Trench walls
-  for(let dx=-8;dx<=7;dx++)for(let dz=-58;dz>=-43;dz--){
-    if(dx===-8||dx===7||dz===-58||dz===-43){
-      if(!((dx===-8||dx===7)&&(dz===-58||dz===-43)))_ds(dx,-6,dz,bW);
+  for(let dx=-10;dx<=9;dx++)for(let dz=-62;dz>=-43;dz--){
+    if(dx===-10||dx===9||dz===-62||dz===-43){
+      if(!((dx===-10||dx===9)&&(dz===-62||dz===-43)))_ds(dx,-7,dz,bW);
     }
   }
-  // Arena pillars (8 grand pillars around perimeter)
-  for(const[px,pz]of[[-7,-45],[7,-45],[-7,-56],[7,-56],[-7,-50],[7,-50],[0,-45],[0,-56]]){
-    for(let dy=-6;dy<=4;dy++)_ds(px,dy,pz,B.COLUMN_BLK);
+  // Arena pillars (12 grand pillars around perimeter)
+  for(const[px,pz]of[[-9,-45],[9,-45],[-9,-60],[9,-60],[-9,-52],[9,-52],[0,-45],[0,-60],[-5,-45],[5,-45],[-5,-60],[5,-60]]){
+    for(let dy=-7;dy<=5;dy++)_ds(px,dy,pz,B.COLUMN_BLK);
   }
-  // Central mechanism platform (5x3x5 raised platform with neon and lanterns)
-  for(let dx=-2;dx<=2;dx++)for(let dz=-52;dz>=-48;dz--){
-    _ds(dx,-6,dz,bM);_ds(dx,-5,dz,bM);
+  // Central mechanism platform (7x3x7 raised platform with neon and lanterns)
+  for(let dx=-3;dx<=3;dx++)for(let dz=-55;dz>=-49;dz--){
+    _ds(dx,-7,dz,bM);_ds(dx,-6,dz,bM);
   }
-  _ds(0,-4,-50,bN);_ds(-2,-4,-50,bN);_ds(2,-4,-50,bN);
-  _ds(0,-4,-48,bL);_ds(0,-4,-52,bL);
-  _ds(0,-3,-50,bN); // activation point (top of mechanism)
-  // Arena lighting
-  _ds(0,4,-50,bL);_ds(-8,4,-43,bL);_ds(8,4,-43,bL);
-  _ds(-8,4,-58,bL);_ds(8,4,-58,bL);_ds(-4,4,-50,bL);_ds(4,4,-50,bL);
+  _ds(0,-5,-52,bN);_ds(-3,-5,-52,bN);_ds(3,-5,-52,bN);_ds(0,-5,-49,bN);_ds(0,-5,-55,bN);
+  _ds(-3,-5,-49,bL);_ds(3,-5,-49,bL);_ds(-3,-5,-55,bL);_ds(3,-5,-55,bL);
+  _ds(0,-4,-52,bN); // activation point (top of mechanism)
+  // Arena lighting (generous - boss room must be well-lit)
+  _ds(0,5,-52,bL);_ds(-10,5,-43,bL);_ds(10,5,-43,bL);
+  _ds(-10,5,-62,bL);_ds(10,5,-62,bL);_ds(-5,5,-52,bL);_ds(5,5,-52,bL);
+  _ds(0,5,-45,bL);_ds(0,5,-59,bL);_ds(-8,5,-50,bL);_ds(8,5,-50,bL);
+  // ═══ BARRACKS ROOM (east wing, 12x7x10) ═══
+  room(3,-3,-24,14,4,-15,bC,bR,bW);
+  // Bunks and lockers
+  for(let dz=-22;dz>=-16;dz-=3){_ds(5,-2,dz,B.PLNK);_ds(6,-2,dz,B.PLNK);_ds(12,-2,dz,B.PLNK);_ds(13,-2,dz,B.PLNK)}
+  for(let dz=-22;dz>=-16;dz-=2){_ds(8,-2,dz,bR);_ds(9,-2,dz,bR)}
+  _ds(8,3,-19,bL);_ds(12,3,-17,bL);
+  // Corridor to barracks
+  for(let dy=1;dy<=3;dy++){_ds(2,dy,-19,B.AIR);_ds(3,dy,-19,B.AIR)}
+  _ds(2,1,-19,B.DOOR_IRON_C);_ds(2,2,-19,B.DOOR_IRON_C);
+  // ═══ COLLAPSED TUNNEL SIDE PATH (west, 6x5x20) ═══
+  for(let dz=-24;dz>=-38;dz--){
+    for(let dx=-14;dx<=-9;dx++){
+      for(let dy=-2;dy<=2;dy++){
+        const isW2=dx===-14||dx===-9;const isC2=dy===2;const isF2=dy===-2;
+        _ds(dx,dy,dz,isF2?bC:isC2?bW:isW2?bR:B.AIR);
+      }
+    }
+    // Partial rubble/debris
+    if(dh01(abs(dz)*17,abs(dz)*31)>.7){_ds(-12,-2,dz,bR);_ds(-11,-1,dz,bC)}
+  }
+  _ds(-11,1,-28,bL);_ds(-11,1,-34,bL);
+  // Corridor from main to collapsed tunnel
+  for(let dy=1;dy<=3;dy++){_ds(-3,dy,-28,B.AIR);_ds(-4,dy,-28,B.AIR)}
+  // ═══ LABORATORY / RESEARCH ROOM (west, 12x6x10) ═══
+  room(-14,-5,-50,-3,1,-41,bM,bM,bW);
+  // Lab tables and equipment
+  for(let dx=-12;dx<=-5;dx+=3){_ds(dx,-4,-46,bM);_ds(dx,-3,-46,B.GLASS);_ds(dx,-4,-43,bR);_ds(dx,-3,-43,bN)}
+  _ds(-8,0,-46,bL);_ds(-6,0,-43,bL);_ds(-12,0,-48,bL);
+  // Lab connection to assembly floor
+  for(let dy=-5;dy<=-1;dy++){_ds(-7,dy,-40,B.AIR);_ds(-8,dy,-40,B.AIR)}
+  _ds(-7,-5,-40,B.DOOR_IRON_C);_ds(-7,-4,-40,B.DOOR_IRON_C);
   // Corridor connecting assembly floor to arena (wider ramp down)
-  for(let step=0;step<4;step++){
+  for(let step=0;step<5;step++){
     for(let dx=-2;dx<=2;dx++){
-      _ds(dx,-6-step,-40+step,bC);
-      for(let dy=-5-step;dy<=3;dy++)_ds(dx,dy,-40+step,B.AIR);
+      _ds(dx,-7-step,-40+step,bC);
+      for(let dy=-6-step;dy<=3;dy++)_ds(dx,dy,-40+step,B.AIR);
     }
   }
   // Arena entrance door
-  _ds(0,-6,-41,B.DOOR_IRON_C);_ds(0,-5,-41,B.DOOR_IRON_C);
-  // Place 3 key chests in different dungeon areas
-  _ds(10,1,-6,B.CHST); // machine hall chest
-  _ds(-15,1,-6,B.CHST); // hidden alcove chest
-  _ds(-4,-5,-38,B.CHST); // assembly floor chest
-  // Spawn garfbots throughout the dungeon
+  _ds(0,-7,-41,B.DOOR_IRON_C);_ds(0,-6,-41,B.DOOR_IRON_C);
+  // Place 3 key chests in different dungeon areas (well-hidden)
+  _ds(10,1,-6,B.CHST); // machine hall chest (key 1)
+  _ds(-15,1,-5,B.CHST); // hidden alcove chest (key 2)
+  _ds(-12,-4,-48,B.CHST); // laboratory chest (key 3)
+  // Additional loot chests
+  _ds(-4,-5,-38,B.CHST); // assembly floor bonus
+  _ds(12,-2,-20,B.CHST); // barracks bonus
+  _ds(-12,-1,-35,B.CHST); // collapsed tunnel bonus
+  // Spawn garfbots throughout the dungeon (more spawns for bigger dungeon)
   if(W&&W.mobs){
-    const gSpawns=[[2,-8],[10,-7],[-8,-7],[-9,-20],[6,-17],[6,-28],[6,-32],[-4,-35],[0,-48],[5,-54],[-5,-54],[-12,-34],[12,-32]];
+    const gSpawns=[[2,-8],[10,-7],[-8,-7],[-9,-20],[6,-17],[6,-28],[6,-32],[-4,-35],[0,-48],[5,-56],[-5,-56],[-12,-34],[12,-32],[8,-19],[-11,-30],[-7,-45],[3,-58],[-3,-58]];
     for(const[gx,gz]of gSpawns){
       const g=new Garfbot(ox+lx+gx,sy+2,oz+lz+gz);W.mobs.push(g)
     }
@@ -3032,12 +3071,42 @@ an(dt){}hit(a,kd){if(this.dT>=0)return;this.hp-=a;this.hT=.3;if(kd){this.vel.x+=
 rm(){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}})}catch(e){}}}
 
 class Garfbot extends Mob{constructor(x,y,z){super(x,y,z);this.hp=20;this.spd=3.2}
-build(){const m=c=>new THREE.MeshLambertMaterial({color:c});this.grp.add(mkM(new THREE.BoxGeometry(.7,.9,.45),m(0x444455),0,.95,0));this.grp.add(mkM(new THREE.BoxGeometry(.5,.4,.46),m(0x663344),0,1.1,0));const gTxt=new THREE.MeshLambertMaterial({color:0xff4400,emissive:0xff2200,emissiveIntensity:.5});this.grp.add(mkM(new THREE.BoxGeometry(.14,.025,.01),gTxt,-.17,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,-.21,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.10,.025,.01),gTxt,-.17,.92,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.05,.01),gTxt,-.13,.95,.232));this.grp.add(mkM(new THREE.BoxGeometry(.07,.025,.01),gTxt,-.15,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,-.03,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,-.07,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,.01,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,-.03,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,-.03,.92,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.11,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,.07,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.06,.01),gTxt,.15,1.03,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.11,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.05,.01),gTxt,.15,.93,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.25,1.06,.232));this.grp.add(mkM(new THREE.BoxGeometry(.025,.12,.01),gTxt,.21,.98,.232));this.grp.add(mkM(new THREE.BoxGeometry(.08,.025,.01),gTxt,.25,.98,.232));const gm=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.3});this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,-.15,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,-.05,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,.05,1.12,.24));this.grp.add(mkM(new THREE.BoxGeometry(.08,.12,.02),gm,.15,1.12,.24));this.hd=mkM(new THREE.BoxGeometry(.55,.55,.5),m(0x222233),0,1.7,0);this.grp.add(this.hd);const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5});this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,-.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.06,.25,.06),m(0x444455),0,2.05,0));this.tip=mkM(new THREE.BoxGeometry(.1,.1,.1),new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5}),0,2.25,0);this.grp.add(this.tip);this.aL=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),-.5,1,0);this.aL.geometry.translate(0,.35,0);this.grp.add(this.aL);this.aR=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),.5,1,0);this.aR.geometry.translate(0,.35,0);this.grp.add(this.aR);this.lL=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),-.2,.3,0);this.lL.geometry.translate(0,.3,0);this.grp.add(this.lL);this.lR=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),.2,.3,0);this.lR.geometry.translate(0,.3,0);this.grp.add(this.lR)}
+build(){const m=c=>new THREE.MeshLambertMaterial({color:c});this.grp.add(mkM(new THREE.BoxGeometry(.7,.9,.45),m(0x444455),0,.95,0));this.grp.add(mkM(new THREE.BoxGeometry(.5,.4,.46),m(0x663344),0,1.1,0));
+// ═══ GARF TEXT ON CHEST ═══ (larger, clearer block letters)
+const gTxt=new THREE.MeshLambertMaterial({color:0xff4400,emissive:0xff2200,emissiveIntensity:.6});
+// G letter
+this.grp.add(mkM(new THREE.BoxGeometry(.10,.03,.015),gTxt,-.17,1.12,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.12,.015),gTxt,-.22,1.05,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,-.17,.98,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.05,.015),gTxt,-.12,1.01,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.06,.03,.015),gTxt,-.14,1.04,.232));
+// A letter
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,-.04,1.12,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.12,.015),gTxt,-.08,1.05,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.12,.015),gTxt,.00,1.05,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,-.04,1.05,.232));
+// R letter
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,.10,1.12,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.12,.015),gTxt,.06,1.05,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.06,.015),gTxt,.14,1.09,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,.10,1.05,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.05,.015),gTxt,.14,1.01,.232));
+// F letter
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,.24,1.12,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.03,.12,.015),gTxt,.20,1.05,.232));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,.24,1.05,.232));
+// Backlit GARF panel (white glow behind text)
+const gm=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.25});
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,-.17,1.05,.225));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,-.04,1.05,.225));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,.10,1.05,.225));
+this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,.24,1.05,.225));
+this.hd=mkM(new THREE.BoxGeometry(.55,.55,.5),m(0x222233),0,1.7,0);this.grp.add(this.hd);const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5});this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,-.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.06,.25,.06),m(0x444455),0,2.05,0));this.tip=mkM(new THREE.BoxGeometry(.1,.1,.1),new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5}),0,2.25,0);this.grp.add(this.tip);this.aL=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),-.5,1,0);this.aL.geometry.translate(0,.35,0);this.grp.add(this.aL);this.aR=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),.5,1,0);this.aR.geometry.translate(0,.35,0);this.grp.add(this.aR);this.lL=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),-.2,.3,0);this.lL.geometry.translate(0,.3,0);this.grp.add(this.lL);this.lR=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),.2,.3,0);this.lR.geometry.translate(0,.3,0);this.grp.add(this.lR)}
 ai(dt){const pp=W.pl.pos,d=this.pos.distanceTo(pp);if(d<18){const dx=pp.x-this.pos.x,dz=pp.z-this.pos.z;this.yaw=Math.atan2(dx,dz);if(d>1.8){this.vel.x=Math.sin(this.yaw)*this.spd;this.vel.z=Math.cos(this.yaw)*this.spd}else{this.vel.x*=.8;this.vel.z*=.8;if(this.aC<=0){W.pl.hurt(3);this.aC=1.2}}}else{this.wT-=dt;if(this.wT<=0){this.wD=dh01(fl(this.pos.x*100+this.aT*10),fl(this.pos.z*100))*TAU;this.wT=2+dh01(fl(this.aT*100),0)*4}this.vel.x=Math.sin(this.wD)*1.2;this.vel.z=Math.cos(this.wD)*1.2;this.yaw=this.wD}}
 an(dt){const ws=sq(this.vel.x**2+this.vel.z**2),sw=Math.sin(this.aT*8)*.5*(ws>.5?1:.15);this.lL.rotation.x=sw;this.lR.rotation.x=-sw;this.aL.rotation.x=-sw*.8;this.aR.rotation.x=sw*.8;if(this.tip)this.tip.material.emissiveIntensity=.3+Math.sin(this.aT*4)*.7}}
 
 class GarbotSentient extends Mob{
-constructor(x,y,z){super(x,y,z);this.hp=300;this.maxHp=300;this.spd=2.8;this.phase=1;this.attackT=0;this.curAtk='';this.staggerT=0;this.summonT=0;this.chargeT=0;this.isB=true;this._wakeT=3;this._dmgAcc=0}
+constructor(x,y,z){super(x,y,z);this.hp=400;this.maxHp=400;this.spd=2.8;this.phase=1;this.attackT=0;this.curAtk='';this.staggerT=0;this.summonT=0;this.chargeT=0;this.isB=true;this._wakeT=3;this._dmgAcc=0;this._deathSpin=0}
 build(){
 const m=c=>new THREE.MeshLambertMaterial({color:c});const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.8});
 // Torso - taller and wider
@@ -3144,10 +3213,31 @@ if(d<30){
 }
 }
 an(dt){
+// Death animation - dramatic spin and collapse
+if(this.dT>=0){
+  this._deathSpin+=dt*8;
+  this.grp.rotation.z=Math.sin(this._deathSpin)*(.5+this.dT);
+  this.grp.rotation.x=this.dT*.3;
+  this.grp.position.y-=dt*2;
+  // Flash red/white
+  if(this.core)this.core.material.emissiveIntensity=Math.sin(this.dT*20)>0?2:0;
+  if(this.tip)this.tip.material.emissiveIntensity=Math.sin(this.dT*15)>0?2:0;
+  return;
+}
 const ws=Math.sqrt(this.vel.x**2+this.vel.z**2),sw=Math.sin(this.aT*6)*.4*(ws>.3?1:.1);
 this.lL.rotation.x=sw;this.lR.rotation.x=-sw;this.aL.rotation.x=-sw*.7;this.aR.rotation.x=sw*.7;
+// Attack animations
+if(this.curAtk==='slam'){this.aL.rotation.x=-1.2;this.aR.rotation.x=-1.2}
+else if(this.curAtk==='charge'){this.grp.rotation.x=-.15}
+else if(this.curAtk==='beam'&&this.core){this.core.material.emissiveIntensity=1.5+Math.sin(this.aT*20)*.5}
+else if(this.curAtk==='crush'){this.aL.rotation.z=.5;this.aR.rotation.z=-.5}
+else if(this.curAtk==='sweep'){this.aL.rotation.x=-.8;this.aR.rotation.x=.8;this.grp.rotation.y+=dt*12}
 if(this.core)this.core.material.emissiveIntensity=.5+Math.sin(this.aT*3)*.4;
 if(this.tip)this.tip.material.emissiveIntensity=.3+Math.sin(this.aT*5)*.7;
+// Phase escalation visual: red glow intensifies
+if(this.phase>=2&&this.hd){
+  this.hd.material=new THREE.MeshLambertMaterial({color:this.phase===3?0x3a1a1a:0x1a1a2a,emissive:this.phase===3?0x440000:0x220000,emissiveIntensity:this.phase===3?.4:.15});
+}
 }
 hurt(dmg){super.hurt(dmg);if(this._dmgAcc!==undefined)this._dmgAcc+=dmg}}
 
@@ -3362,45 +3452,61 @@ function fluidTick(sx,sy,sz,fluidId){
 }
 function processFluidQueue(){
   const q=window._fluidQ;if(!q||q.length===0)return;
-  const maxPerFrame=100;let processed=0;const now=performance.now();
+  const maxPerFrame=80;let processed=0;const now=performance.now();
   const newQ=[];
   for(let i=0;i<q.length;i++){
     const f=q[i];
-    const delay=f.id===B.WATER?40:120;
+    const delay=f.id===B.WATER?50:150;
     if(now-f.t<delay){newQ.push(f);continue}
     if(processed>=maxPerFrame){newQ.push(f);continue}
-    // Check if source still exists (prevent orphan flow)
+    // Validate source still exists (prevents orphan flow)
     const cur=W.gB(f.x,f.y,f.z);
-    if(cur!==f.id)continue; // block was removed/changed, skip
+    if(cur!==f.id)continue;
     processed++;
-    const maxSpread=f.id===B.WATER?7:3;
-    // Flow down first (priority: gravity)
+    const maxSpread=f.id===B.WATER?7:4;
+    // === DOWNWARD FLOW (gravity priority) ===
     const below=W.gB(f.x,f.y-1,f.z);
     if(f.y>1&&below===B.AIR){
       W.sB(f.x,f.y-1,f.z,f.id);
-      newQ.push({x:f.x,y:f.y-1,z:f.z,id:f.id,d:0,t:now});
-      // Continue flowing down from new position
-      const below2=W.gB(f.x,f.y-2,f.z);
-      if(f.y>2&&below2===B.AIR){newQ.push({x:f.x,y:f.y-1,z:f.z,id:f.id,d:0,t:now+delay})}
-    }else if(below===B.LAVA&&f.id===B.WATER){W.sB(f.x,f.y-1,f.z,B.OBSIDIAN)}
-    else if(below===B.WATER&&f.id===B.LAVA){W.sB(f.x,f.y-1,f.z,B.COB)}
-    else if(f.d<maxSpread&&below!==B.AIR){
-      // Check for downhill flow opportunity - prefer spreading toward edges where it can fall
-      let spread=false;
-      for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){
+      newQ.push({x:f.x,y:f.y-1,z:f.z,id:f.id,d:0,t:now,src:false});
+      continue; // Prioritize downward - don't spread horizontally if we can fall
+    }
+    // Water/lava interactions (obsidian/cobblestone)
+    if(below===B.LAVA&&f.id===B.WATER){W.sB(f.x,f.y-1,f.z,B.OBSIDIAN);continue}
+    if(below===B.WATER&&f.id===B.LAVA){W.sB(f.x,f.y-1,f.z,B.COB);continue}
+    // === HORIZONTAL SPREAD (only when can't go down) ===
+    if(f.d<maxSpread&&below!==B.AIR){
+      // Prefer directions that lead to edges/drops (smarter pathfinding)
+      const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+      // Shuffle to avoid directional bias
+      for(let j=dirs.length-1;j>0;j--){const k=fl(dh01(f.x+j*3,f.z+j*7)*j);const tmp=dirs[j];dirs[j]=dirs[k];dirs[k]=tmp}
+      let spreadCount=0;
+      for(const[dx,dz]of dirs){
+        if(spreadCount>=2)break; // limit horizontal spread per tick
         const nx=f.x+dx,nz=f.z+dz;
         const nb=W.gB(nx,f.y,nz);
         if(nb===B.AIR){
-          // Check if flowing here would let it fall (prefer this direction)
           const nbBelow=W.gB(nx,f.y-1,nz);
           W.sB(nx,f.y,nz,f.id);
-          const newD=nbBelow===B.AIR?0:f.d+1; // reset depth if it can fall
-          newQ.push({x:nx,y:f.y,z:nz,id:f.id,d:newD,t:now});
-          spread=true;
+          // Reset depth counter if it can fall from new position (waterfall/lavafall)
+          const newD=nbBelow===B.AIR?0:f.d+1;
+          newQ.push({x:nx,y:f.y,z:nz,id:f.id,d:newD,t:now,src:false});
+          spreadCount++;
         }
+        // Water/lava interactions during horizontal spread
         else if(nb===B.LAVA&&f.id===B.WATER){W.sB(nx,f.y,nz,B.OBSIDIAN)}
         else if(nb===B.WATER&&f.id===B.LAVA){W.sB(nx,f.y,nz,B.COB)}
       }
+    }
+    // === UNSUPPORTED FLUID CLEANUP ===
+    // If this fluid block has no source above or adjacent, and is at max spread, remove it
+    if(f.d>=maxSpread&&!f.src){
+      let hasSupport=false;
+      for(const[dx,dy,dz]of[[0,1,0],[1,0,0],[-1,0,0],[0,0,1],[0,0,-1]]){
+        const adj=W.gB(f.x+dx,f.y+dy,f.z+dz);
+        if(adj===f.id){hasSupport=true;break}
+      }
+      if(!hasSupport){W.sB(f.x,f.y,f.z,B.AIR)} // Remove isolated floating fluid
     }
   }
   window._fluidQ=newQ;
@@ -3471,8 +3577,8 @@ tick(dt){if(this.hT>0)this.hT-=dt;this.aT+=dt;const I=W.inp;this.yaw-=I.dx*.002;
     else _trainThrottle*=.98;
     // Fuel consumption
     if(_trainThrottle>0&&_trainFuel>0){_trainFuel-=dt*_trainThrottle*2;if(_trainFuel<=0){_trainFuel=0;_trainThrottle=0}}
-    // Set train speed based on throttle
-    _trainMount.spd=_trainThrottle*6;
+    // Set train speed based on throttle (max 12 b/s for real train feel)
+    _trainMount.spd=_trainThrottle*12;
     // Position player in train cabin
     const t=_trainMount;const ang=Math.atan2(t.dirX,t.dirZ);
     // Cabin offset: slightly behind center, elevated to cabin height
@@ -3749,13 +3855,15 @@ async start(seed,mode,ld){try{
   this.lt=performance.now();this.loop();
 }catch(e){console.error(e);$('ltx').textContent='Error: '+e.message}},
 loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;this.fps=Math.round(1/mx(dt,.001));if(!this._frmC)this._frmC=0;this._frmC++;
+  if(!this._perfD)this._perfD={gen:0,deco:0,mesh:0,mob:0,train:0,fluid:0};
   if(this.st==='play'){
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=1||performance.now()-_genStart>16)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrain();c._needDeco=true;c.dirty=false;_applyPending(c);this.ch[p.k]=c;_gc++}}
-    {let _dc=0;const _decoStart=performance.now();for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>8)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}
-    let b2=0;{const _meshStart=performance.now();const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD)dirty.push({c,dd})}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=2||performance.now()-_meshStart>12)break;d.c.buildMesh((x,y,z)=>this.gB(x,y,z));b2++}}
+    let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=1||performance.now()-_genStart>12)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrain();c._needDeco=true;c.dirty=false;_applyPending(c);this.ch[p.k]=c;_gc++}}
+    this._perfD.gen=performance.now()-_genStart;
+    {let _dc=0;const _decoStart=performance.now();for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>8)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}this._perfD.deco=performance.now()-_decoStart}
+    let b2=0;{const _meshStart=performance.now();const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD)dirty.push({c,dd})}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=2||performance.now()-_meshStart>10)break;d.c.buildMesh((x,y,z)=>this.gB(x,y,z));b2++}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frmC%4===0&&this._frustum){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);
@@ -3795,13 +3903,16 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     // Night darkening of hemisphere
     if(tw<.2){this.hemiLight.color.set(0x334455);this.hemiLight.groundColor.set(0x1a1a33)}
     else{this.hemiLight.color.set(0x88bbff);this.hemiLight.groundColor.set(0x554433)}
+    const _mobStart=performance.now();
     this.mT+=dt;if(this.mT>10&&this.mobs.length<25){this.mT=0;const a=dh01(fl(now/100),fl(now/50))*TAU,d=25+dh01(fl(now/200),0)*35;const mx2=fl(this.pl.pos.x+Math.cos(a)*d),mz=fl(this.pl.pos.z+Math.sin(a)*d),b3=bio(mx2,mz),h=htA(mx2,mz,b3);
     if(h>WL){if(b3===BI.WATCHER&&dh01(fl(now/300),1)>.7&&!W.mobs.some(m=>m instanceof VCKnight))this.mobs.push(new VCKnight(mx2+.5,h+2,mz+.5));
     else if(b3===BI.GARFBOT_CITY||this.dT>.5)this.mobs.push(new Garfbot(mx2+.5,h+2,mz+.5));
     else this.mobs.push(new CowMob(mx2+.5,h+2,mz+.5))}
     else if(b3===BI.OC&&dh01(fl(now/150),2)>.4)this.mobs.push(new FishMob(mx2+.5,WL-3,mz+.5))}
     this.mobs=this.mobs.filter(m=>{if(m.pos.distanceTo(this.pl.pos)>RD*CS){m.rm();return false}return m.tick(dt)});
+    this._perfD.mob=performance.now()-_mobStart;
     // Tick trains - spawn near player on rail corridors
+    const _trainStart=performance.now();
     if(this.trains.length<2&&this.mT>15){
       const px2=fl(this.pl.pos.x/CS),pz2=fl(this.pl.pos.z/CS);
       for(let dx=-RD;dx<=RD&&this.trains.length<2;dx++)for(let dz=-RD;dz<=RD&&this.trains.length<2;dz++){
@@ -3817,6 +3928,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
       }
     }
     this.trains=this.trains.filter(t=>{if(t.pos.distanceTo(this.pl.pos)>RD*CS*2){t.rm();return false}return t.tick(dt)});
+    this._perfD.train=performance.now()-_trainStart;
     this.drops=this.drops.filter(d2=>d2.tick(dt));
     if(this.brkS>=0&&this.pl.bt){this.brkOvl.visible=true;this.brkOvl.position.set(this.pl.bt.x+.5,this.pl.bt.y+.5,this.pl.bt.z+.5);
       const stage=this.brkS/5;this.brkOvl.material.opacity=.1+stage*.45;this.brkOvl.material.color.setRGB(stage*.3,0,0);
@@ -3831,9 +3943,10 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     document.getElementById('bossHP').style.width=(boss.hp/boss.maxHp*100)+'%'}
     else if(_bossBar){_bossBar.remove()}}
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';const _pt=this._perfT;const _pStr=_pt?` W:${_pt.worstF.toFixed(0)}ms S:${_pt.stutC}`:'';
-    $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}${_pStr}`;
+    const _pd=this._perfD;const _pdStr=_pd?`<br><span style="font-size:5px;color:#888">G:${_pd.gen.toFixed(1)} D:${_pd.deco.toFixed(1)} M:${_pd.mesh.toFixed(1)} Mob:${_pd.mob.toFixed(1)} T:${_pd.train.toFixed(1)} F:${_pd.fluid.toFixed(1)}</span>`:'';
+    $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}${_pStr}${_pdStr}`;
   }
-  if(this.ren){if(this.wMat&&this.wMat.map){const _wt=Date.now()*.000003;this.wMat.map.offset.y=(_wt%0.02)}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();processFluidQueue();this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt);if(!this._perfT)this._perfT={frames:0,lastT:performance.now(),stutC:0,worstF:0};this._perfT.frames++;const _now=performance.now(),_ft=_now-this._perfT._lastF||16;this._perfT._lastF=_now;if(_ft>this._perfT.worstF)this._perfT.worstF=_ft;if(_ft>50)this._perfT.stutC++;if(_now-this._perfT.lastT>2000){const fps=this._perfT.frames/(((_now-this._perfT.lastT)/1000));const dd=$('dbg');if(dd)dd.textContent=dd.textContent.replace(/ F:.*$/,'')+' F:'+fps.toFixed(0)+' W:'+this._perfT.worstF.toFixed(0)+'ms S:'+this._perfT.stutC;this._perfT.frames=0;this._perfT.lastT=_now;this._perfT.worstF=0;this._perfT.stutC=0}}
+  if(this.ren){if(this.wMat&&this.wMat.map){const _wt=Date.now()*.000003;this.wMat.map.offset.y=(_wt%0.02)}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();const _fStart=performance.now();processFluidQueue();if(this._perfD)this._perfD.fluid=performance.now()-_fStart;this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt);if(!this._perfT)this._perfT={frames:0,lastT:performance.now(),stutC:0,worstF:0};this._perfT.frames++;const _now=performance.now(),_ft=_now-this._perfT._lastF||16;this._perfT._lastF=_now;if(_ft>this._perfT.worstF)this._perfT.worstF=_ft;if(_ft>50)this._perfT.stutC++;if(_now-this._perfT.lastT>2000){const fps=this._perfT.frames/(((_now-this._perfT.lastT)/1000));const dd=$('dbg');if(dd)dd.textContent=dd.textContent.replace(/ F:.*$/,'')+' F:'+fps.toFixed(0)+' W:'+this._perfT.worstF.toFixed(0)+'ms S:'+this._perfT.stutC;this._perfT.frames=0;this._perfT.lastT=_now;this._perfT.worstF=0;this._perfT.stutC=0}}
   requestAnimationFrame(()=>this.loop())}
 };
 

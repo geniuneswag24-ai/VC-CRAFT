@@ -117,7 +117,7 @@
 <div class="btn" onclick="closeCheat()" style="width:280px;font-size:8px">Close</div>
 </div></div>
 <div id="chestUI"><div id="chestP"><h3 id="chestTitle">Chest</h3><div class="chG" id="chestGrid"></div><div class="isep"></div><h3 style="font-size:7px;color:#404040;margin:4px 0">Inventory</h3><div class="chG" id="chestInv"></div><div class="isep"></div><div class="chG" id="chestHB"></div></div></div>
-<div id="trainHUD">🚂 TRAIN · <span id="trainSpd">0</span> b/s · Fuel: <div id="fuelSlot"></div><div id="fuelBar"><div id="fuelFill"></div></div> · <span style="color:#888;font-size:6px">[E] dismount · [W/S] throttle</span></div>
+<div id="trainHUD">🚂 TRAIN · <span id="trainSpd">0</span> b/s · Fuel: <div id="fuelSlot"></div><div id="fuelBar"><div id="fuelFill"></div></div> · <span style="color:#888;font-size:6px">[Q] dismount · [W/S] throttle · [F] fuel · [E] inventory</span></div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -153,7 +153,7 @@ POOL_TILE:86,CABIN_WALL:87,TRAIL_STONE:88,CHAPEL_STONE:89,SIDING:90,
 SHINGLE:91,FENCE_BLK:92,DRIVEWAY:93,WATCHER_SAND:94,TOWER_BRICK:95,
 ANCIENT_METAL:96,PIRATE_PLNK:97,CORAL_PINK:98,CORAL_BLUE:99,CORAL_YELLOW:100,KELP:101,SEA_LANTERN:102,RAIL_IRON:103,RAIL_POWERED:104,RAIL_BED:105,TALL_GRASS:106,FLOWER_RED:107,FLOWER_BLUE:108,FLOWER_YELLOW:109,SHRUB:110,REED:111,FERN:112,LAVA:113,STAIR_COB:114,STAIR_PLNK:115,STAIR_BRK:116,STAIR_SBK:117,STAIR_STONE:118,STAIR_MARBLE:119,
 LADDER:120,BASALT:121,ASH_STONE:122,SCORCHED:123,OBSIDIAN:124,LOCKER2:125,BOOTH_SEAT:126,CABINET:127,NEON_TRIM:128,CARPET:129,COUNTER_TOP:130,MENU_BOARD:131,REDWOOD_LOG:132,REDWOOD_LVS:133,WATER_BUCKET:134,LAVA_BUCKET:135,
-DOOR_OAK_C:136,DOOR_OAK_O:137,DOOR_IRON_C:138,DOOR_IRON_O:139,DOOR_DARK_C:140,DOOR_DARK_O:141,DESK:142,SHELF:143,TILE_FLOOR:144,CARPET_RED:145};
+DOOR_OAK_C:136,DOOR_OAK_O:137,DOOR_IRON_C:138,DOOR_IRON_O:139,DOOR_DARK_C:140,DOOR_DARK_O:141,DESK:142,SHELF:143,TILE_FLOOR:144,CARPET_RED:145,DUNGEON_KEY:146};
 const BD={};function db(id,nm,o={}){BD[id]={nm,sol:o.s!==0,tr:!!o.t,liq:!!o.l,hd:o.h||1,dr:o.d!==undefined?o.d:id,st:o.st||64}}
 db(B.AIR,'Air',{s:0,t:1});db(B.GRASS,'Grass Block',{h:.6});db(B.DIRT,'Dirt',{h:.5});db(B.STONE,'Stone',{h:1.5,d:B.COB});db(B.SAND,'Sand',{h:.5});db(B.WATER,'Water',{s:0,t:1,l:1,h:-1});db(B.BED,'Bedrock',{h:-1});db(B.OLOG,'Oak Log',{h:2});db(B.OLVS,'Oak Leaves',{h:.2,t:1});db(B.BLOG,'Birch Log',{h:2});db(B.BLVS,'Birch Leaves',{h:.2,t:1});db(B.SLOG,'Spruce Log',{h:2});db(B.SLVS,'Spruce Leaves',{h:.2,t:1});db(B.SNOW,'Snow',{h:.3});db(B.COB,'Cobblestone',{h:1.5});db(B.SSTON,'Sandstone',{h:1.2});db(B.PLNK,'Oak Planks',{h:1.5});db(B.GLASS,'Glass',{h:.3,t:1,d:B.AIR});db(B.GRAV,'Gravel',{h:.6});db(B.CLAY,'Clay',{h:.6});db(B.RSAND,'Red Sand',{h:.5});db(B.MUD,'Mud',{h:.5});db(B.CACT,'Cactus',{h:.4});db(B.DEEP,'Deepslate',{h:2});db(B.COAL,'Coal Ore',{h:1.8,d:B.COAL_I});db(B.IRON,'Iron Ore',{h:2.2});db(B.GOLD,'Gold Ore',{h:2.5});db(B.DIAM,'Diamond Ore',{h:3});db(B.MOSS,'Mossy Stone',{h:1.5});db(B.BRK,'Bricks',{h:2});db(B.SBK,'Stone Bricks',{h:1.5});db(B.DLOG,'Dark Oak Log',{h:2});db(B.DLVS,'Dark Leaves',{h:.2,t:1});db(B.JLOG,'Jungle Log',{h:2});db(B.JLVS,'Jungle Leaves',{h:.2,t:1});db(B.ALOG,'Acacia Log',{h:2});db(B.ALVS,'Acacia Leaves',{h:.2,t:1});db(B.CRFT,'Crafting Table',{h:1.5});db(B.FURN,'Furnace',{h:2});db(B.CHST,'Chest',{h:1.5});db(B.ICE,'Ice',{h:.5,t:1});db(B.STICK,'Stick',{s:0,t:1,st:64});db(B.COAL_I,'Coal',{s:0,t:1,st:64});db(B.IRON_I,'Iron Ingot',{s:0,t:1,st:64});db(B.WPICK,'Wood Pickaxe',{s:0,t:1,st:1});db(B.SPICK,'Stone Pickaxe',{s:0,t:1,st:1});db(B.WSWD,'Wood Sword',{s:0,t:1,st:1});
 // VC World block defs
@@ -166,6 +166,7 @@ db(B.LADDER,'Ladder',{h:.5,s:0,t:1});db(B.BASALT,'Basalt',{h:2});db(B.ASH_STONE,
 db(B.REDWOOD_LOG,'Redwood Log',{h:2.5});db(B.REDWOOD_LVS,'Redwood Leaves',{h:.2,t:1});db(B.WATER_BUCKET,'Water Bucket',{s:0,t:1,st:1});db(B.LAVA_BUCKET,'Lava Bucket',{s:0,t:1,st:1});
 db(B.DOOR_OAK_C,'Oak Door',{h:1.5});db(B.DOOR_OAK_O,'Oak Door (Open)',{h:.5,s:0,t:1});db(B.DOOR_IRON_C,'Iron Door',{h:2});db(B.DOOR_IRON_O,'Iron Door (Open)',{h:.5,s:0,t:1});db(B.DOOR_DARK_C,'Dark Door',{h:1.5});db(B.DOOR_DARK_O,'Dark Door (Open)',{h:.5,s:0,t:1});
 db(B.DESK,'Desk',{h:1});db(B.SHELF,'Bookshelf',{h:1.5});db(B.TILE_FLOOR,'Tile Floor',{h:1});db(B.CARPET_RED,'Red Carpet',{h:.5,s:0,t:1});
+db(B.DUNGEON_KEY,'Dungeon Key',{s:0,t:1,st:1});
 
 // RECIPES
 const RCP=[];function addR(g,r,n){RCP.push({g,r,n:n||1})}
@@ -335,9 +336,9 @@ bf(B.STAIR_COB,'co');bf(B.STAIR_PLNK,'pk');bf(B.STAIR_BRK,'bk');bf(B.STAIR_SBK,'
 bf(B.LADDER,'pk');bf(B.BASALT,'bslt');bf(B.ASH_STONE,'ashst');bf(B.SCORCHED,'scor');bf(B.OBSIDIAN,'obsi');bf(B.LOCKER2,'lock2');bf(B.BOOTH_SEAT,'bseat');bf(B.CABINET,'cabnt');bf(B.NEON_TRIM,'ntrim');bf(B.CARPET,'crpet');bf(B.COUNTER_TOP,'cntop');bf(B.MENU_BOARD,'menbrd');
 bf(B.REDWOOD_LOG,'rwlt','rwl');bf(B.REDWOOD_LVS,'rwlv');
 bf(B.DOOR_OAK_C,'dokc');bf(B.DOOR_OAK_O,'doko');bf(B.DOOR_IRON_C,'dikc');bf(B.DOOR_IRON_O,'diko');bf(B.DOOR_DARK_C,'ddkc');bf(B.DOOR_DARK_O,'ddko');
-bf(B.DESK,'pk');bf(B.SHELF,'pk');bf(B.TILE_FLOOR,'conc');bf(B.CARPET_RED,'crpet');
+bf(B.DESK,'pk');bf(B.SHELF,'pk');bf(B.TILE_FLOOR,'conc');bf(B.CARPET_RED,'crpet');bf(B.DUNGEON_KEY,'neon');
 
-const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPICK]:'wpick_i',[B.SPICK]:'spick_i',[B.WSWD]:'wswd_i'};
+const IMAP={[B.STICK]:'stick_i',[B.COAL_I]:'coal_ii',[B.IRON_I]:'iron_ii',[B.WPICK]:'wpick_i',[B.SPICK]:'spick_i',[B.WSWD]:'wswd_i',[B.DUNGEON_KEY]:'neon'};
 
 let atlas,uvL={},icons={};
 function buildAtlas(){
@@ -1659,10 +1660,18 @@ function genGarfDungeon(chunk,lx,sy,lz){
   _ds(10,1,-6,B.CHST); // machine hall chest (key 1)
   _ds(-15,1,-5,B.CHST); // hidden alcove chest (key 2)
   _ds(-12,-4,-48,B.CHST); // laboratory chest (key 3)
+  // Seed key chests with dungeon keys
+  seedChest(ox+lx+10,sy+1,oz+lz-6,[{id:B.DUNGEON_KEY,n:1},{id:B.IRON_I,n:3}]);
+  seedChest(ox+lx-15,sy+1,oz+lz-5,[{id:B.DUNGEON_KEY,n:1},{id:B.COAL_I,n:5}]);
+  seedChest(ox+lx-12,sy-4,oz+lz-48,[{id:B.DUNGEON_KEY,n:1},{id:B.DIAM,n:1}]);
   // Additional loot chests
   _ds(-4,-5,-38,B.CHST); // assembly floor bonus
   _ds(12,-2,-20,B.CHST); // barracks bonus
   _ds(-12,-1,-35,B.CHST); // collapsed tunnel bonus
+  // Seed bonus chests with loot
+  seedChest(ox+lx-4,sy-5,oz+lz-38,[{id:B.IRON_I,n:5},{id:B.COAL_I,n:8}]);
+  seedChest(ox+lx+12,sy-2,oz+lz-20,[{id:B.PLNK,n:16},{id:B.COAL_I,n:4}]);
+  seedChest(ox+lx-12,sy-1,oz+lz-35,[{id:B.GOLD,n:2},{id:B.IRON_I,n:4}]);
   // Spawn garfbots throughout the dungeon (more spawns for bigger dungeon)
   if(W&&W.mobs){
     const gSpawns=[[2,-8],[10,-7],[-8,-7],[-9,-20],[6,-17],[6,-28],[6,-32],[-4,-35],[0,-48],[5,-56],[-5,-56],[-12,-34],[12,-32],[8,-19],[-11,-30],[-7,-45],[3,-58],[-3,-58]];
@@ -2564,9 +2573,9 @@ deco(){
         for(let dy=2;dy<=4;dy++)if(BD[this.G(rx,h+dy,z)]?.sol)this.S(rx,h+dy,z,B.AIR);
       }
     }
-    // ═══ LARGE STATION at intersections or every ~15 chunks ═══
+    // ═══ STATION at intersections or every ~40 chunks (rarer, more meaningful) ═══
     const isIntersection = isEWRail && isNSRail;
-    const isStationChunk = isIntersection || (isEWRail && (((this.cx%20)+20)%20===0)) || (isNSRail && (((this.cz%20)+20)%20===0));
+    const isStationChunk = isIntersection || (isEWRail && (((this.cx%40)+40)%40===0)) || (isNSRail && (((this.cz%40)+40)%40===0));
     if(isStationChunk){
       const sh=this.sY(8,8);if(sh>WL){
         // ──── LARGE TRAIN STATION ────
@@ -2606,6 +2615,7 @@ deco(){
         W._stations.push({x:this.cx*CS+8,y:sh+2,z:this.cz*CS+8});
       }
     }
+    this._hasRail=true; // mark chunk as having rail to protect corridor from clutter
   }
   // Register volcanoes as landmarks for teleport
   if(chunkBio===BI.VOLCANO){const vh=this.sY(8,8);if(vh>WL+30&&!_structRegistry['Volcano Landmark']?.some(s=>abs(s.x-(ox+8))<200&&abs(s.z-(oz+8))<200))regStruct('Volcano Landmark',ox+8,vh+2,oz+8)}
@@ -2618,6 +2628,12 @@ deco(){
     if(h<=WL||h>=CH-10||this.G(x,h,z)===B.WATER||this.G(x,h,z)===B.AIR||!isNaturalSurface(this.G(x,h,z)))continue;const abv=this.G(x,h+1,z);if(abv!==B.AIR&&abv!==B.WATER&&!BD[abv]?.liq)continue;
     const r=dh01(wx,wz);
     if(bd.tc&&r<bd.tc&&this.G(x,h+1,z)===B.AIR){
+      // Skip trees near rail corridors to keep them clear
+      if(this._hasRail){
+        const isNearEW=(((this.cz%16)+16)%16===0)&&z>=5&&z<=11;
+        const isNearNS=(((this.cx%20)+20)%20===0)&&x>=5&&x<=11;
+        if(isNearEW||isNearNS)continue;
+      }
       // Mixed tree types for forest diversity
       let treeType=bd.tr;
       const treeMix=dh01(wx+777,wz+777);
@@ -2791,6 +2807,33 @@ deco(){
           }
         }
         if(above!==b&&fluidNeighbors<3&&!solidSupport)this.S(x,y,z,B.AIR);
+      }
+    }
+  }
+  // ═══ WATER/LAVA INTERACTION PASS: Create obsidian/cobblestone formations ═══
+  for(let x=0;x<CS;x++)for(let z=0;z<CS;z++){
+    for(let y=2;y<CH-2;y++){
+      const b=this.G(x,y,z);
+      if(b===B.WATER){
+        // Check if adjacent to lava -> obsidian
+        for(const[dx,dy,dz]of[[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]){
+          const nx=x+dx,ny=y+dy,nz=z+dz;
+          if(nx<0||nx>=CS||nz<0||nz>=CS||ny<0||ny>=CH)continue;
+          if(this.G(nx,ny,nz)===B.LAVA){
+            // Lava source touched by water -> obsidian
+            this.S(nx,ny,nz,B.OBSIDIAN);
+          }
+        }
+      }else if(b===B.LAVA){
+        // Check if adjacent to water -> cobblestone (lava flowing into water)
+        for(const[dx,dy,dz]of[[1,0,0],[-1,0,0],[0,-1,0],[0,0,1],[0,0,-1]]){
+          const nx=x+dx,ny=y+dy,nz=z+dz;
+          if(nx<0||nx>=CS||nz<0||nz>=CS||ny<0||ny>=CH)continue;
+          if(this.G(nx,ny,nz)===B.WATER){
+            // Lava flowing into water -> cobblestone at lava position
+            this.S(x,y,z,B.COB);break;
+          }
+        }
       }
     }
   }
@@ -3599,6 +3642,37 @@ this.bp=0;this.bt=null;W.brkS=-1}}}else{this.bp=0;this.bt=null;W.brkS=-1}
     if(W.inp.rj){W.inp.rj=false;
       // Chest interaction - right-click opens chest UI
       if(hit.b===B.CHST){openChestUI(hit.x,hit.y,hit.z);return}
+      // ═══ DUNGEON ALTAR INTERACTION ═══
+      // Right-click NEON_BLK altar mechanism (neon on top of neon) with 3 keys to spawn boss
+      if(hit.b===B.NEON_BLK&&W.gB(hit.x,hit.y-1,hit.z)===B.NEON_BLK){
+        // Count dungeon keys in player inventory
+        let keyCount=0;const keySlots=[];
+        for(let i=0;i<9;i++){if(this.hb[i]?.id===B.DUNGEON_KEY){keyCount+=this.hb[i].n;keySlots.push({type:'hb',idx:i})}}
+        for(let i=0;i<27;i++){if(this.inv[i]?.id===B.DUNGEON_KEY){keyCount+=this.inv[i].n;keySlots.push({type:'inv',idx:i})}}
+        if(keyCount>=3&&!W.mobs.some(m=>m instanceof GarbotSentient&&m.dT<0)){
+          // Consume 3 keys
+          let toRemove=3;
+          for(const sl of keySlots){
+            if(toRemove<=0)break;
+            const src=sl.type==='hb'?this.hb:this.inv;
+            const item=src[sl.idx];
+            if(item&&item.id===B.DUNGEON_KEY){
+              const take=mn(toRemove,item.n);item.n-=take;toRemove-=take;
+              if(item.n<=0)src[sl.idx]=null;
+            }
+          }
+          this._hbDirty=true;
+          // Transform altar block to mark it as used
+          W.sB(hit.x,hit.y,hit.z,B.GLOW_CRYSTAL);
+          // Spawn GarbotSentient boss at altar position
+          const boss=new GarbotSentient(hit.x+.5,hit.y+2,hit.z+.5);
+          W.mobs.push(boss);
+          return;
+        }else if(keyCount<3){
+          // Show hint
+          const bn2=$('bn');if(bn2)bn2.textContent='Need 3 Dungeon Keys (have '+keyCount+')';
+        }
+      }
       // Door interaction - right-click toggles open/closed
       const _doorToggle={[B.DOOR_OAK_C]:B.DOOR_OAK_O,[B.DOOR_OAK_O]:B.DOOR_OAK_C,[B.DOOR_IRON_C]:B.DOOR_IRON_O,[B.DOOR_IRON_O]:B.DOOR_IRON_C,[B.DOOR_DARK_C]:B.DOOR_DARK_O,[B.DOOR_DARK_O]:B.DOOR_DARK_C};
       if(_doorToggle[hit.b]!==undefined){W.sB(hit.x,hit.y,hit.z,_doorToggle[hit.b]);const above=W.gB(hit.x,hit.y+1,hit.z);if(_doorToggle[above]!==undefined)W.sB(hit.x,hit.y+1,hit.z,_doorToggle[above]);const below=W.gB(hit.x,hit.y-1,hit.z);if(_doorToggle[below]!==undefined)W.sB(hit.x,hit.y-1,hit.z,_doorToggle[below]);return}
@@ -3724,6 +3798,7 @@ function rebI(){
 const _chestData={};
 function chestKey(x,y,z){return x+','+y+','+z}
 function getChest(x,y,z){const k=chestKey(x,y,z);if(!_chestData[k])_chestData[k]=Array(27).fill(null);return _chestData[k]}
+function seedChest(x,y,z,items){const cd=getChest(x,y,z);for(let i=0;i<items.length&&i<27;i++)cd[i]=items[i]}
 let _openChest=null;
 function openChestUI(x,y,z){
   _openChest={x,y,z};W.st='chest';$('chestUI').style.display='flex';document.exitPointerLock();

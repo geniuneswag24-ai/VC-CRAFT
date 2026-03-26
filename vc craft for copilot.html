@@ -91,10 +91,9 @@
 <div id="settingsUI" style="position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)">
 <div style="background:#222;border:2px solid #555;padding:12px;min-width:320px;max-height:70vh;overflow-y:auto">
 <h3 style="font-size:10px;margin-bottom:8px;color:#aaf">Settings</h3>
-<div style="font-size:7px;color:#aaa;margin:4px 0">Render Distance: <span id="rdVal">4</span></div>
-<input type="range" id="rdSlider" min="2" max="16" value="4" style="width:280px" oninput="setRD(this.value)">
-<div style="font-size:7px;color:#aaa;margin:4px 0">Fog Density: <span id="fogVal">100</span>%</div>
-<input type="range" id="fogSlider" min="30" max="200" value="100" style="width:280px" oninput="setFogDensity(this.value)">
+<div style="font-size:7px;color:#aaa;margin:4px 0">Render Distance: <span id="rdVal">8</span></div>
+<input type="range" id="rdSlider" min="2" max="16" value="8" style="width:280px" oninput="setRD(this.value)">
+
 <div style="font-size:7px;color:#aaa;margin:4px 0">Brightness: <span id="brVal">100</span>%</div>
 <input type="range" id="brSlider" min="50" max="150" value="100" style="width:280px" oninput="setBright(this.value)">
 <div style="font-size:7px;color:#aaa;margin:4px 0">FOV: <span id="fovVal">75</span></div>
@@ -139,7 +138,7 @@ class Noise{constructor(s){const p=new Uint8Array(256);for(let i=0;i<256;i++)p[i
 n2(x,y){const F=.366025,G2=.211325,s=(x+y)*F;let i=fl(x+s),j=fl(y+s);const t=(i+j)*G2,x0=x-(i-t),y0=y-(j-t);let i1=0,j1=1;if(x0>y0){i1=1;j1=0}const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;i&=255;j&=255;const g=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]];const gi0=this.p[i+this.p[j]]%12,gi1=this.p[i+i1+this.p[j+j1]]%12,gi2=this.p[i+1+this.p[j+1]]%12;let n0=0,n1=0,n2=0,t0=.5-x0*x0-y0*y0;if(t0>0){t0*=t0;n0=t0*t0*(g[gi0][0]*x0+g[gi0][1]*y0)}let t1=.5-x1*x1-y1*y1;if(t1>0){t1*=t1;n1=t1*t1*(g[gi1][0]*x1+g[gi1][1]*y1)}let t2=.5-x2*x2-y2*y2;if(t2>0){t2*=t2;n2=t2*t2*(g[gi2][0]*x2+g[gi2][1]*y2)}return 70*(n0+n1+n2)}
 n3(x,y,z){const F=1/3,G=1/6,s=(x+y+z)*F;let i=fl(x+s),j=fl(y+s),k=fl(z+s);const t=(i+j+k)*G,x0=x-(i-t),y0=y-(j-t),z0=z-(k-t);let o;if(x0>=y0)o=y0>=z0?[1,0,0,1,1,0]:x0>=z0?[1,0,0,1,0,1]:[0,0,1,1,0,1];else o=y0<z0?[0,0,1,0,1,1]:x0<z0?[0,1,0,0,1,1]:[0,1,0,1,1,0];const[i1,j1,k1,i2,j2,k2]=o,x1=x0-i1+G,y1=y0-j1+G,z1=z0-k1+G,x2=x0-i2+2*G,y2=y0-j2+2*G,z2=z0-k2+2*G,x3=x0-1+.5,y3=y0-1+.5,z3=z0-1+.5;i&=255;j&=255;k&=255;const g=[[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],[1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],[0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];const p=this.p,gi0=p[i+p[j+p[k]]]%12,gi1=p[i+i1+p[j+j1+p[k+k1]]]%12,gi2=p[i+i2+p[j+j2+p[k+k2]]]%12,gi3=p[i+1+p[j+1+p[k+1]]]%12;let n0=0,n1=0,n2=0,n3=0,t0=.6-x0*x0-y0*y0-z0*z0;if(t0>0){t0*=t0;n0=t0*t0*(g[gi0][0]*x0+g[gi0][1]*y0+g[gi0][2]*z0)}let t1=.6-x1*x1-y1*y1-z1*z1;if(t1>0){t1*=t1;n1=t1*t1*(g[gi1][0]*x1+g[gi1][1]*y1+g[gi1][2]*z1)}let t2=.6-x2*x2-y2*y2-z2*z2;if(t2>0){t2*=t2;n2=t2*t2*(g[gi2][0]*x2+g[gi2][1]*y2+g[gi2][2]*z2)}let t3=.6-x3*x3-y3*y3-z3*z3;if(t3>0){t3*=t3;n3=t3*t3*(g[gi3][0]*x3+g[gi3][1]*y3+g[gi3][2]*z3)}return 32*(n0+n1+n2+n3)}}
 
-const CS=16,CH=320,WL=124,TS=16,Y_OFF=60;let RD=4;let _fogMul=1.0;
+const CS=16,CH=320,WL=124,TS=16,Y_OFF=60;let RD=8;
 
 // BLOCKS - Simplified, no cross-mesh plants initially to ensure clean rendering
 const B={AIR:0,GRASS:1,DIRT:2,STONE:3,SAND:4,WATER:5,BED:6,OLOG:7,OLVS:8,BLOG:9,BLVS:10,SLOG:11,SLVS:12,SNOW:13,COB:14,SSTON:15,PLNK:16,GLASS:17,GRAV:18,CLAY:19,RSAND:20,MUD:21,CACT:22,DEEP:23,COAL:24,IRON:25,GOLD:26,DIAM:27,MOSS:28,BRK:29,SBK:30,DLOG:31,DLVS:32,JLOG:33,JLVS:34,ALOG:35,ALVS:36,CRFT:37,FURN:38,CHST:39,ICE:40,STICK:41,COAL_I:42,IRON_I:43,WPICK:44,SPICK:45,WSWD:46,
@@ -4001,7 +4000,7 @@ async start(seed,mode,ld){try{
   if(this.ren){const c=this.ren.domElement;if(c.parentNode)c.parentNode.removeChild(c);this.ren.dispose();this.ren=null}
   this.sc=null;
   await new Promise(r=>setTimeout(r,30));this.seed=seed;this.gMode=mode;initN(seed);buildAtlas();
-  this.sc=new THREE.Scene();this.sc.background=new THREE.Color(.53,.81,.92);this.sc.fog=new THREE.FogExp2(new THREE.Color(.53,.81,.92),.012);
+  this.sc=new THREE.Scene();this.sc.background=new THREE.Color(.53,.81,.92);this.sc.fog=new THREE.FogExp2(new THREE.Color(.53,.81,.92),.008);
   this.cam=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,RD*CS+50);
   this.ren=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(mn(devicePixelRatio,2));this.ren.autoClear=false;
   this.ren.toneMapping=THREE.ACESFilmicToneMapping;this.ren.toneMappingExposure=1.1;
@@ -4070,11 +4069,11 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    const _worldBudget=3;let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=1||performance.now()-_genStart>2)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=false;_applyPending(c);this.ch[p.k]=c;_gc++}}
-    this._perfD.gen=performance.now()-_genStart;const _afterGen=performance.now()-now;
-    {let _cc=0;const _caveStart=performance.now();if(_afterGen<1.5){for(const k in this.ch){if(_cc>=1||performance.now()-_caveStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){const done=c.genTerrainCavesIncr(1.5);if(done){delete c._needCaves;c._needDeco=true}_cc++}}}this._perfD.cave=performance.now()-_caveStart}
-    {let _dc=0;const _decoStart=performance.now();const _afterCave=performance.now()-now;if(_afterCave<1.5){for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
-    const _afterDeco=performance.now()-now;let b2=0;{const _meshStart=performance.now();if(_afterDeco<1.5){const dirty=[];const _gBf=(x,y,z)=>this.gB(x,y,z);for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){if(this._frustum&&c._bb&&!this._frustum.intersectsBox(c._bb))continue;dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=1||performance.now()-_meshStart>2||performance.now()-now>_worldBudget)break;d.c.buildMesh(_gBf);b2++}}this._perfD.mesh=performance.now()-_meshStart}
+    const _worldBudget=10;let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=3||performance.now()-_genStart>4)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=false;_applyPending(c);this.ch[p.k]=c;_gc++}}
+    this._perfD.gen=performance.now()-_genStart;
+    {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=3||performance.now()-_caveStart>4||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
+    {let _dc=0;const _decoStart=performance.now();for(const k in this.ch){if(_dc>=2||performance.now()-_decoStart>4||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}this._perfD.deco=performance.now()-_decoStart}
+    let b2=0;{const _meshStart=performance.now();const dirty=[];const _gBf=(x,y,z)=>this.gB(x,y,z);for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=3||performance.now()-_meshStart>5||performance.now()-now>_worldBudget)break;d.c.buildMesh(_gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frustum&&this._frmC%2===0){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);
@@ -4098,13 +4097,13 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     if(this.pl.headInWater){this.sc.fog.density=.08;this.sc.fog.color.set(0x1a4080);this.sc.background.set(0x1a4080)}
     else{
       const pBio=bio(fl(this.pl.pos.x),fl(this.pl.pos.z));
-      let fogD=.014;
-      if(pBio===BI.DISCORD_DEEP){fogD=.03;this.sc.fog.color.lerp(new THREE.Color(.06,.06,.12),.3)}
-      else if(pBio===BI.NICSHADE){fogD=.018;this.sc.fog.color.lerp(new THREE.Color(.2,.35,.25),.15)}
-      else if(pBio===BI.WATCHER){fogD=.014;this.sc.fog.color.lerp(new THREE.Color(.55,.45,.35),.1)}
-      else if(pBio===BI.GARFBOT_CITY){fogD=.016;this.sc.fog.color.lerp(new THREE.Color(.3,.35,.4),.1)}
-      else if(pBio===BI.CAMGROVE){fogD=.017;this.sc.fog.color.lerp(new THREE.Color(.3,.4,.35),.08)}
-      this.sc.fog.density=fogD*_fogMul;
+      let fogD=.008;
+      if(pBio===BI.DISCORD_DEEP){fogD=.02;this.sc.fog.color.lerp(new THREE.Color(.06,.06,.12),.3)}
+      else if(pBio===BI.NICSHADE){fogD=.012;this.sc.fog.color.lerp(new THREE.Color(.2,.35,.25),.15)}
+      else if(pBio===BI.WATCHER){fogD=.009;this.sc.fog.color.lerp(new THREE.Color(.55,.45,.35),.1)}
+      else if(pBio===BI.GARFBOT_CITY){fogD=.01;this.sc.fog.color.lerp(new THREE.Color(.3,.35,.4),.1)}
+      else if(pBio===BI.CAMGROVE){fogD=.011;this.sc.fog.color.lerp(new THREE.Color(.3,.4,.35),.08)}
+      this.sc.fog.density=fogD;
     }
     this.sun.intensity=mx(.05,tw*.95);this.amb.intensity=.1+tw*.35;
     this.hemiLight.intensity=.15+tw*.45;
@@ -4199,12 +4198,11 @@ function saveQuit(){if(W.curW)saveW(W.curW.nm,W.curW.sd,W.curW.md);W.st='menu';h
 function doResp(){W.st='play';$('deathUI').style.display='none';W.pl.rsp();W.ren.domElement.requestPointerLock()}
 
 // ═══ SETTINGS SYSTEM ═══
-let _settings={rd:4,fogMul:100,brightness:100,fov:75};
+let _settings={rd:8,brightness:100,fov:75};
 function openSettings(){
   $('settingsUI').style.display='flex';
   if(W.st==='play'||W.st==='pause')document.exitPointerLock();
   $('rdSlider').value=_settings.rd;$('rdVal').textContent=_settings.rd;
-  $('fogSlider').value=_settings.fogMul;$('fogVal').textContent=_settings.fogMul;
   $('brSlider').value=_settings.brightness;$('brVal').textContent=_settings.brightness;
   $('fovSlider').value=_settings.fov;$('fovVal').textContent=_settings.fov;
 }
@@ -4214,7 +4212,6 @@ function closeSettings(){
   else if(W.st==='play'&&W.ren){W.ren.domElement.requestPointerLock()}
 }
 function setRD(v){_settings.rd=+v;$('rdVal').textContent=v;RD=+v;if(W.cam){W.cam.far=RD*CS+50;W.cam.updateProjectionMatrix()}}
-function setFogDensity(v){_settings.fogMul=+v;$('fogVal').textContent=v;_fogMul=+v/100}
 function setBright(v){
   _settings.brightness=+v;$('brVal').textContent=v;
   if(W.ren)W.ren.toneMappingExposure=0.6+(+v/100)*0.5;

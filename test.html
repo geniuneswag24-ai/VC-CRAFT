@@ -120,8 +120,8 @@
 <div id="chestUI"><div id="chestP"><h3 id="chestTitle">Chest</h3><div class="chG" id="chestGrid"></div><div class="isep"></div><h3 style="font-size:7px;color:#404040;margin:4px 0">Inventory</h3><div class="chG" id="chestInv"></div><div class="isep"></div><div class="chG" id="chestHB"></div></div></div>
 <div id="trainHUD">🚂 TRAIN · <span id="trainSpd">0</span> b/s · Fuel: <div id="fuelSlot"></div><div id="fuelBar"><div id="fuelFill"></div></div> · <span style="color:#888;font-size:6px">[Q] dismount · [W/S] throttle · [F] fuel · [E] inventory</span></div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="three.min.js"></script>
+<script src="peerjs.min.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id),PI=Math.PI,TAU=PI*2,fl=Math.floor,abs=Math.abs,mn=Math.min,mx=Math.max,sq=Math.sqrt;
@@ -4069,10 +4069,10 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    const _worldBudget=10;let _gc=0,_hasPendGen=false,_hasPendCave=false,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);_hasPendGen=pending.length>0;for(const p of pending){if(_gc>=3||performance.now()-_genStart>4)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c);this.ch[p.k]=c;_gc++}}
+    const _worldBudget=10;let _gc=0,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);for(const p of pending){if(_gc>=3||performance.now()-_genStart>4)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c);this.ch[p.k]=c;_gc++}}
     this._perfD.gen=performance.now()-_genStart;
-    {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=3||performance.now()-_caveStart>4||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){_hasPendCave=true;const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true;c.dirty=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
-    {let _dc=0;const _decoStart=performance.now();if(!_hasPendGen&&!_hasPendCave){for(const k in this.ch){if(_dc>=1)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
+    {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=3||performance.now()-_caveStart>4||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true;c.dirty=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
+    {let _dc=0;const _decoStart=performance.now();for(const k in this.ch){if(_dc>=1||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}this._perfD.deco=performance.now()-_decoStart}
     let b2=0;{const _meshStart=performance.now();const dirty=[];const _gBf=(x,y,z)=>this.gB(x,y,z);for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=2||performance.now()-_meshStart>6||performance.now()-now>_worldBudget)break;d.c.buildMesh(_gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frustum&&this._frmC%2===0){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}

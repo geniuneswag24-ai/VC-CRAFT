@@ -484,6 +484,7 @@ const _structRegistry={};
 function regStruct(nm,x,y,z){if(!_structRegistry[nm])_structRegistry[nm]=[];_structRegistry[nm].push({x,y,z})}
 const _pendingBlocks={};
 function _applyPending(chunk){const k=chunk.cx+','+chunk.cz;if(_pendingBlocks[k]){for(const[lx,y,lz,b]of _pendingBlocks[k])chunk.S(lx,y,lz,b);delete _pendingBlocks[k];chunk.dirty=true}}
+const _structQ=[];
 function _dungeonSet(wx,wy,wz,b,src){const cx=fl(wx/CS),cz=fl(wz/CS),lx=((wx%CS)+CS)%CS,lz=((wz%CS)+CS)%CS;if(src&&cx===src.cx&&cz===src.cz){src.S(lx,wy,lz,b)}else{const k=cx+','+cz,c=W.ch[k];if(c){c.S(lx,wy,lz,b);c.dirty=true}else{if(!_pendingBlocks[k])_pendingBlocks[k]=[];_pendingBlocks[k].push([lx,wy,lz,b])}}}
 function genStructure(chunk,ox,oz,wx,wz,h,bi){
   const bd=BDt[bi];if(!bd.structs)return;
@@ -521,7 +522,7 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
   const r=dh01(chunk.cx+50,chunk.cz+50);
   const wx2=chunk.cx*CS+lx,wz2=chunk.cz*CS+lz;
   switch(type){
-    case 'condo':genCondo(chunk,lx,h+1,lz,r);regStruct('Condo Complex',wx2,h+1,wz2);break;
+    case 'condo':_structQ.push(()=>{genCondo(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Condo Complex',wx2,h+1,wz2);break;
     case 'statue':genStatue(chunk,lx,h+1,lz,fl(dh01(chunk.cx+77,chunk.cz+77)*3));regStruct('Statue',wx2,h+1,wz2);break;
     case 'house':genHouse(chunk,lx,h+1,lz,r);regStruct('House',wx2,h+1,wz2);break;
     case 'cabin':genCabin(chunk,lx,h+1,lz);regStruct('Abandoned Cabin',wx2,h+1,wz2);break;
@@ -531,16 +532,16 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
     case 'tower':genCityTower(chunk,lx,h+1,lz,r);regStruct('City Tower',wx2,h+1,wz2);break;
     case 'broken_tower':genBrokenTower(chunk,lx,h+1,lz);regStruct('Broken Tower',wx2,h+1,wz2);break;
     case 'waffle':genWaffle(chunk,lx,h+1,lz);regStruct('Waffle House',wx2,h+1,wz2);break;
-    case 'school':genSchool(chunk,lx,h+1,lz,r);regStruct('Sweetwater High',wx2,h+1,wz2);break;
-    case 'gomp':genGomp(chunk,lx,h+1,lz,r);regStruct('Gomp Industries Tower',wx2,h+1,wz2);break;
+    case 'school':_structQ.push(()=>{genSchool(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Sweetwater High',wx2,h+1,wz2);break;
+    case 'gomp':_structQ.push(()=>{genGomp(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Gomp Industries Tower',wx2,h+1,wz2);break;
     case 'boardwalk':genBoardwalk(chunk,lx,h,lz);regStruct('Boardwalk Ruins',wx2,h,wz2);break;
     case 'chapel':genChapel(chunk,lx,h+1,lz);regStruct('Chapel',wx2,h+1,wz2);break;
-    case 'monument':genMonument(chunk,lx,h+1,lz,r);regStruct('Monument',wx2,h+1,wz2);break;
-    case 'stadium':genStadium(chunk,lx,h+1,lz,r);regStruct('Football Stadium',wx2,h+1,wz2);break;
-    case 'restaurant':genRestaurant(chunk,lx,h+1,lz);regStruct('VC Restaurant',wx2,h+1,wz2);break;
-    case 'arcade':genArcade(chunk,lx,h+1,lz);regStruct('Props Arcade',wx2,h+1,wz2);break;
-    case 'mall':genMall(chunk,lx,h+1,lz,r);regStruct('VC Mall',wx2,h+1,wz2);break;
-    case 'temple':genTemple(chunk,lx,h+1,lz);regStruct('Temple',wx2,h+1,wz2);break;
+    case 'monument':_structQ.push(()=>{genMonument(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Monument',wx2,h+1,wz2);break;
+    case 'stadium':_structQ.push(()=>{genStadium(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Football Stadium',wx2,h+1,wz2);break;
+    case 'restaurant':_structQ.push(()=>{genRestaurant(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('VC Restaurant',wx2,h+1,wz2);break;
+    case 'arcade':_structQ.push(()=>{genArcade(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Props Arcade',wx2,h+1,wz2);break;
+    case 'mall':_structQ.push(()=>{genMall(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('VC Mall',wx2,h+1,wz2);break;
+    case 'temple':_structQ.push(()=>{genTemple(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Temple',wx2,h+1,wz2);break;
   }
   // Mark this chunk as having a structure so trees won't spawn on it
   chunk._hasStruct=true;
@@ -1832,116 +1833,119 @@ deco(){
       // Rubble and debris
       for(let i=0;i<3;i++){const rx=2+fl(dh01(ox+i*13,oz+i*17)*12),rz=2+fl(dh01(ox+i*19,oz+i*23)*12);this.S(rx,h0+1,rz,B.CITY_RUBBLE)}
     }
-    // ═══ BUILDINGS: non-road chunks ═══
+    // ═══ BUILDINGS: non-road chunks (deferred to prevent stutter) ═══
     else{
-      const bType=fl(bSeed*12); // 12 building types
-      const floors=bType<3?fl(5+bSeed*18):bType<6?fl(2+bSeed*5):bType<9?fl(3+bSeed*8):fl(4+bSeed*10);
-      const flH=4; // floor height
+      const _ch=this,_h0=h0,_bSeed=bSeed,_dist=dist;
+      _structQ.push(()=>{
+      const bType=fl(_bSeed*12);
+      const floors=bType<3?fl(5+_bSeed*18):bType<6?fl(2+_bSeed*5):bType<9?fl(3+_bSeed*8):fl(4+_bSeed*10);
+      const flH=4;
       const totalH=floors*flH;
-      const bx1=1,bz1=1,bx2=14,bz2=14; // building footprint
+      const bx1=1,bz1=1,bx2=14,bz2=14;
       
       // Building shell
       for(let x=bx1;x<=bx2;x++)for(let z=bz1;z<=bz2;z++){
         const isWall=x===bx1||x===bx2||z===bz1||z===bz2;
         // Foundation
-        this.S(x,h0,z,B.CONCRETE);
+        _ch.S(x,_h0,z,B.CONCRETE);
         for(let f=0;f<floors;f++){
-          const fy=h0+1+f*flH;
+          const fy=_h0+1+f*flH;
           for(let dy=0;dy<flH;dy++){
             const y=fy+dy;
             if(dy===0){
               // Floor slab
-              this.S(x,y,z,dist==='industrial'?B.METAL_PANEL:dist==='garfbot'?B.DARK_PANEL:B.CONCRETE);
+              _ch.S(x,y,z,_dist==='industrial'?B.METAL_PANEL:_dist==='garfbot'?B.DARK_PANEL:B.CONCRETE);
             }else if(isWall){
               // Wall type varies by building and district
               if(bType<3){
                 // Tall office: glass exterior with concrete bands
-                this.S(x,y,z,dy===flH-1?B.CONCRETE:B.GLASS_TOWER);
+                _ch.S(x,y,z,dy===flH-1?B.CONCRETE:B.GLASS_TOWER);
               }else if(bType<5){
                 // Commercial: brick with windows
-                this.S(x,y,z,(dy===2&&(x+z)%3===0)?B.GLASS:B.BRK);
+                _ch.S(x,y,z,(dy===2&&(x+z)%3===0)?B.GLASS:B.BRK);
               }else if(bType<7){
                 // Parking structure: open sides with pillars
                 const isPillar=(x===bx1||x===bx2)&&(z===bz1||z===bz2||z===7||z===8);
-                this.S(x,y,z,isPillar?B.CONCRETE:B.AIR);
+                _ch.S(x,y,z,isPillar?B.CONCRETE:B.AIR);
               }else if(bType<9){
                 // Industrial: metal panels
-                this.S(x,y,z,dy<flH-1?B.METAL_PANEL:B.RUSTED_METAL);
+                _ch.S(x,y,z,dy<flH-1?B.METAL_PANEL:B.RUSTED_METAL);
               }else if(bType<10){
                 // Garfbot facility: dark panels with neon trim
-                this.S(x,y,z,(dy===1&&(x+z)%5===0)?B.NEON_BLK:B.DARK_PANEL);
+                _ch.S(x,y,z,(dy===1&&(x+z)%5===0)?B.NEON_BLK:B.DARK_PANEL);
               }else{
                 // Residential: stucco with windows
-                this.S(x,y,z,(dy===2&&(x+z)%4===1)?B.GLASS:B.STUCCO);
+                _ch.S(x,y,z,(dy===2&&(x+z)%4===1)?B.GLASS:B.STUCCO);
               }
             }else{
               // Interior - AIR
-              this.S(x,y,z,B.AIR);
+              _ch.S(x,y,z,B.AIR);
             }
           }
         }
         // Roof
-        this.S(x,h0+1+totalH,z,B.CONCRETE);
+        _ch.S(x,_h0+1+totalH,z,B.CONCRETE);
       }
       
       // ═══ INTERIOR DETAILS per floor ═══
       for(let f=0;f<floors;f++){
-        const fy=h0+1+f*flH;
+        const fy=_h0+1+f*flH;
         if(bType<3){
           // Office: cubicle partitions, desks
           for(let x=4;x<=11;x+=4)for(let z=bz1+2;z<bz2-1;z++){
-            this.S(x,fy+1,z,B.CONCRETE);this.S(x,fy+2,z,B.GLASS);
+            _ch.S(x,fy+1,z,B.CONCRETE);_ch.S(x,fy+2,z,B.GLASS);
           }
           // Central hallway
-          for(let z=bz1+1;z<=bz2-1;z++){this.S(7,fy+1,z,B.AIR);this.S(8,fy+1,z,B.AIR)}
+          for(let z=bz1+1;z<=bz2-1;z++){_ch.S(7,fy+1,z,B.AIR);_ch.S(8,fy+1,z,B.AIR)}
           // Elevator shaft
-          for(let dy=1;dy<flH;dy++){this.S(bx2-1,fy+dy,bz2-1,B.AIR);this.S(bx2-1,fy+dy,bz2-2,B.LADDER)}
+          for(let dy=1;dy<flH;dy++){_ch.S(bx2-1,fy+dy,bz2-1,B.AIR);_ch.S(bx2-1,fy+dy,bz2-2,B.LADDER)}
         }else if(bType>=7&&bType<9){
           // Industrial: heavy machinery blocks, catwalks
-          for(let x=4;x<=11;x+=3){this.S(x,fy+1,7,B.RUSTED_METAL);this.S(x,fy+2,7,B.RUSTED_METAL);this.S(x,fy+3,7,B.METAL_PANEL)}
+          for(let x=4;x<=11;x+=3){_ch.S(x,fy+1,7,B.RUSTED_METAL);_ch.S(x,fy+2,7,B.RUSTED_METAL);_ch.S(x,fy+3,7,B.METAL_PANEL)}
         }else if(bType>=9&&bType<10){
           // Garfbot facility: storage racks, conduits, neon lighting
-          for(let z=3;z<=12;z+=3){this.S(3,fy+1,z,B.DARK_PANEL);this.S(3,fy+2,z,B.DARK_PANEL);this.S(12,fy+1,z,B.DARK_PANEL);this.S(12,fy+2,z,B.DARK_PANEL)}
-          this.S(7,fy+flH-1,7,B.SEA_LANTERN);
+          for(let z=3;z<=12;z+=3){_ch.S(3,fy+1,z,B.DARK_PANEL);_ch.S(3,fy+2,z,B.DARK_PANEL);_ch.S(12,fy+1,z,B.DARK_PANEL);_ch.S(12,fy+2,z,B.DARK_PANEL)}
+          _ch.S(7,fy+flH-1,7,B.SEA_LANTERN);
           // Neon floor strips
-          for(let x=5;x<=10;x++)this.S(x,fy,4,B.NEON_BLK);
+          for(let x=5;x<=10;x++)_ch.S(x,fy,4,B.NEON_BLK);
         }else if(bType>=10){
           // Residential: room dividers, furniture hints
-          this.S(7,fy+1,4,B.PLNK);this.S(7,fy+2,4,B.PLNK);this.S(7,fy+1,11,B.PLNK);this.S(7,fy+2,11,B.PLNK);
+          _ch.S(7,fy+1,4,B.PLNK);_ch.S(7,fy+2,4,B.PLNK);_ch.S(7,fy+1,11,B.PLNK);_ch.S(7,fy+2,11,B.PLNK);
           // Doorways
-          this.S(7,fy+1,7,B.AIR);this.S(7,fy+2,7,B.AIR);
+          _ch.S(7,fy+1,7,B.AIR);_ch.S(7,fy+2,7,B.AIR);
         }
         // Floor lighting
-        if(f%2===0)this.S(7,fy+flH-1,7,B.SEA_LANTERN);
+        if(f%2===0)_ch.S(7,fy+flH-1,7,B.SEA_LANTERN);
         // Stairwell in corner (all building types)
         if(f<floors-1){
-          for(let dy=1;dy<flH;dy++){this.S(bx1+1,fy+dy,bz1+1,B.AIR);this.S(bx1+1,fy+dy,bz1+2,B.AIR)}
-          this.S(bx1+1,fy+1,bz1+1,B.LADDER);this.S(bx1+1,fy+2,bz1+1,B.LADDER);this.S(bx1+1,fy+3,bz1+1,B.LADDER);
+          for(let dy=1;dy<flH;dy++){_ch.S(bx1+1,fy+dy,bz1+1,B.AIR);_ch.S(bx1+1,fy+dy,bz1+2,B.AIR)}
+          _ch.S(bx1+1,fy+1,bz1+1,B.LADDER);_ch.S(bx1+1,fy+2,bz1+1,B.LADDER);_ch.S(bx1+1,fy+3,bz1+1,B.LADDER);
         }
         // Building entrance (ground floor doorway)
         if(f===0){
-          for(let dy=1;dy<=3;dy++){this.S(7,fy+dy,bz1,B.AIR);this.S(8,fy+dy,bz1,B.AIR)}
+          for(let dy=1;dy<=3;dy++){_ch.S(7,fy+dy,bz1,B.AIR);_ch.S(8,fy+dy,bz1,B.AIR)}
           // Back door
-          for(let dy=1;dy<=3;dy++){this.S(7,fy+dy,bz2,B.AIR);this.S(8,fy+dy,bz2,B.AIR)}
+          for(let dy=1;dy<=3;dy++){_ch.S(7,fy+dy,bz2,B.AIR);_ch.S(8,fy+dy,bz2,B.AIR)}
           // Side doors
-          for(let dy=1;dy<=3;dy++){this.S(bx1,fy+dy,7,B.AIR);this.S(bx2,fy+dy,7,B.AIR)}
+          for(let dy=1;dy<=3;dy++){_ch.S(bx1,fy+dy,7,B.AIR);_ch.S(bx2,fy+dy,7,B.AIR)}
         }
       }
       
       // Roof access (ladder + hatch)
-      this.S(bx1+1,h0+totalH,bz1+1,B.AIR);
-      for(let dy=1;dy<=3;dy++)this.S(bx1+1,h0+totalH+dy,bz1+1,B.LADDER);
+      _ch.S(bx1+1,_h0+totalH,bz1+1,B.AIR);
+      for(let dy=1;dy<=3;dy++)_ch.S(bx1+1,_h0+totalH+dy,bz1+1,B.LADDER);
       // Roof structures
       if(bType<3){
         // AC units on tall buildings
-        for(const[rx,rz]of[[5,5],[10,10],[5,10]]){this.S(rx,h0+totalH+1,rz,B.METAL_PANEL);this.S(rx,h0+totalH+2,rz,B.RUSTED_METAL)}
+        for(const[rx,rz]of[[5,5],[10,10],[5,10]]){_ch.S(rx,_h0+totalH+1,rz,B.METAL_PANEL);_ch.S(rx,_h0+totalH+2,rz,B.RUSTED_METAL)}
       }
       if(bType>=9&&bType<10){
         // Antenna array on garfbot facilities
-        for(let dy=1;dy<=8;dy++)this.S(7,h0+totalH+dy,7,B.METAL_PANEL);
-        this.S(7,h0+totalH+9,7,B.NEON_BLK);
-        this.S(8,h0+totalH+5,7,B.RUSTED_METAL);this.S(6,h0+totalH+5,7,B.RUSTED_METAL);
+        for(let dy=1;dy<=8;dy++)_ch.S(7,_h0+totalH+dy,7,B.METAL_PANEL);
+        _ch.S(7,_h0+totalH+9,7,B.NEON_BLK);
+        _ch.S(8,_h0+totalH+5,7,B.RUSTED_METAL);_ch.S(6,_h0+totalH+5,7,B.RUSTED_METAL);
       }
+      _ch.dirty=true;});
     }
     
     // ═══ UNDERGROUND NETWORK (all chunks) ═══
@@ -4081,10 +4085,15 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    const _worldBudget=8;let _gc=0,_hasPendGen=false,_hasPendCave=false,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);_hasPendGen=pending.length>0;for(const p of pending){if(_gc>=2||performance.now()-_genStart>2)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c);this.ch[p.k]=c;_gc++}}
+    // Adaptive budget: tighter when recovering from slow frames
+    const _lastWorst=this._perfT?this._perfT.worstF:16;
+    const _worldBudget=_lastWorst>40?5:8;
+    let _gc=0,_hasPendGen=false,_hasPendCave=false,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);_hasPendGen=pending.length>0;const _genMax=_lastWorst>40?1:2;for(const p of pending){if(_gc>=_genMax||performance.now()-_genStart>2)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c);this.ch[p.k]=c;_gc++}}
     this._perfD.gen=performance.now()-_genStart;
     {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=2||performance.now()-_caveStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){_hasPendCave=true;const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true;c.dirty=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
     {let _dc=0;const _decoStart=performance.now();if(!_hasPendGen&&!_hasPendCave){for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>3||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
+    // Process deferred structures (1 per frame, time-budgeted)
+    {const _sStart=performance.now();let _sc=0;while(_structQ.length>0&&_sc<1&&performance.now()-now<_worldBudget){const sf=_structQ.shift();sf();_sc++}if(this._perfD)this._perfD.struct=performance.now()-_sStart}
     if(!this._gBf)this._gBf=(x,y,z)=>this.gB(x,y,z);let b2=0;{const _meshStart=performance.now();const _meshBudget=Math.max(3,_worldBudget-(performance.now()-now));const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);const _meshMax=_hasPendGen?2:4;for(const d of dirty){if(b2>=_meshMax||performance.now()-_meshStart>_meshBudget)break;d.c.buildMesh(this._gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frustum&&this._frmC%4===0){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
@@ -4178,8 +4187,10 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     else if(_bossBar){_bossBar.remove()}}}
     const b3=bio(fl(p.pos.x),fl(p.pos.z));const fly=p.flying?' [FLY]':'';
     if(this._frmC%20===0){const _pt=this._perfT;const _pStr=_pt?` W:${_pt.worstF.toFixed(0)}ms S:${_pt.stutC}`:'';
-    const _pd=this._perfD;const _pdStr=_pd?`<br><span style="font-size:5px;color:#888">G:${_pd.gen.toFixed(1)} C:${(_pd.cave||0).toFixed(1)} D:${_pd.deco.toFixed(1)} M:${_pd.mesh.toFixed(1)} Mob:${_pd.mob.toFixed(1)} T:${_pd.train.toFixed(1)} F:${_pd.fluid.toFixed(1)}</span>`:'';
-    $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}${_pStr}${_pdStr}`;}
+    const _pd=this._perfD;const _pdStr=_pd?`<br><span style="font-size:5px;color:#888">G:${_pd.gen.toFixed(1)} C:${(_pd.cave||0).toFixed(1)} D:${_pd.deco.toFixed(1)} St:${(_pd.struct||0).toFixed(1)} M:${_pd.mesh.toFixed(1)} Mob:${_pd.mob.toFixed(1)} T:${_pd.train.toFixed(1)} F:${_pd.fluid.toFixed(1)}</span>`:'';
+    const _gpuStr=_settings.gpu==='high-performance'?' [GPU:DED]':' [GPU:INT]';
+    const _sqStr=_structQ.length>0?' SQ:'+_structQ.length:'';
+    $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}${_gpuStr}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}${_sqStr}${_pStr}${_pdStr}`;}
   }
   if(this.ren){if(this.wMat&&this.wMat.map){const _wt=Date.now()*.000003;this.wMat.map.offset.y=(_wt%0.02)}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();const _fStart=performance.now();const _frameSoFar=_fStart-now;if(_frameSoFar<4)processFluidQueue();if(this._perfD)this._perfD.fluid=performance.now()-_fStart;this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt);if(!this._perfT)this._perfT={frames:0,lastT:performance.now(),stutC:0,worstF:0};this._perfT.frames++;const _now=performance.now(),_ft=_now-this._perfT._lastF||16;this._perfT._lastF=_now;if(_ft>this._perfT.worstF)this._perfT.worstF=_ft;if(_ft>50)this._perfT.stutC++;if(_now-this._perfT.lastT>2000){const fps=this._perfT.frames/(((_now-this._perfT.lastT)/1000));const dd=$('dbg');if(dd)dd.textContent=dd.textContent.replace(/ F:.*$/,'')+' F:'+fps.toFixed(0)+' W:'+this._perfT.worstF.toFixed(0)+'ms S:'+this._perfT.stutC;this._perfT.frames=0;this._perfT.lastT=_now;this._perfT.worstF=0;this._perfT.stutC=0}}
   if(!this._loopBound)this._loopBound=()=>this.loop();requestAnimationFrame(this._loopBound)}
@@ -4200,7 +4211,7 @@ async function doMP(){const nm=$('mpnm').value||'P',cd=$('mpcd').value.trim();W.
 function toggleP(){if(W.st==='play'){W.st='pause';$('pauseUI').style.display='flex';document.exitPointerLock()}else if(W.st==='pause'){W.st='play';$('pauseUI').style.display='none';W.ren.domElement.requestPointerLock()}}
 function toggleI(){if(W.st==='play'){const dir=new THREE.Vector3(0,0,-1).applyQuaternion(W.cam.quaternion);const hit=W.pl.ray(W.cam.position.clone(),dir,5.5);openI(hit&&hit.b===B.CRFT)}else if(W.st==='inv')closeI()}
 function unpause(){toggleP()}
-function saveQuit(){if(W.curW)saveW(W.curW.nm,W.curW.sd,W.curW.md);W.st='menu';hideAll();$('menu').style.display='flex';for(const k in W.ch)W.ch[k].disp();W.ch={};W.mobs.forEach(m=>m.rm());W.mobs=[];W.drops.forEach(d=>d.rm());W.drops=[];if(W.trains)W.trains.forEach(t=>t.rm());W.trains=[];if(W.carts)W.carts.forEach(c=>c.rm());W.carts=[];if(W.net){W.net.stop();W.net=null}if(W.ren){const c=W.ren.domElement;if(c.parentNode)c.parentNode.removeChild(c);W.ren.dispose();W.ren=null}W.sc=null}
+function saveQuit(){if(W.curW)saveW(W.curW.nm,W.curW.sd,W.curW.md);W.st='menu';hideAll();$('menu').style.display='flex';for(const k in W.ch)W.ch[k].disp();W.ch={};_structQ.length=0;W.mobs.forEach(m=>m.rm());W.mobs=[];W.drops.forEach(d=>d.rm());W.drops=[];if(W.trains)W.trains.forEach(t=>t.rm());W.trains=[];if(W.carts)W.carts.forEach(c=>c.rm());W.carts=[];if(W.net){W.net.stop();W.net=null}if(W.ren){const c=W.ren.domElement;if(c.parentNode)c.parentNode.removeChild(c);W.ren.dispose();W.ren=null}W.sc=null}
 function doResp(){W.st='play';$('deathUI').style.display='none';W.pl.rsp();W.ren.domElement.requestPointerLock()}
 
 // ═══ SETTINGS SYSTEM ═══

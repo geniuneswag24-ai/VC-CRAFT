@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script>
-(function(){var c=document.createElement('canvas');var gl=c.getContext('webgl',{powerPreference:'high-performance'})||c.getContext('experimental-webgl',{powerPreference:'high-performance'});if(gl){var ext=gl.getExtension('WEBGL_lose_context');if(ext)ext.loseContext()}})();
+(function(){var p='high-performance';try{var s=JSON.parse(localStorage.getItem('vc_settings'));if(s&&s.gpu)p=s.gpu}catch(e){}if(p==='high-performance'){var c=document.createElement('canvas');var gl=c.getContext('webgl',{powerPreference:p})||c.getContext('experimental-webgl',{powerPreference:p});if(gl){var ext=gl.getExtension('WEBGL_lose_context');if(ext)ext.loseContext()}}})();
 </script>
 <title>VC CRAFT</title>
 <style>
@@ -91,7 +91,7 @@
 <div id="waterOvl"></div>
 <div id="invUI"><div id="invP"><h3 id="invT">Inventory</h3><div id="cArea"><div id="cGrid"></div><div id="cArrow">➜</div><div id="cOut"></div></div><div id="ciDiv"><div class="cig" id="ciG"></div></div><div class="ig" id="iM"></div><div class="isep"></div><div class="ig" id="iH"></div></div></div>
 <div id="pauseUI"><h2>Game Menu</h2><div class="btn" onclick="unpause()">Back to Game</div><div style="height:3px"></div><div class="btn" onclick="openSettings()">Options...</div><div style="height:3px"></div><div class="btn" onclick="saveQuit()">Save and Quit</div></div>
-<div id="settingsUI" style="position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)">
+<div id="settingsUI" style="position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)">
 <div style="background:#222;border:2px solid #555;padding:12px;min-width:320px;max-height:70vh;overflow-y:auto">
 <h3 style="font-size:10px;margin-bottom:8px;color:#aaf">Settings</h3>
 <div style="font-size:7px;color:#aaa;margin:4px 0">Render Distance: <span id="rdVal">8</span></div>
@@ -101,6 +101,10 @@
 <input type="range" id="brSlider" min="50" max="150" value="100" style="width:280px" oninput="setBright(this.value)">
 <div style="font-size:7px;color:#aaa;margin:4px 0">FOV: <span id="fovVal">75</span></div>
 <input type="range" id="fovSlider" min="50" max="110" value="75" style="width:280px" oninput="setFOV(this.value)">
+<div style="height:8px"></div>
+<div style="font-size:7px;color:#aaa;margin:4px 0">GPU Mode: <span id="gpuVal" style="color:#5f5">Dedicated</span></div>
+<div style="display:flex;gap:6px;margin:2px 0"><div class="btn" id="gpuIntBtn" onclick="setGPU('default')" style="width:136px;font-size:7px">Integrated</div><div class="btn" id="gpuDedBtn" onclick="setGPU('high-performance')" style="width:136px;font-size:7px">Dedicated</div></div>
+<div id="gpuInfo" style="font-size:6px;color:#666;margin:2px 0"></div>
 <div style="height:8px"></div>
 <div class="btn" onclick="closeSettings()" style="width:280px;font-size:8px">Done</div>
 </div></div>
@@ -4010,7 +4014,7 @@ async start(seed,mode,ld){try{
   await new Promise(r=>setTimeout(r,30));this.seed=seed;this.gMode=mode;initN(seed);buildAtlas();
   this.sc=new THREE.Scene();this.sc.background=new THREE.Color(.53,.81,.92);this.sc.fog=new THREE.FogExp2(new THREE.Color(.53,.81,.92),.012);
   this.cam=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.5,RD*CS*2+100);
-  this.ren=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance',precision:'mediump'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(1);this.ren.autoClear=false;
+  this.ren=new THREE.WebGLRenderer({antialias:false,powerPreference:_settings.gpu||'high-performance',precision:'mediump'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(1);this.ren.autoClear=false;
   this.ren.toneMapping=THREE.NoToneMapping;this.ren.toneMappingExposure=1.0;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshLambertMaterial({map:atlas,transparent:false});
@@ -4077,11 +4081,11 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this.pl.tick(dt);if(this.inp.ml&&this.hand&&!this.hand.sw)this.hand.swing();
     if(this._frustum){this._projScreenMatrix.multiplyMatrices(this.cam.projectionMatrix,this.cam.matrixWorldInverse);this._frustum.setFromProjectionMatrix(this._projScreenMatrix)}
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
-    const _worldBudget=6;let _gc=0,_hasPendGen=false,_hasPendCave=false,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);_hasPendGen=pending.length>0;for(const p of pending){if(_gc>=2||performance.now()-_genStart>2)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c);this.ch[p.k]=c;_gc++}}
+    const _worldBudget=8;let _gc=0,_hasPendGen=false,_hasPendCave=false,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);_hasPendGen=pending.length>0;for(const p of pending){if(_gc>=2||performance.now()-_genStart>2)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c);this.ch[p.k]=c;_gc++}}
     this._perfD.gen=performance.now()-_genStart;
     {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=2||performance.now()-_caveStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){_hasPendCave=true;const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true;c.dirty=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
-    {let _dc=0;const _decoStart=performance.now();for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}this._perfD.deco=performance.now()-_decoStart}
-    let b2=0;{const _meshStart=performance.now();const _meshBudget=Math.max(2,_worldBudget-(performance.now()-now));const dirty=[];const _gBf=(x,y,z)=>this.gB(x,y,z);for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);for(const d of dirty){if(b2>=2||performance.now()-_meshStart>_meshBudget)break;d.c.buildMesh(_gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
+    {let _dc=0;const _decoStart=performance.now();if(!_hasPendGen&&!_hasPendCave){for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>3||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
+    if(!this._gBf)this._gBf=(x,y,z)=>this.gB(x,y,z);let b2=0;{const _meshStart=performance.now();const _meshBudget=Math.max(3,_worldBudget-(performance.now()-now));const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);const _meshMax=_hasPendGen?2:4;for(const d of dirty){if(b2>=_meshMax||performance.now()-_meshStart>_meshBudget)break;d.c.buildMesh(this._gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frustum&&this._frmC%4===0){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);
@@ -4200,16 +4204,28 @@ function saveQuit(){if(W.curW)saveW(W.curW.nm,W.curW.sd,W.curW.md);W.st='menu';h
 function doResp(){W.st='play';$('deathUI').style.display='none';W.pl.rsp();W.ren.domElement.requestPointerLock()}
 
 // ═══ SETTINGS SYSTEM ═══
-let _settings={rd:6,brightness:100,fov:75};
+let _settings={rd:6,brightness:100,fov:75,gpu:'high-performance'};
+try{const _ls=JSON.parse(localStorage.getItem('vc_settings'));if(_ls){if(_ls.rd)_settings.rd=_ls.rd;if(_ls.brightness)_settings.brightness=_ls.brightness;if(_ls.fov)_settings.fov=_ls.fov;if(_ls.gpu)_settings.gpu=_ls.gpu;RD=_settings.rd}}catch(e){}
+function _saveSettings(){try{localStorage.setItem('vc_settings',JSON.stringify(_settings))}catch(e){}}
+function _updateGpuUI(){
+  const isDed=_settings.gpu==='high-performance';
+  $('gpuVal').textContent=isDed?'Dedicated':'Integrated';
+  $('gpuVal').style.color=isDed?'#5f5':'#fa5';
+  $('gpuDedBtn').style.outline=isDed?'2px solid #5f5':'';
+  $('gpuIntBtn').style.outline=isDed?'':'2px solid #fa5';
+  // Show GPU renderer info
+  if(W.ren){try{const gl=W.ren.getContext();const dbg=gl.getExtension('WEBGL_debug_renderer_info');if(dbg){$('gpuInfo').textContent='GPU: '+gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)}else{$('gpuInfo').textContent='GPU: (info unavailable)'}}catch(e){$('gpuInfo').textContent=''}}
+}
 function openSettings(){
   $('settingsUI').style.display='flex';
   if(W.st==='play'||W.st==='pause')document.exitPointerLock();
   $('rdSlider').value=_settings.rd;$('rdVal').textContent=_settings.rd;
   $('brSlider').value=_settings.brightness;$('brVal').textContent=_settings.brightness;
   $('fovSlider').value=_settings.fov;$('fovVal').textContent=_settings.fov;
+  _updateGpuUI();
 }
 function closeSettings(){
-  $('settingsUI').style.display='none';
+  $('settingsUI').style.display='none';_saveSettings();
   if(W.st==='pause'){$('pauseUI').style.display='flex'}
   else if(W.st==='play'&&W.ren){W.ren.domElement.requestPointerLock()}
 }
@@ -4220,6 +4236,19 @@ function setBright(v){
   if(W.hemiLight){W.hemiLight.intensity=(.15+.45)*((+v)/100)}
 }
 function setFOV(v){_settings.fov=+v;$('fovVal').textContent=v;if(W.cam){W.cam.fov=+v;W.cam.updateProjectionMatrix()}}
+function setGPU(mode){
+  if(_settings.gpu===mode)return;_settings.gpu=mode;_updateGpuUI();
+  if(!W.ren||!W.sc)return;
+  // Recreate renderer with new GPU preference
+  const parent=W.ren.domElement.parentNode;
+  const w=W.ren.domElement.width,h=W.ren.domElement.height;
+  parent.removeChild(W.ren.domElement);W.ren.dispose();
+  W.ren=new THREE.WebGLRenderer({antialias:false,powerPreference:mode,precision:'mediump'});
+  W.ren.setSize(w,h);W.ren.setPixelRatio(1);W.ren.autoClear=false;
+  W.ren.toneMapping=THREE.NoToneMapping;W.ren.toneMappingExposure=1.0;
+  parent.appendChild(W.ren.domElement);
+  _updateGpuUI();
+}
 
 // ═══ CHEAT SYSTEM (Creative Mode) ═══
 function openCheat(){

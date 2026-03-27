@@ -3137,20 +3137,22 @@ buildMesh(gB){
   if(LP.length>0){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(LP,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(LN,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(LU,2));g.setIndex(LI2);this.lm=new THREE.Mesh(g,W.lMat);W.sc.add(this.lm)}
   this.dirty=false;
 }
-disp(){if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.tm){W.sc.remove(this.tm);this.tm.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}}
+disp(){if(this.m){W.sc.remove(this.m);this.m.geometry.dispose()}if(this.tm){W.sc.remove(this.tm);this.tm.geometry.dispose()}if(this.wm){W.sc.remove(this.wm);this.wm.geometry.dispose()}if(this.lm){W.sc.remove(this.lm);this.lm.geometry.dispose()}this._bb=null}
 }
 
-// MOBS
+// MOBS — shared material pool to avoid per-mob material allocations
+const _mobMatPool={};function _mm(c,type){const k=c+'_'+(type||'L');if(!_mobMatPool[k]){if(type==='P')_mobMatPool[k]=new THREE.MeshPhongMaterial({color:c,shininess:12,specular:0x222222});else if(type==='B')_mobMatPool[k]=new THREE.MeshBasicMaterial({color:c});else _mobMatPool[k]=new THREE.MeshLambertMaterial({color:c})}return _mobMatPool[k]}
+function _mmE(c,em,ei,type){const k=c+'_'+em+'_'+ei+'_'+(type||'L');if(!_mobMatPool[k]){if(type==='B')_mobMatPool[k]=new THREE.MeshBasicMaterial({color:c,emissive:em});else _mobMatPool[k]=new THREE.MeshLambertMaterial({color:c,emissive:em,emissiveIntensity:ei})}return _mobMatPool[k]}
 class Mob{constructor(x,y,z){this.pos=new THREE.Vector3(x,y,z);this.vel=new THREE.Vector3();this.hp=10;this.yaw=dh01(fl(x*100),fl(z*100))*TAU;this.gr=false;this.hT=0;this.dT=-1;this.aT=0;this.aC=0;this.wT=0;this.wD=this.yaw;this.grp=new THREE.Group();this.build();W.sc.add(this.grp)}build(){}
 tick(dt){if(this.dT>=0){this.dT+=dt;if(this.dT>1.5){this.rm();return false}this.grp.rotation.z=this.dT*PI*.5;return true}this.aT+=dt;if(this.hT>0)this.hT-=dt;if(this.aC>0)this.aC-=dt;this.ai(dt);this.ph(dt);this.grp.position.copy(this.pos);this.grp.rotation.y=this.yaw;this.an(dt);return true}ai(dt){}
 ph(dt){this.vel.y-=18*dt;if(!this._np)this._np=new THREE.Vector3();const np=this._np;np.x=this.pos.x+this.vel.x*dt;np.y=this.pos.y+this.vel.y*dt;np.z=this.pos.z+this.vel.z*dt;const sol=(a,b,c)=>BD[W.gB(a,b,c)]?.sol;if(this.vel.y<0&&sol(fl(np.x),fl(np.y),fl(np.z))){np.y=fl(np.y)+1;this.vel.y=0;this.gr=true}else this.gr=false;if(sol(fl(np.x),fl(this.pos.y+.5),fl(this.pos.z))){np.x=this.pos.x;if(this.gr)this.vel.y=5.5}if(sol(fl(this.pos.x),fl(this.pos.y+.5),fl(np.z))){np.z=this.pos.z;if(this.gr)this.vel.y=5.5}this.pos.copy(np)}
-an(dt){}hit(a,kd){if(this.dT>=0)return;this.hp-=a;this.hT=.3;if(kd){this.vel.x+=kd.x*5;this.vel.y+=3;this.vel.z+=kd.z*5}if(this.hp<=0)this.dT=0;try{this.grp.traverse(c=>{if(c.isMesh&&c.material){if(!c._origEmissive)c._origEmissive=c.material.emissive.clone();c.material.emissive.set(.5,0,0)}})}catch(e){}setTimeout(()=>{try{if(this.dT<0)this.grp.traverse(c=>{if(c.isMesh&&c.material&&c._origEmissive){c.material.emissive.copy(c._origEmissive)}})}catch(e){}},200)}
-rm(){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}})}catch(e){}}}
+an(dt){}hit(a,kd){if(this.dT>=0)return;this.hp-=a;this.hT=.3;if(kd){this.vel.x+=kd.x*5;this.vel.y+=3;this.vel.z+=kd.z*5}if(this.hp<=0)this.dT=0;if(!_mobMatPool._hitFlash)_mobMatPool._hitFlash=new THREE.MeshLambertMaterial({color:0x331111,emissive:0xff0000,emissiveIntensity:.5});try{this.grp.traverse(c=>{if(c.isMesh&&c.material){if(!c._origMat)c._origMat=c.material;c.material=_mobMatPool._hitFlash}})}catch(e){}setTimeout(()=>{try{if(this.dT<0)this.grp.traverse(c=>{if(c.isMesh&&c._origMat){c.material=c._origMat}})}catch(e){}},200)}
+rm(){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose()}})}catch(e){}}}
 
 class Garfbot extends Mob{constructor(x,y,z){super(x,y,z);this.hp=20;this.spd=3.2}
-build(){const m=c=>new THREE.MeshLambertMaterial({color:c});this.grp.add(mkM(new THREE.BoxGeometry(.7,.9,.45),m(0x444455),0,.95,0));this.grp.add(mkM(new THREE.BoxGeometry(.5,.4,.46),m(0x663344),0,1.1,0));
+build(){const m=c=>_mm(c);this.grp.add(mkM(new THREE.BoxGeometry(.7,.9,.45),m(0x444455),0,.95,0));this.grp.add(mkM(new THREE.BoxGeometry(.5,.4,.46),m(0x663344),0,1.1,0));
 // ═══ GARF TEXT ON CHEST ═══ (larger, clearer block letters)
-const gTxt=new THREE.MeshLambertMaterial({color:0xff4400,emissive:0xff2200,emissiveIntensity:.6});
+const gTxt=_mmE(0xff4400,0xff2200,.6);
 // G letter
 this.grp.add(mkM(new THREE.BoxGeometry(.10,.03,.015),gTxt,-.17,1.12,.232));
 this.grp.add(mkM(new THREE.BoxGeometry(.03,.12,.015),gTxt,-.22,1.05,.232));
@@ -3173,27 +3175,27 @@ this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,.24,1.12,.232));
 this.grp.add(mkM(new THREE.BoxGeometry(.03,.12,.015),gTxt,.20,1.05,.232));
 this.grp.add(mkM(new THREE.BoxGeometry(.08,.03,.015),gTxt,.24,1.05,.232));
 // Backlit GARF panel (white glow behind text)
-const gm=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.25});
+const gm=_mmE(0xffffff,0xffffff,.25);
 this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,-.17,1.05,.225));
 this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,-.04,1.05,.225));
 this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,.10,1.05,.225));
 this.grp.add(mkM(new THREE.BoxGeometry(.12,.14,.02),gm,.24,1.05,.225));
-this.hd=mkM(new THREE.BoxGeometry(.55,.55,.5),m(0x222233),0,1.7,0);this.grp.add(this.hd);const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5});this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,-.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.06,.25,.06),m(0x444455),0,2.05,0));this.tip=mkM(new THREE.BoxGeometry(.1,.1,.1),new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.5}),0,2.25,0);this.grp.add(this.tip);this.aL=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),-.5,1,0);this.aL.geometry.translate(0,.35,0);this.grp.add(this.aL);this.aR=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),.5,1,0);this.aR.geometry.translate(0,.35,0);this.grp.add(this.aR);this.lL=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),-.2,.3,0);this.lL.geometry.translate(0,.3,0);this.grp.add(this.lL);this.lR=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),.2,.3,0);this.lR.geometry.translate(0,.3,0);this.grp.add(this.lR)}
+this.hd=mkM(new THREE.BoxGeometry(.55,.55,.5),m(0x222233),0,1.7,0);this.grp.add(this.hd);const em=_mmE(0xff2200,0xff2200,.5);this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,-.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.1,.06,.05),em,.15,1.72,.26));this.grp.add(mkM(new THREE.BoxGeometry(.06,.25,.06),m(0x444455),0,2.05,0));this.tip=mkM(new THREE.BoxGeometry(.1,.1,.1),_mmE(0xff2200,0xff2200,.5),0,2.25,0);this.grp.add(this.tip);this.aL=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),-.5,1,0);this.aL.geometry.translate(0,.35,0);this.grp.add(this.aL);this.aR=mkM(new THREE.BoxGeometry(.25,.7,.25),m(0x444455),.5,1,0);this.aR.geometry.translate(0,.35,0);this.grp.add(this.aR);this.lL=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),-.2,.3,0);this.lL.geometry.translate(0,.3,0);this.grp.add(this.lL);this.lR=mkM(new THREE.BoxGeometry(.3,.6,.3),m(0x222233),.2,.3,0);this.lR.geometry.translate(0,.3,0);this.grp.add(this.lR)}
 ai(dt){const pp=W.pl.pos,d2=this.pos.distanceToSquared(pp);if(d2<324){const dx=pp.x-this.pos.x,dz=pp.z-this.pos.z;this.yaw=Math.atan2(dx,dz);if(d2>3.24){this.vel.x=Math.sin(this.yaw)*this.spd;this.vel.z=Math.cos(this.yaw)*this.spd}else{this.vel.x*=.8;this.vel.z*=.8;if(this.aC<=0){W.pl.hurt(3);this.aC=1.2}}}else{this.wT-=dt;if(this.wT<=0){this.wD=dh01(fl(this.pos.x*100+this.aT*10),fl(this.pos.z*100))*TAU;this.wT=2+dh01(fl(this.aT*100),0)*4}this.vel.x=Math.sin(this.wD)*1.2;this.vel.z=Math.cos(this.wD)*1.2;this.yaw=this.wD}}
 an(dt){const ws=sq(this.vel.x**2+this.vel.z**2),sw=Math.sin(this.aT*8)*.5*(ws>.5?1:.15);this.lL.rotation.x=sw;this.lR.rotation.x=-sw;this.aL.rotation.x=-sw*.8;this.aR.rotation.x=sw*.8;if(this.tip)this.tip.material.emissiveIntensity=.3+Math.sin(this.aT*4)*.7}}
 
 class GarbotSentient extends Mob{
 constructor(x,y,z){super(x,y,z);this.hp=400;this.maxHp=400;this.spd=2.8;this.phase=1;this.attackT=0;this.curAtk='';this.staggerT=0;this.summonT=0;this.chargeT=0;this.isB=true;this._wakeT=3;this._dmgAcc=0;this._deathSpin=0}
 build(){
-const m=c=>new THREE.MeshLambertMaterial({color:c});const em=new THREE.MeshLambertMaterial({color:0xff2200,emissive:0xff2200,emissiveIntensity:.8});
+const m=c=>_mm(c);const em=_mmE(0xff2200,0xff2200,.8);
 // Torso - taller and wider
 this.grp.add(mkM(new THREE.BoxGeometry(1.1,1.8,.65),m(0x2a2a3a),0,1.6,0));
 // Upper chest plate - darker, more angular
 this.grp.add(mkM(new THREE.BoxGeometry(1.0,.7,.66),m(0x441122),0,2.0,0));
 // Core energy source (glowing center chest)
-this.core=mkM(new THREE.BoxGeometry(.35,.35,.12),new THREE.MeshLambertMaterial({color:0xff6600,emissive:0xff6600,emissiveIntensity:.9}),0,1.5,.34);this.grp.add(this.core);
+this.core=mkM(new THREE.BoxGeometry(.35,.35,.12),_mmE(0xff6600,0xff6600,.9),0,1.5,.34);this.grp.add(this.core);
 // ═══ GARF TEXT ON CHEST ═══ (clear block letters)
-const gTxt=new THREE.MeshLambertMaterial({color:0xff6600,emissive:0xff4400,emissiveIntensity:.7});
+const gTxt=_mmE(0xff6600,0xff4400,.7);
 // G letter (5 segments)
 this.grp.add(mkM(new THREE.BoxGeometry(.22,.03,.01),gTxt,-.28,2.15,.34));
 this.grp.add(mkM(new THREE.BoxGeometry(.03,.18,.01),gTxt,-.36,2.03,.34));
@@ -3218,7 +3220,7 @@ this.grp.add(mkM(new THREE.BoxGeometry(.03,.18,.01),gTxt,.20,2.03,.34));
 this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,.26,2.03,.34));
 this.grp.add(mkM(new THREE.BoxGeometry(.12,.03,.01),gTxt,.26,1.91,.34));
 // Backlit GARF panel
-const gBack=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.2});
+const gBack=_mmE(0xffffff,0xffffff,.2);
 this.grp.add(mkM(new THREE.BoxGeometry(.08,.14,.02),gBack,-.28,2.03,.33));
 this.grp.add(mkM(new THREE.BoxGeometry(.08,.14,.02),gBack,-.08,2.03,.33));
 this.grp.add(mkM(new THREE.BoxGeometry(.08,.14,.02),gBack,.08,2.03,.33));
@@ -3229,7 +3231,7 @@ this.hd=mkM(new THREE.BoxGeometry(.75,.75,.7),m(0x1a1a2a),0,3.1,0);this.grp.add(
 this.grp.add(mkM(new THREE.BoxGeometry(.18,.1,.06),em,-.2,3.12,.36));
 this.grp.add(mkM(new THREE.BoxGeometry(.18,.1,.06),em,.2,3.12,.36));
 // Central eye
-this.grp.add(mkM(new THREE.BoxGeometry(.08,.08,.06),new THREE.MeshLambertMaterial({color:0xff0000,emissive:0xff0000,emissiveIntensity:1}),0,3.2,.36));
+this.grp.add(mkM(new THREE.BoxGeometry(.08,.08,.06),_mmE(0xff0000,0xff0000,1),0,3.2,.36));
 // Jaw/chin
 this.grp.add(mkM(new THREE.BoxGeometry(.5,.15,.3),m(0x222233),0,2.65,0));
 // Antenna mast
@@ -3311,21 +3313,23 @@ else if(this.curAtk==='crush'){this.aL.rotation.z=.5;this.aR.rotation.z=-.5}
 else if(this.curAtk==='sweep'){this.aL.rotation.x=-.8;this.aR.rotation.x=.8;this.grp.rotation.y+=dt*12}
 if(this.core)this.core.material.emissiveIntensity=.5+Math.sin(this.aT*3)*.4;
 if(this.tip)this.tip.material.emissiveIntensity=.3+Math.sin(this.aT*5)*.7;
-// Phase escalation visual: red glow intensifies
-if(this.phase>=2&&this.hd){
-  this.hd.material=new THREE.MeshLambertMaterial({color:this.phase===3?0x3a1a1a:0x1a1a2a,emissive:this.phase===3?0x440000:0x220000,emissiveIntensity:this.phase===3?.4:.15});
+// Phase escalation visual: red glow intensifies (cached materials to avoid per-frame allocation)
+if(this.phase>=2&&this.hd&&this._lastPhaseVis!==this.phase){
+  this._lastPhaseVis=this.phase;
+  if(!this._phaseMats){this._phaseMats={2:new THREE.MeshLambertMaterial({color:0x1a1a2a,emissive:0x220000,emissiveIntensity:.15}),3:new THREE.MeshLambertMaterial({color:0x3a1a1a,emissive:0x440000,emissiveIntensity:.4})}}
+  this.hd.material=this._phaseMats[this.phase];
 }
 }
 hurt(dmg){super.hurt(dmg);if(this._dmgAcc!==undefined)this._dmgAcc+=dmg}}
 
 class CowMob extends Mob{constructor(x,y,z){super(x,y,z)}
-build(){const m=c=>new THREE.MeshLambertMaterial({color:c});this.grp.add(mkM(new THREE.BoxGeometry(.6,.5,.8),m(0x8B6914),0,.65,0));this.grp.add(mkM(new THREE.BoxGeometry(.4,.35,.35),m(0xF5F5DC),0,.85,.5));this.grp.add(mkM(new THREE.BoxGeometry(.05,.05,.04),m(0x111111),-.1,.9,.69));this.grp.add(mkM(new THREE.BoxGeometry(.05,.05,.04),m(0x111111),.1,.9,.69));this.legs=[];for(const p of [[-.2,0,-.25],[.2,0,-.25],[-.2,0,.25],[.2,0,.25]]){const l=mkM(new THREE.BoxGeometry(.15,.4,.15),m(0x8B6914),p[0],.2,p[2]);l.geometry.translate(0,.2,0);this.grp.add(l);this.legs.push(l)}}
+build(){const m=c=>_mm(c);this.grp.add(mkM(new THREE.BoxGeometry(.6,.5,.8),m(0x8B6914),0,.65,0));this.grp.add(mkM(new THREE.BoxGeometry(.4,.35,.35),m(0xF5F5DC),0,.85,.5));this.grp.add(mkM(new THREE.BoxGeometry(.05,.05,.04),m(0x111111),-.1,.9,.69));this.grp.add(mkM(new THREE.BoxGeometry(.05,.05,.04),m(0x111111),.1,.9,.69));this.legs=[];for(const p of [[-.2,0,-.25],[.2,0,-.25],[-.2,0,.25],[.2,0,.25]]){const l=mkM(new THREE.BoxGeometry(.15,.4,.15),m(0x8B6914),p[0],.2,p[2]);l.geometry.translate(0,.2,0);this.grp.add(l);this.legs.push(l)}}
 ai(dt){this.wT-=dt;if(this.wT<=0){this.wD=dh01(fl(this.pos.x*100+this.aT*10),fl(this.pos.z*100))*TAU;this.wT=3+dh01(fl(this.aT*100),1)*5;if(dh01(fl(this.aT*50),2)<.3){this.vel.x=this.vel.z=0;return}}this.vel.x=Math.sin(this.wD)*.6;this.vel.z=Math.cos(this.wD)*.6;this.yaw=this.wD}
 an(dt){const ws=sq(this.vel.x**2+this.vel.z**2),s=Math.sin(this.aT*5)*.3*(ws>.15?1:0);for(let i=0;i<4;i++)if(this.legs[i])this.legs[i].rotation.x=(i%2?-1:1)*s}}
 
 // FISH MOB - passive ocean creature
 class FishMob extends Mob{constructor(x,y,z){super(x,y,z);this.hp=4;this.swimDir=dh01(fl(x*100),fl(z*100))*TAU;this.swimT=0}
-build(){const m=c=>new THREE.MeshLambertMaterial({color:c});
+build(){const m=c=>_mm(c);
   this.grp.add(mkM(new THREE.BoxGeometry(.4,.25,.15),m(0x4488CC),0,.15,0)); // body
   this.grp.add(mkM(new THREE.BoxGeometry(.15,.15,.08),m(0x3377BB),-.25,.18,0)); // head
   this.grp.add(mkM(new THREE.BoxGeometry(.2,.12,.02),m(0x55AADD),.2,.2,0)); // tail
@@ -3333,16 +3337,16 @@ build(){const m=c=>new THREE.MeshLambertMaterial({color:c});
 }
 ai(dt){this.swimT+=dt;if(this.swimT>3){this.swimT=0;this.swimDir+=dh01(fl(this.pos.x*50+this.aT*10),fl(this.pos.z*50))*.5-.25}
   this.vel.x=Math.sin(this.swimDir)*.8;this.vel.z=Math.cos(this.swimDir)*.8;this.vel.y=Math.sin(this.aT*2)*.3;this.yaw=this.swimDir}
-ph(dt){this.vel.y=Math.sin(this.aT*2)*.3;const np=this.pos.clone().add(this.vel.clone().multiplyScalar(dt));if(np.y<5)np.y=5;if(np.y>WL-1)np.y=WL-1;this.pos.copy(np)} // override - swim in water
+ph(dt){this.vel.y=Math.sin(this.aT*2)*.3;if(!this._np)this._np=new THREE.Vector3();const np=this._np;np.x=this.pos.x+this.vel.x*dt;np.y=this.pos.y+this.vel.y*dt;np.z=this.pos.z+this.vel.z*dt;if(np.y<5)np.y=5;if(np.y>WL-1)np.y=WL-1;this.pos.copy(np)} // override - swim in water
 an(dt){const sw=Math.sin(this.aT*8)*.15;this.grp.rotation.z=sw}}
 
 // VC KNIGHT - Massive desert sentinel, 6x player size
 class VCKnight extends Mob{
 constructor(x,y,z){super(x,y,z);this.hp=150;this.spd=1.4;this.detRange=20}
 build(){
-  const armor=c=>new THREE.MeshPhongMaterial({color:c,shininess:12,specular:0x222222});
+  const armor=c=>_mm(c,'P');
   const dark=armor(0x3a3830);const rust=armor(0x5a4028);const grime=armor(0x4a4238);
-  const visor=new THREE.MeshBasicMaterial({color:0x88ccff,emissive:0x3377aa,fog:false});
+  const visor=_mmE(0x88ccff,0x3377aa,1,'B');
   // ~4x player height, slumped forward
   // Torso - hunched
   this.grp.add(mkM(new THREE.BoxGeometry(2,2.5,1.5),dark,0,3.5,.3));
@@ -3356,8 +3360,8 @@ build(){
   this.hd=mkM(new THREE.BoxGeometry(1.6,1.8,1.5),dark,0,5.8,.4);this.hd.rotation.x=.2;this.grp.add(this.hd);
   // Visor slit with cold glow
   this.grp.add(mkM(new THREE.BoxGeometry(1,.1,.05),visor,0,5.9,1.2));
-  this.grp.add(mkM(new THREE.BoxGeometry(.2,.08,.05),new THREE.MeshBasicMaterial({color:0xaaddff,emissive:0x4488cc}),-.25,5.9,1.25));
-  this.grp.add(mkM(new THREE.BoxGeometry(.2,.08,.05),new THREE.MeshBasicMaterial({color:0xaaddff,emissive:0x4488cc}),.25,5.9,1.25));
+  this.grp.add(mkM(new THREE.BoxGeometry(.2,.08,.05),_mmE(0xaaddff,0x4488cc,1,'B'),-.25,5.9,1.25));
+  this.grp.add(mkM(new THREE.BoxGeometry(.2,.08,.05),_mmE(0xaaddff,0x4488cc,1,'B'),.25,5.9,1.25));
   // Arms - one dragging lower, asymmetric
   this.aL=mkM(new THREE.BoxGeometry(.9,2.8,.9),dark,-1.6,2.8,0);this.aL.geometry.translate(0,1.4,0);this.grp.add(this.aL);
   this.aR=mkM(new THREE.BoxGeometry(.8,3.2,.8),grime,1.6,2.2,.3);this.aR.geometry.translate(0,1.6,0);this.grp.add(this.aR);
@@ -3401,11 +3405,11 @@ class Train{
 constructor(x,y,z,dirX,dirZ){
   this.pos=new THREE.Vector3(x,y+.2,z);this.dirX=dirX||1;this.dirZ=dirZ||0;this.spd=4;this.grp=new THREE.Group();
   this.alive=true;this.pauseT=0;
-  const body=new THREE.MeshLambertMaterial({color:0xaa1818});const bodyH=new THREE.MeshLambertMaterial({color:0xcc2020});
-  const metal=new THREE.MeshLambertMaterial({color:0x3a3a3a});const frame=new THREE.MeshLambertMaterial({color:0x1a1a1a});
-  const glass=new THREE.MeshLambertMaterial({color:0x88bbdd,transparent:true,opacity:.55});
-  const gold=new THREE.MeshLambertMaterial({color:0xccaa44});const cargo1=new THREE.MeshLambertMaterial({color:0x5a4428});
-  const cargo2=new THREE.MeshLambertMaterial({color:0x446688});
+  const body=_mm(0xaa1818);const bodyH=_mm(0xcc2020);
+  const metal=_mm(0x3a3a3a);const frame=_mm(0x1a1a1a);
+  const glass=_mm(0x88bbdd);
+  const gold=_mm(0xccaa44);const cargo1=_mm(0x5a4428);
+  const cargo2=_mm(0x446688);
   // ═══ LOCOMOTIVE ═══
   // Main body - larger
   this.grp.add(mkM(new THREE.BoxGeometry(3.2,1.8,1.8),body,0,.9,0));
@@ -3434,7 +3438,7 @@ constructor(x,y,z,dirX,dirZ){
     this.grp.add(mkM(new THREE.BoxGeometry(.35,.4,.15),frame,wx,.2,-.85));
   }
   // Headlight (bright)
-  this.grp.add(mkM(new THREE.BoxGeometry(.15,.3,.3),new THREE.MeshBasicMaterial({color:0xffeeaa,emissive:0xffdd66}),1.85,1.1,0));
+  this.grp.add(mkM(new THREE.BoxGeometry(.15,.3,.3),_mmE(0xffeeaa,0xffdd66,1,'B'),1.85,1.1,0));
   // Rear coupler
   this.grp.add(mkM(new THREE.BoxGeometry(.3,.15,.15),frame,-1.7,.3,0));
   // Gold stripe detail
@@ -3508,7 +3512,7 @@ tick(dt){
   this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ);
   return true;
 }
-rm(){if(this.grp&&W.sc){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}})}catch(e){}}this.alive=false}
+rm(){if(this.grp&&W.sc){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose()}})}catch(e){}}this.alive=false}
 }
 
 // RAIL CART - lighter handcar that the player pumps with space
@@ -3516,10 +3520,10 @@ class RailCart{
 constructor(x,y,z,dirX,dirZ){
   this.pos=new THREE.Vector3(x,y+.15,z);this.dirX=dirX||1;this.dirZ=dirZ||0;this.spd=0;this.grp=new THREE.Group();
   this.alive=true;this.pauseT=0;this._playerDriving=false;this._pumpCooldown=0;
-  const wood=new THREE.MeshLambertMaterial({color:0x8B6914});
-  const metal=new THREE.MeshLambertMaterial({color:0x555555});
-  const darkM=new THREE.MeshLambertMaterial({color:0x333333});
-  const red=new THREE.MeshLambertMaterial({color:0xaa3322});
+  const wood=_mm(0x8B6914);
+  const metal=_mm(0x555555);
+  const darkM=_mm(0x333333);
+  const red=_mm(0xaa3322);
   // Platform base
   this.grp.add(mkM(new THREE.BoxGeometry(1.8,.12,1.4),wood,0,.35,0));
   // Frame rails (side runners)
@@ -3593,7 +3597,7 @@ tick(dt){
   this.grp.rotation.y=Math.atan2(this.dirX,this.dirZ);
   return true;
 }
-rm(){if(this.grp&&W.sc){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()}})}catch(e){}}this.alive=false}
+rm(){if(this.grp&&W.sc){try{W.sc.remove(this.grp);this.grp.traverse(c=>{if(c.isMesh){if(c.geometry)c.geometry.dispose()}})}catch(e){}}this.alive=false}
 }
 
 // MULTIPLAYER
@@ -4003,7 +4007,7 @@ async start(seed,mode,ld){try{
   await new Promise(r=>setTimeout(r,30));this.seed=seed;this.gMode=mode;initN(seed);buildAtlas();
   this.sc=new THREE.Scene();this.sc.background=new THREE.Color(.53,.81,.92);this.sc.fog=new THREE.FogExp2(new THREE.Color(.53,.81,.92),.012);
   this.cam=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.5,RD*CS*2+100);
-  this.ren=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(1);this.ren.autoClear=false;
+  this.ren=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance',precision:'mediump'});this.ren.setSize(innerWidth,innerHeight);this.ren.setPixelRatio(1);this.ren.autoClear=false;
   this.ren.toneMapping=THREE.NoToneMapping;this.ren.toneMappingExposure=1.0;
   document.getElementById('gc').appendChild(this.ren.domElement);
   this.bMat=new THREE.MeshLambertMaterial({map:atlas,transparent:false});
@@ -4171,7 +4175,7 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     $('dbg').innerHTML=`VC CRAFT 1.1 ${p.mode==='creative'?'CREATIVE':'SURVIVAL'}${fly}<br>${p.pos.x.toFixed(1)} / ${(p.pos.y-Y_OFF).toFixed(1)} / ${p.pos.z.toFixed(1)}<br>${BDt[b3]?.n||'?'}<br>${this.fps} fps  C:${Object.keys(this.ch).length}${_pStr}${_pdStr}`;}
   }
   if(this.ren){if(this.wMat&&this.wMat.map){const _wt=Date.now()*.000003;this.wMat.map.offset.y=(_wt%0.02)}if(this.lMat){this.lMat.emissiveIntensity=.55+Math.sin(Date.now()*.002)*.05}this.ren.clear();const _fStart=performance.now();const _frameSoFar=_fStart-now;if(_frameSoFar<4)processFluidQueue();if(this._perfD)this._perfD.fluid=performance.now()-_fStart;this.ren.render(this.sc,this.cam);if(this.hand&&this.st==='play')this.hand.render(this.ren,dt);if(!this._perfT)this._perfT={frames:0,lastT:performance.now(),stutC:0,worstF:0};this._perfT.frames++;const _now=performance.now(),_ft=_now-this._perfT._lastF||16;this._perfT._lastF=_now;if(_ft>this._perfT.worstF)this._perfT.worstF=_ft;if(_ft>50)this._perfT.stutC++;if(_now-this._perfT.lastT>2000){const fps=this._perfT.frames/(((_now-this._perfT.lastT)/1000));const dd=$('dbg');if(dd)dd.textContent=dd.textContent.replace(/ F:.*$/,'')+' F:'+fps.toFixed(0)+' W:'+this._perfT.worstF.toFixed(0)+'ms S:'+this._perfT.stutC;this._perfT.frames=0;this._perfT.lastT=_now;this._perfT.worstF=0;this._perfT.stutC=0}}
-  requestAnimationFrame(()=>this.loop())}
+  if(!this._loopBound)this._loopBound=()=>this.loop();requestAnimationFrame(this._loopBound)}
 };
 
 // UI

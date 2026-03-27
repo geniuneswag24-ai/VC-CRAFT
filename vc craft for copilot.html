@@ -522,7 +522,7 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
   const r=dh01(chunk.cx+50,chunk.cz+50);
   const wx2=chunk.cx*CS+lx,wz2=chunk.cz*CS+lz;
   switch(type){
-    case 'condo':if(_gpuDed){genCondo(chunk,lx,h+1,lz,r);chunk.dirty=true}else{_structQ.push(()=>{genCondo(chunk,lx,h+1,lz,r);chunk.dirty=true})}regStruct('Condo Complex',wx2,h+1,wz2);break;
+    case 'condo':_structQ.push(()=>{genCondo(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Condo Complex',wx2,h+1,wz2);break;
     case 'statue':genStatue(chunk,lx,h+1,lz,fl(dh01(chunk.cx+77,chunk.cz+77)*3));regStruct('Statue',wx2,h+1,wz2);break;
     case 'house':genHouse(chunk,lx,h+1,lz,r);regStruct('House',wx2,h+1,wz2);break;
     case 'cabin':genCabin(chunk,lx,h+1,lz);regStruct('Abandoned Cabin',wx2,h+1,wz2);break;
@@ -532,16 +532,16 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
     case 'tower':genCityTower(chunk,lx,h+1,lz,r);regStruct('City Tower',wx2,h+1,wz2);break;
     case 'broken_tower':genBrokenTower(chunk,lx,h+1,lz);regStruct('Broken Tower',wx2,h+1,wz2);break;
     case 'waffle':genWaffle(chunk,lx,h+1,lz);regStruct('Waffle House',wx2,h+1,wz2);break;
-    case 'school':if(_gpuDed){genSchool(chunk,lx,h+1,lz,r);chunk.dirty=true}else{_structQ.push(()=>{genSchool(chunk,lx,h+1,lz,r);chunk.dirty=true})}regStruct('Sweetwater High',wx2,h+1,wz2);break;
-    case 'gomp':if(_gpuDed){genGomp(chunk,lx,h+1,lz,r);chunk.dirty=true}else{_structQ.push(()=>{genGomp(chunk,lx,h+1,lz,r);chunk.dirty=true})}regStruct('Gomp Industries Tower',wx2,h+1,wz2);break;
+    case 'school':_structQ.push(()=>{genSchool(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Sweetwater High',wx2,h+1,wz2);break;
+    case 'gomp':_structQ.push(()=>{genGomp(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Gomp Industries Tower',wx2,h+1,wz2);break;
     case 'boardwalk':genBoardwalk(chunk,lx,h,lz);regStruct('Boardwalk Ruins',wx2,h,wz2);break;
     case 'chapel':genChapel(chunk,lx,h+1,lz);regStruct('Chapel',wx2,h+1,wz2);break;
-    case 'monument':if(_gpuDed){genMonument(chunk,lx,h+1,lz,r);chunk.dirty=true}else{_structQ.push(()=>{genMonument(chunk,lx,h+1,lz,r);chunk.dirty=true})}regStruct('Monument',wx2,h+1,wz2);break;
-    case 'stadium':if(_gpuDed){genStadium(chunk,lx,h+1,lz,r);chunk.dirty=true}else{_structQ.push(()=>{genStadium(chunk,lx,h+1,lz,r);chunk.dirty=true})}regStruct('Football Stadium',wx2,h+1,wz2);break;
-    case 'restaurant':if(_gpuDed){genRestaurant(chunk,lx,h+1,lz);chunk.dirty=true}else{_structQ.push(()=>{genRestaurant(chunk,lx,h+1,lz);chunk.dirty=true})}regStruct('VC Restaurant',wx2,h+1,wz2);break;
-    case 'arcade':if(_gpuDed){genArcade(chunk,lx,h+1,lz);chunk.dirty=true}else{_structQ.push(()=>{genArcade(chunk,lx,h+1,lz);chunk.dirty=true})}regStruct('Props Arcade',wx2,h+1,wz2);break;
-    case 'mall':if(_gpuDed){genMall(chunk,lx,h+1,lz,r);chunk.dirty=true}else{_structQ.push(()=>{genMall(chunk,lx,h+1,lz,r);chunk.dirty=true})}regStruct('VC Mall',wx2,h+1,wz2);break;
-    case 'temple':if(_gpuDed){genTemple(chunk,lx,h+1,lz);chunk.dirty=true}else{_structQ.push(()=>{genTemple(chunk,lx,h+1,lz);chunk.dirty=true})}regStruct('Temple',wx2,h+1,wz2);break;
+    case 'monument':_structQ.push(()=>{genMonument(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Monument',wx2,h+1,wz2);break;
+    case 'stadium':_structQ.push(()=>{genStadium(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Football Stadium',wx2,h+1,wz2);break;
+    case 'restaurant':_structQ.push(()=>{genRestaurant(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('VC Restaurant',wx2,h+1,wz2);break;
+    case 'arcade':_structQ.push(()=>{genArcade(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Props Arcade',wx2,h+1,wz2);break;
+    case 'mall':_structQ.push(()=>{genMall(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('VC Mall',wx2,h+1,wz2);break;
+    case 'temple':_structQ.push(()=>{genTemple(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Temple',wx2,h+1,wz2);break;
   }
   // Mark this chunk as having a structure so trees won't spawn on it
   chunk._hasStruct=true;
@@ -1945,7 +1945,7 @@ deco(){
         _ch.S(7,_h0+totalH+9,7,B.NEON_BLK);
         _ch.S(8,_h0+totalH+5,7,B.RUSTED_METAL);_ch.S(6,_h0+totalH+5,7,B.RUSTED_METAL);
       }
-      _ch.dirty=true;};if(_gpuDed){_buildCity()}else{_structQ.push(_buildCity)}
+      _ch.dirty=true;};_structQ.push(_buildCity)
     }
     
     // ═══ UNDERGROUND NETWORK (all chunks) ═══
@@ -4092,8 +4092,8 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     this._perfD.gen=performance.now()-_genStart;
     {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=(_gpuDed?4:2)||performance.now()-_caveStart>(_gpuDed?4:2)||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){_hasPendCave=true;const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true;c.dirty=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
     {let _dc=0;const _decoStart=performance.now();if(_gpuDed||(!_hasPendGen&&!_hasPendCave)){for(const k in this.ch){if(_dc>=(_gpuDed?3:1)||performance.now()-_decoStart>(_gpuDed?6:3)||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
-    // Process deferred structures (all within budget)
-    {const _sStart=performance.now();while(_structQ.length>0&&performance.now()-now<_worldBudget){const sf=_structQ.shift();sf()}if(this._perfD)this._perfD.struct=performance.now()-_sStart}
+    // Process deferred structures with guaranteed minimum budget
+    {const _sStart=performance.now();const _structBudget=Math.max(_gpuDed?6:3,_worldBudget-(performance.now()-now));while(_structQ.length>0&&performance.now()-_sStart<_structBudget){const sf=_structQ.shift();sf()}if(this._perfD)this._perfD.struct=performance.now()-_sStart}
     if(!this._gBf)this._gBf=(x,y,z)=>this.gB(x,y,z);let b2=0;{const _meshStart=performance.now();const _meshBudget=Math.max(_gpuDed?5:3,_worldBudget-(performance.now()-now));const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);const _meshMax=_gpuDed?8:(_hasPendGen?2:4);for(const d of dirty){if(b2>=_meshMax||performance.now()-_meshStart>_meshBudget)break;d.c.buildMesh(this._gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frustum&&this._frmC%4===0){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}

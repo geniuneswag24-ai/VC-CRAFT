@@ -1,0 +1,7 @@
+node_modules/
+three.min.js
+peerjs.min.js
+package.json
+package-lock.json
+test.html
+game.html

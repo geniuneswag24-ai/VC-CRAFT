@@ -523,19 +523,19 @@ function genStructure(chunk,ox,oz,wx,wz,h,bi){
   const wx2=chunk.cx*CS+lx,wz2=chunk.cz*CS+lz;
   switch(type){
     case 'condo':_structQ.push(()=>{genCondo(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Condo Complex',wx2,h+1,wz2);break;
-    case 'statue':genStatue(chunk,lx,h+1,lz,fl(dh01(chunk.cx+77,chunk.cz+77)*3));regStruct('Statue',wx2,h+1,wz2);break;
-    case 'house':genHouse(chunk,lx,h+1,lz,r);regStruct('House',wx2,h+1,wz2);break;
-    case 'cabin':genCabin(chunk,lx,h+1,lz);regStruct('Abandoned Cabin',wx2,h+1,wz2);break;
-    case 'tower_ruin':genTowerRuin(chunk,lx,h+1,lz,r);regStruct('Tower Ruin',wx2,h+1,wz2);break;
-    case 'shrine':genShrine(chunk,lx,h+1,lz);regStruct('Shrine',wx2,h+1,wz2);break;
-    case 'watchtower':genWatchtower(chunk,lx,h+1,lz);regStruct('Watchtower',wx2,h+1,wz2);break;
-    case 'tower':genCityTower(chunk,lx,h+1,lz,r);regStruct('City Tower',wx2,h+1,wz2);break;
-    case 'broken_tower':genBrokenTower(chunk,lx,h+1,lz);regStruct('Broken Tower',wx2,h+1,wz2);break;
-    case 'waffle':genWaffle(chunk,lx,h+1,lz);regStruct('Waffle House',wx2,h+1,wz2);break;
+    case 'statue':_structQ.push(()=>{genStatue(chunk,lx,h+1,lz,fl(dh01(chunk.cx+77,chunk.cz+77)*3));chunk.dirty=true});regStruct('Statue',wx2,h+1,wz2);break;
+    case 'house':_structQ.push(()=>{genHouse(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('House',wx2,h+1,wz2);break;
+    case 'cabin':_structQ.push(()=>{genCabin(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Abandoned Cabin',wx2,h+1,wz2);break;
+    case 'tower_ruin':_structQ.push(()=>{genTowerRuin(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Tower Ruin',wx2,h+1,wz2);break;
+    case 'shrine':_structQ.push(()=>{genShrine(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Shrine',wx2,h+1,wz2);break;
+    case 'watchtower':_structQ.push(()=>{genWatchtower(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Watchtower',wx2,h+1,wz2);break;
+    case 'tower':_structQ.push(()=>{genCityTower(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('City Tower',wx2,h+1,wz2);break;
+    case 'broken_tower':_structQ.push(()=>{genBrokenTower(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Broken Tower',wx2,h+1,wz2);break;
+    case 'waffle':_structQ.push(()=>{genWaffle(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Waffle House',wx2,h+1,wz2);break;
     case 'school':_structQ.push(()=>{genSchool(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Sweetwater High',wx2,h+1,wz2);break;
     case 'gomp':_structQ.push(()=>{genGomp(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Gomp Industries Tower',wx2,h+1,wz2);break;
-    case 'boardwalk':genBoardwalk(chunk,lx,h,lz);regStruct('Boardwalk Ruins',wx2,h,wz2);break;
-    case 'chapel':genChapel(chunk,lx,h+1,lz);regStruct('Chapel',wx2,h+1,wz2);break;
+    case 'boardwalk':_structQ.push(()=>{genBoardwalk(chunk,lx,h,lz);chunk.dirty=true});regStruct('Boardwalk Ruins',wx2,h,wz2);break;
+    case 'chapel':_structQ.push(()=>{genChapel(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('Chapel',wx2,h+1,wz2);break;
     case 'monument':_structQ.push(()=>{genMonument(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Monument',wx2,h+1,wz2);break;
     case 'stadium':_structQ.push(()=>{genStadium(chunk,lx,h+1,lz,r);chunk.dirty=true});regStruct('Football Stadium',wx2,h+1,wz2);break;
     case 'restaurant':_structQ.push(()=>{genRestaurant(chunk,lx,h+1,lz);chunk.dirty=true});regStruct('VC Restaurant',wx2,h+1,wz2);break;
@@ -1717,6 +1717,31 @@ genTerrainFill(){
     }
   }
 }
+genTerrainFillIncr(budget){
+  if(this._terrainCol===undefined)this._terrainCol=0;
+  const start=performance.now();
+  const ox=this.cx*CS,oz=this.cz*CS;
+  const end=CS*CS;
+  while(this._terrainCol<end){
+    const x=this._terrainCol&15,z=this._terrainCol>>4;
+    const wx=ox+x,wz=oz+z,bi=bio(wx,wz),bd=BDt[bi],h=htA(wx,wz,bi);
+    for(let y=0;y<CH;y++){
+      let b=B.AIR;const rv=dh01(wx*999+y,wz*777);
+      if(y===0)b=B.BED;else if(y<5&&rv<.5)b=B.BED;
+      else if(y<=h){
+        if(y===h)b=y<=WL+1&&(bi===BI.OC||bi===BI.BE)?B.SAND:bi===BI.MO&&y>200?B.SNOW:bi===BI.VOLCANO&&y>220?B.SCORCHED:bd.sf;
+        else if(y>h-4)b=bi===BI.VOLCANO?B.BASALT:bd.su;
+        else if(y<76)b=bi===BI.VOLCANO?B.SCORCHED:B.DEEP;
+        else{b=B.STONE;if(y<84&&rv<.004)b=B.DIAM;else if(y<116&&rv<.01)b=B.GOLD;else if(y<160&&rv<.018)b=B.IRON;else if(y<190&&rv<.022)b=B.COAL}
+      }else if(y<=WL)b=B.WATER;
+      this.blk[this.I(x,y,z)]=b;
+    }
+    this._terrainCol++;
+    if((this._terrainCol&7)===0&&performance.now()-start>budget)return false;
+  }
+  delete this._terrainCol;
+  return true;
+}
 genTerrainCavesAll(){this._caveCol=0;this._carveCaves(256);delete this._caveCol}
 _carveCaves(maxCols){
   const ox=this.cx*CS,oz=this.cz*CS;
@@ -2663,19 +2688,21 @@ deco(){
   }
   // Register volcanoes as landmarks for teleport
   if(chunkBio===BI.VOLCANO){const vh=this.sY(8,8);if(vh>WL+30&&!_structRegistry['Volcano Landmark']?.some(s=>abs(s.x-(ox+8))<200&&abs(s.z-(oz+8))<200))regStruct('Volcano Landmark',ox+8,vh+2,oz+8)}
-  // ═══ NORMAL BIOME DECO ═══
+  // ═══ NORMAL BIOME DECO (deferred to prevent stutter) ═══
   if(this._hasStruct)return;
   // Also skip deco if any neighboring chunk has structure (protect structure edges)
   for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){const nk=(this.cx+dx)+','+(this.cz+dz);const nc=W.ch[nk];if(nc&&nc._hasStruct)return}
+  const _tCh=this,_tOx=ox,_tOz=oz,_tHasRail=this._hasRail;
+  _structQ.push(()=>{
   for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
-    const wx=ox+x,wz=oz+z,bi2=bio(wx,wz),bd=BDt[bi2],h=this.sY(x,z);
-    if(h<=WL||h>=CH-10||this.G(x,h,z)===B.WATER||this.G(x,h,z)===B.AIR||!isNaturalSurface(this.G(x,h,z)))continue;const abv=this.G(x,h+1,z);if(abv!==B.AIR&&abv!==B.WATER&&!BD[abv]?.liq)continue;
+    const wx=_tOx+x,wz=_tOz+z,bi2=bio(wx,wz),bd=BDt[bi2],h=_tCh.sY(x,z);
+    if(h<=WL||h>=CH-10||_tCh.G(x,h,z)===B.WATER||_tCh.G(x,h,z)===B.AIR||!isNaturalSurface(_tCh.G(x,h,z)))continue;const abv=_tCh.G(x,h+1,z);if(abv!==B.AIR&&abv!==B.WATER&&!BD[abv]?.liq)continue;
     const r=dh01(wx,wz);
-    if(bd.tc&&r<bd.tc&&this.G(x,h+1,z)===B.AIR){
+    if(bd.tc&&r<bd.tc&&_tCh.G(x,h+1,z)===B.AIR){
       // Skip trees near rail corridors to keep them clear
-      if(this._hasRail){
-        const isNearEW=(((this.cz%16)+16)%16===0)&&z>=5&&z<=11;
-        const isNearNS=(((this.cx%20)+20)%20===0)&&x>=5&&x<=11;
+      if(_tCh._hasRail){
+        const isNearEW=(((_tCh.cz%16)+16)%16===0)&&z>=5&&z<=11;
+        const isNearNS=(((_tCh.cx%20)+20)%20===0)&&x>=5&&x<=11;
         if(isNearEW||isNearNS)continue;
       }
       // Mixed tree types for forest diversity
@@ -2687,50 +2714,51 @@ deco(){
       else if(bi2===BI.REDWOOD){treeType=treeMix<.06?'spruce':treeMix<.1?'dark':'redwood'}
       else if(bi2===BI.PLAINS){treeType=treeMix<.2?'birch':treeMix<.45?'oak':'acacia'}
       else if(bi2===BI.RIO_LAGOON){treeType=treeMix<.05?'oak':'jungle'}
-      this.tree(x,h+1,z,treeType,dh01(wx+999,wz+999));
+      _tCh.tree(x,h+1,z,treeType,dh01(wx+999,wz+999));
     }
-    else if(bd.ca&&r<bd.ca&&this.G(x,h+1,z)===B.AIR){const ch2=1+fl(dh01(wx+50,wz+50)*3);for(let i=0;i<ch2;i++)this.S(x,h+1+i,z,B.CACT)}
-    if(bi2===BI.VC_BADLANDS){if(dh01(wx+440,wz+440)<.005)this.S(x,h,z,B.MONUMENT_STN);if(dh01(wx+450,wz+450)<.003){this.S(x,h+1,z,B.CANYON_STONE);if(dh01(wx+451,wz+451)<.4)this.S(x,h+2,z,B.CANYON_STONE)}if(dh01(wx+460,wz+460)<.002)this.S(x,h,z,B.RSAND)}
-    if(bi2===BI.RIO_LAGOON){if(dh01(wx+700,wz+700)<.008)this.S(x,h,z,B.BOARDWALK);if(dh01(wx+800,wz+800)<.003){this.S(x,h+1,z,B.JLOG);const vh=2+fl(dh01(wx+801,wz+801)*4);for(let dy=0;dy<vh;dy++)if(this.G(x,h+1+dy,z)===B.AIR)this.S(x,h+1+dy,z,B.JLOG)}if(dh01(wx+900,wz+900)<.004)this.S(x,h,z,B.PIRATE_PLNK);if(dh01(wx+150,wz+150)<.03&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.FERN);if(dh01(wx+160,wz+160)<.02&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.TALL_GRASS);if(dh01(wx+170,wz+170)<.015&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.SHRUB);if(dh01(wx+180,wz+180)<.005&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(h<=WL+2&&dh01(wx+190,wz+190)<.04){const rh=1+fl(dh01(wx+2100,wz+2100)*4);for(let dy=0;dy<rh;dy++)this.S(x,h+1+dy,z,B.REED)}if(dh01(wx+200,wz+200)<.01)this.S(x,h,z,B.MUD);if(dh01(wx+210,wz+210)<.008)this.S(x,h,z,B.VINE_STONE)}
-    if(bi2===BI.VC_SUBURB){if(wz%20<2)this.S(x,h,z,B.ASPHALT);else if(wz%20===2||wz%20===19)this.S(x,h,z,B.SIDEWALK);if(wx%24<2&&wz%20>=3)this.S(x,h,z,B.ASPHALT);if(wz%20===10&&wx%6<2)this.S(x,h,z,B.DRIVEWAY);if(dh01(wx+100,wz+100)<.002)this.S(x,h+1,z,B.FENCE_BLK)}
-    if(bi2===BI.SA_PLAINS){if(dh01(wx+200,wz+200)<.012)this.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+210,wz+210)<.005)this.S(x,h,z,B.ASPHALT);if(dh01(wx+220,wz+220)<.003)this.S(x,h,z,B.SIDEWALK);if(dh01(wx+230,wz+230)<.002)this.S(x,h+1,z,B.FENCE_BLK)}
-    if(bi2===BI.WATCHER){if(dh01(wx+400,wz+400)<.01)this.S(x,h,z,B.TOWER_BRICK);if(dh01(wx+410,wz+410)<.004)this.S(x,h,z,B.ANCIENT_METAL);if(dh01(wx+420,wz+420)<.003){this.S(x,h,z,B.TEMPLE_STONE);if(dh01(wx+421,wz+421)<.5)this.S(x,h+1,z,B.TEMPLE_STONE)}}
-    if(bi2===BI.DRY_COAST){if(dh01(wx+800,wz+800)<.008)this.S(x,h,z,B.BOARDWALK);if(dh01(wx+810,wz+810)<.003)this.S(x,h,z,B.POOL_TILE);if(dh01(wx+820,wz+820)<.004)this.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+830,wz+830)<.002)this.S(x,h+1,z,B.RESORT_WALL)}
-    if(bi2===BI.DISCORD_DEEP){if(h<80&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)this.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)this.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)this.S(x,h+1,z,B.NEON_BLK)}
-    if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.035&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.015)this.S(x,h,z,B.VINE_STONE);if(dh01(wx+260,wz+260)<.01)this.S(x,h,z,B.MOSS);if(dh01(wx+270,wz+270)<.006&&this.G(x,h+1,z)===B.AIR){this.S(x,h+1,z,B.VINE_STONE);this.S(x,h+2,z,B.VINE_STONE)}if(dh01(wx+280,wz+280)<.008&&this.G(x,h+1,z)===B.AIR)this.S(x,h+1,z,B.SHRUB)}
-    if(bi2===BI.CAMGROVE){if(dh01(wx+350,wz+350)<.01)this.S(x,h,z,B.TRAIL_STONE);if(dh01(wx+360,wz+360)<.002)this.S(x,h,z,B.CABIN_WALL);if(dh01(wx+370,wz+370)<.003)this.S(x,h,z,B.COB)}
+    else if(bd.ca&&r<bd.ca&&_tCh.G(x,h+1,z)===B.AIR){const ch2=1+fl(dh01(wx+50,wz+50)*3);for(let i=0;i<ch2;i++)_tCh.S(x,h+1+i,z,B.CACT)}
+    if(bi2===BI.VC_BADLANDS){if(dh01(wx+440,wz+440)<.005)_tCh.S(x,h,z,B.MONUMENT_STN);if(dh01(wx+450,wz+450)<.003){_tCh.S(x,h+1,z,B.CANYON_STONE);if(dh01(wx+451,wz+451)<.4)_tCh.S(x,h+2,z,B.CANYON_STONE)}if(dh01(wx+460,wz+460)<.002)_tCh.S(x,h,z,B.RSAND)}
+    if(bi2===BI.RIO_LAGOON){if(dh01(wx+700,wz+700)<.008)_tCh.S(x,h,z,B.BOARDWALK);if(dh01(wx+800,wz+800)<.003){_tCh.S(x,h+1,z,B.JLOG);const vh=2+fl(dh01(wx+801,wz+801)*4);for(let dy=0;dy<vh;dy++)if(_tCh.G(x,h+1+dy,z)===B.AIR)_tCh.S(x,h+1+dy,z,B.JLOG)}if(dh01(wx+900,wz+900)<.004)_tCh.S(x,h,z,B.PIRATE_PLNK);if(dh01(wx+150,wz+150)<.03&&_tCh.G(x,h+1,z)===B.AIR)_tCh.S(x,h+1,z,B.FERN);if(dh01(wx+160,wz+160)<.02&&_tCh.G(x,h+1,z)===B.AIR)_tCh.S(x,h+1,z,B.TALL_GRASS);if(dh01(wx+170,wz+170)<.015&&_tCh.G(x,h+1,z)===B.AIR)_tCh.S(x,h+1,z,B.SHRUB);if(dh01(wx+180,wz+180)<.005&&_tCh.G(x,h+1,z)===B.AIR)_tCh.S(x,h+1,z,B.GLOW_FLOWER);if(h<=WL+2&&dh01(wx+190,wz+190)<.04){const rh=1+fl(dh01(wx+2100,wz+2100)*4);for(let dy=0;dy<rh;dy++)_tCh.S(x,h+1+dy,z,B.REED)}if(dh01(wx+200,wz+200)<.01)_tCh.S(x,h,z,B.MUD);if(dh01(wx+210,wz+210)<.008)_tCh.S(x,h,z,B.VINE_STONE)}
+    if(bi2===BI.VC_SUBURB){if(wz%20<2)_tCh.S(x,h,z,B.ASPHALT);else if(wz%20===2||wz%20===19)_tCh.S(x,h,z,B.SIDEWALK);if(wx%24<2&&wz%20>=3)_tCh.S(x,h,z,B.ASPHALT);if(wz%20===10&&wx%6<2)_tCh.S(x,h,z,B.DRIVEWAY);if(dh01(wx+100,wz+100)<.002)_tCh.S(x,h+1,z,B.FENCE_BLK)}
+    if(bi2===BI.SA_PLAINS){if(dh01(wx+200,wz+200)<.012)_tCh.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+210,wz+210)<.005)_tCh.S(x,h,z,B.ASPHALT);if(dh01(wx+220,wz+220)<.003)_tCh.S(x,h,z,B.SIDEWALK);if(dh01(wx+230,wz+230)<.002)_tCh.S(x,h+1,z,B.FENCE_BLK)}
+    if(bi2===BI.WATCHER){if(dh01(wx+400,wz+400)<.01)_tCh.S(x,h,z,B.TOWER_BRICK);if(dh01(wx+410,wz+410)<.004)_tCh.S(x,h,z,B.ANCIENT_METAL);if(dh01(wx+420,wz+420)<.003){_tCh.S(x,h,z,B.TEMPLE_STONE);if(dh01(wx+421,wz+421)<.5)_tCh.S(x,h+1,z,B.TEMPLE_STONE)}}
+    if(bi2===BI.DRY_COAST){if(dh01(wx+800,wz+800)<.008)_tCh.S(x,h,z,B.BOARDWALK);if(dh01(wx+810,wz+810)<.003)_tCh.S(x,h,z,B.POOL_TILE);if(dh01(wx+820,wz+820)<.004)_tCh.S(x,h,z,B.CRACK_PAVE);if(dh01(wx+830,wz+830)<.002)_tCh.S(x,h+1,z,B.RESORT_WALL)}
+    if(bi2===BI.DISCORD_DEEP){if(h<80&&dh01(wx+300,wz+300)<.025)for(let dy=0;dy<3+fl(dh01(wx,wz+500)*5);dy++)_tCh.S(x,h+1+dy,z,B.GLOW_CRYSTAL);if(dh01(wx+500,wz+500)<.008)_tCh.S(x,h,z,B.SIGNAL_STONE);if(dh01(wx+550,wz+550)<.004)_tCh.S(x,h+1,z,B.NEON_BLK)}
+    if(bi2===BI.NICSHADE){if(dh01(wx+150,wz+150)<.035&&_tCh.G(x,h+1,z)===B.AIR)_tCh.S(x,h+1,z,B.GLOW_FLOWER);if(dh01(wx+250,wz+250)<.015)_tCh.S(x,h,z,B.VINE_STONE);if(dh01(wx+260,wz+260)<.01)_tCh.S(x,h,z,B.MOSS);if(dh01(wx+270,wz+270)<.006&&_tCh.G(x,h+1,z)===B.AIR){_tCh.S(x,h+1,z,B.VINE_STONE);_tCh.S(x,h+2,z,B.VINE_STONE)}if(dh01(wx+280,wz+280)<.008&&_tCh.G(x,h+1,z)===B.AIR)_tCh.S(x,h+1,z,B.SHRUB)}
+    if(bi2===BI.CAMGROVE){if(dh01(wx+350,wz+350)<.01)_tCh.S(x,h,z,B.TRAIL_STONE);if(dh01(wx+360,wz+360)<.002)_tCh.S(x,h,z,B.CABIN_WALL);if(dh01(wx+370,wz+370)<.003)_tCh.S(x,h,z,B.COB)}
     // General foliage - all biomes get flora
-    if(this.G(x,h+1,z)===B.AIR&&h>WL){
+    if(_tCh.G(x,h+1,z)===B.AIR&&h>WL){
       const fr=dh01(wx+1000,wz+1000);
       if(bi2===BI.RIO_LAGOON){
-        if(fr<.07)this.S(x,h+1,z,B.TALL_GRASS);
-        else if(fr<.10)this.S(x,h+1,z,B.FERN);
-        else if(fr<.12)this.S(x,h+1,z,B.SHRUB);
-        else if(fr<.13)this.S(x,h+1,z,fr<.125?B.FLOWER_RED:B.FLOWER_YELLOW);
+        if(fr<.07)_tCh.S(x,h+1,z,B.TALL_GRASS);
+        else if(fr<.10)_tCh.S(x,h+1,z,B.FERN);
+        else if(fr<.12)_tCh.S(x,h+1,z,B.SHRUB);
+        else if(fr<.13)_tCh.S(x,h+1,z,fr<.125?B.FLOWER_RED:B.FLOWER_YELLOW);
       }else if(bi2===BI.NICSHADE||bi2===BI.CAMGROVE){
-        if(fr<.05)this.S(x,h+1,z,B.TALL_GRASS);
-        else if(fr<.07)this.S(x,h+1,z,B.FERN);
-        else if(fr<.08)this.S(x,h+1,z,B.SHRUB);
-        else if(fr<.085)this.S(x,h+1,z,fr<.0825?B.FLOWER_RED:B.FLOWER_BLUE);
+        if(fr<.05)_tCh.S(x,h+1,z,B.TALL_GRASS);
+        else if(fr<.07)_tCh.S(x,h+1,z,B.FERN);
+        else if(fr<.08)_tCh.S(x,h+1,z,B.SHRUB);
+        else if(fr<.085)_tCh.S(x,h+1,z,fr<.0825?B.FLOWER_RED:B.FLOWER_BLUE);
       }else if(bi2===BI.SA_PLAINS||bi2===BI.VC_SUBURB||bi2===BI.PLAINS){
-        if(fr<.025)this.S(x,h+1,z,B.TALL_GRASS);
-        else if(fr<.03)this.S(x,h+1,z,B.FLOWER_YELLOW);
-        else if(fr<.033)this.S(x,h+1,z,B.FLOWER_RED);
+        if(fr<.025)_tCh.S(x,h+1,z,B.TALL_GRASS);
+        else if(fr<.03)_tCh.S(x,h+1,z,B.FLOWER_YELLOW);
+        else if(fr<.033)_tCh.S(x,h+1,z,B.FLOWER_RED);
       }else if(bi2===BI.TAIGA||bi2===BI.SNOWY){
-        if(fr<.02)this.S(x,h+1,z,B.FERN);
-        else if(fr<.025)this.S(x,h+1,z,B.SHRUB);
+        if(fr<.02)_tCh.S(x,h+1,z,B.FERN);
+        else if(fr<.025)_tCh.S(x,h+1,z,B.SHRUB);
       }else if(bi2===BI.MO){
-        if(fr<.012)this.S(x,h+1,z,B.SHRUB);
+        if(fr<.012)_tCh.S(x,h+1,z,B.SHRUB);
       }else if(bi2===BI.VOLCANO){
         // Sparse scorched vegetation
-        if(fr<.003)this.S(x,h+1,z,B.SHRUB);
+        if(fr<.003)_tCh.S(x,h+1,z,B.SHRUB);
       }
       // Reeds near water
       if(bi2===BI.RIO_LAGOON||bi2===BI.DRY_COAST||bi2===BI.BE){
-        if(fr<.03&&h<=WL+2){const rh=1+fl(dh01(wx+2000,wz+2000)*3);for(let dy=0;dy<rh;dy++)this.S(x,h+1+dy,z,B.REED)}
+        if(fr<.03&&h<=WL+2){const rh=1+fl(dh01(wx+2000,wz+2000)*3);for(let dy=0;dy<rh;dy++)_tCh.S(x,h+1+dy,z,B.REED)}
       }
     }
   }
+  _tCh.dirty=true});
   // ═══ CAVE DECORATION PASS ═══
   for(let x=2;x<CS-2;x++)for(let z=2;z<CS-2;z++){
     const wx=ox+x,wz=oz+z,surfH=this.sY(x,z);
@@ -2992,11 +3020,11 @@ deco(){
     }
   }
 
-  // ═══ GARFBOT DUNGEON PLACEMENT ═══
+  // ═══ GARFBOT DUNGEON PLACEMENT (deferred to avoid stutter) ═══
   if(!this._hasStruct&&dh01(this.cx*999,this.cz*777)<.008){
     for(let sy=20;sy<60;sy++){
       if(this.G(8,sy,8)===B.AIR&&BD[this.G(8,sy-1,8)]?.sol){
-        genGarfDungeon(this,8,sy,8);this._hasStruct=true;regStruct('Garfbot Dungeon',ox+8,sy+2,oz+8);break
+        const _dch=this,_sy=sy;_structQ.push(()=>{genGarfDungeon(_dch,8,_sy,8);_dch.dirty=true});this._hasStruct=true;regStruct('Garfbot Dungeon',ox+8,sy+2,oz+8);break
       }
     }
   }
@@ -4087,14 +4115,14 @@ loop(){const now=performance.now(),dt=mn((now-this.lt)/1000,.08);this.lt=now;thi
     const pcx=fl(this.pl.pos.x/CS),pcz=fl(this.pl.pos.z/CS);
     // Adaptive budget: tighter when recovering from slow frames
     const _lastWorst=this._perfT?this._perfT.worstF:16;
-    const _worldBudget=_gpuDed?14:(_lastWorst>40?5:8);
-    let _gc=0,_hasPendGen=false,_hasPendCave=false,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);_hasPendGen=pending.length>0;const _genMax=_gpuDed?4:(_lastWorst>40?1:2);for(const p of pending){if(_gc>=_genMax||performance.now()-_genStart>(_gpuDed?4:2))break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c.genTerrainFill();c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c);this.ch[p.k]=c;_gc++}}
+    const _worldBudget=_lastWorst>40?5:8;
+    let _gc=0,_hasPendGen=false,_hasPendCave=false,_genStart=performance.now();{const pending=[];for(let dx=-RD;dx<=RD;dx++)for(let dz=-RD;dz<=RD;dz++){if(dx*dx+dz*dz>RD*RD)continue;const k=(pcx+dx)+','+(pcz+dz);if(!this.ch[k])pending.push({dx,dz,d:dx*dx+dz*dz,k})}pending.sort((a,b)=>a.d-b.d);const _newMax=_lastWorst>40?1:2;for(const p of pending){if(_gc>=_newMax)break;const c=new Chunk(pcx+p.dx,pcz+p.dz);c._needTerrain=true;c._terrainCol=0;this.ch[p.k]=c;_gc++}let _tc=0;for(const k in this.ch){if(_tc>=2||performance.now()-_genStart>3||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needTerrain){_hasPendGen=true;const done=c.genTerrainFillIncr(2);if(done){delete c._needTerrain;c._needCaves=true;c._caveCol=0;c.dirty=true;_applyPending(c)}_tc++}}if(!_hasPendGen){for(const k in this.ch){if(this.ch[k]._needTerrain){_hasPendGen=true;break}}}}
     this._perfD.gen=performance.now()-_genStart;
-    {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=(_gpuDed?4:2)||performance.now()-_caveStart>(_gpuDed?4:2)||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){_hasPendCave=true;const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true;c.dirty=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
-    {let _dc=0;const _decoStart=performance.now();if(_gpuDed||(!_hasPendGen&&!_hasPendCave)){for(const k in this.ch){if(_dc>=(_gpuDed?3:1)||performance.now()-_decoStart>(_gpuDed?6:3)||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
-    // Process deferred structures with guaranteed minimum budget
-    {const _sStart=performance.now();const _structBudget=Math.max(_gpuDed?6:3,_worldBudget-(performance.now()-now));while(_structQ.length>0&&performance.now()-_sStart<_structBudget){const sf=_structQ.shift();sf()}if(this._perfD)this._perfD.struct=performance.now()-_sStart}
-    if(!this._gBf)this._gBf=(x,y,z)=>this.gB(x,y,z);let b2=0;{const _meshStart=performance.now();const _meshBudget=Math.max(_gpuDed?5:3,_worldBudget-(performance.now()-now));const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);const _meshMax=_gpuDed?8:(_hasPendGen?2:4);for(const d of dirty){if(b2>=_meshMax||performance.now()-_meshStart>_meshBudget)break;d.c.buildMesh(this._gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
+    {let _cc=0;const _caveStart=performance.now();for(const k in this.ch){if(_cc>=2||performance.now()-_caveStart>2||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needCaves){_hasPendCave=true;const done=c.genTerrainCavesIncr(2);if(done){delete c._needCaves;c._needDeco=true;c.dirty=true}_cc++}}this._perfD.cave=performance.now()-_caveStart}
+    {let _dc=0;const _decoStart=performance.now();if(!_hasPendGen&&!_hasPendCave){for(const k in this.ch){if(_dc>=1||performance.now()-_decoStart>3||performance.now()-now>_worldBudget)break;const c=this.ch[k];if(c._needDeco){c.deco();delete c._needDeco;_applyPending(c);c.dirty=true;_dc++}}}this._perfD.deco=performance.now()-_decoStart}
+    // Process deferred structures with budget - each item gets max 3ms
+    {const _sStart=performance.now();const _structBudget=Math.max(3,_worldBudget-(performance.now()-now));while(_structQ.length>0&&performance.now()-_sStart<_structBudget){const sf=_structQ.shift();sf();if(performance.now()-_sStart>3)break}if(this._perfD)this._perfD.struct=performance.now()-_sStart}
+    if(!this._gBf)this._gBf=(x,y,z)=>this.gB(x,y,z);let b2=0;{const _meshStart=performance.now();const _meshBudget=Math.max(3,_worldBudget-(performance.now()-now));const dirty=[];for(const k in this.ch){if(this.ch[k].dirty){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz,dd=dx*dx+dz*dz;if(dd<=RD*RD){dirty.push({c,dd})}}}dirty.sort((a,b)=>a.dd-b.dd);const _meshMax=_hasPendGen?2:4;for(const d of dirty){if(b2>=_meshMax||performance.now()-_meshStart>_meshBudget)break;d.c.buildMesh(this._gBf);b2++}this._perfD.mesh=performance.now()-_meshStart}
     if(this._frmC%30===0){for(const k in this.ch){const c=this.ch[k],dx=c.cx-pcx,dz=c.cz-pcz;if(dx*dx+dz*dz>(RD+2)**2){c.disp();delete this.ch[k]}}}
     if(this._frustum&&this._frmC%4===0){for(const k in this.ch){const c=this.ch[k];if(!c._bb)c._bb=new THREE.Box3(new THREE.Vector3(c.cx*CS,0,c.cz*CS),new THREE.Vector3(c.cx*CS+CS,CH,c.cz*CS+CS));const vis=this._frustum.intersectsBox(c._bb);if(c.m)c.m.visible=vis;if(c.tm)c.tm.visible=vis;if(c.wm)c.wm.visible=vis;if(c.lm)c.lm.visible=vis}}
     this.dT=(this.dT+dt/1200)%1;const sa=this.dT*TAU,sy=Math.sin(sa),sx=Math.cos(sa);

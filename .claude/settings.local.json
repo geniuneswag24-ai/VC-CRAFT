@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(powershell -Command \"\n\\\\$content = Get-Content 'C:\\\\Users\\\\sethl\\\\OneDrive\\\\Documents\\\\vc craft\\\\src\\\\client\\\\VoxelRenderer.client.lua' -Raw -Encoding UTF8\n\\\\$old = \\\\\"\\\\`t\\\\`t\\\\`t\\\\`t\\\\`t\\\\`tp.Transparency = \\(bv == B.WATER\\) and 0.45 or 0.2\\\\`n\\\\`t\\\\`t\\\\`t\\\\`t\\\\`t\\\\`tp.Material    = Enum.Material.SmoothPlastic\\\\`n\\\\`t\\\\`t\\\\`t\\\\`t\\\\`t\\\\`tp.CanCollide  = false\\\\\"\n\\\\$new = \\\\\"\\\\`t\\\\`t\\\\`t\\\\`t\\\\`t\\\\`tp.Transparency = \\(bv == B.WATER\\) and 0.45 or 0.2\\\\`n\\\\`t\\\\`t\\\\`t\\\\`t\\\\`t\\\\`tp.Material    = BLOCK_MATERIAL[bv] or Enum.Material.SmoothPlastic\\\\`n\\\\`t\\\\`t\\\\`t\\\\`t\\\\`t\\\\`tp.CanCollide  = false\\\\\"\nif \\(\\\\$content.Contains\\('Enum.Material.SmoothPlastic'\\)\\) {\n    \\\\$content = \\\\$content.Replace\\(\\\\$old, \\\\$new\\)\n    Set-Content 'C:\\\\Users\\\\sethl\\\\OneDrive\\\\Documents\\\\vc craft\\\\src\\\\client\\\\VoxelRenderer.client.lua' \\\\$content -Encoding UTF8 -NoNewline\n    Write-Host 'Done'\n} else { Write-Host 'Not found' }\n\")",
+      "Bash(powershell -Command \"\n\\\\$files = Get-ChildItem 'C:\\\\Users\\\\sethl\\\\OneDrive\\\\Documents\\\\vc craft\\\\src' -Recurse -Filter '*.lua'\nforeach \\(\\\\$f in \\\\$files\\) {\n    \\\\$bytes = [System.IO.File]::ReadAllBytes\\(\\\\$f.FullName\\)\n    if \\(\\\\$bytes.Length -ge 3 -and \\\\$bytes[0] -eq 0xEF -and \\\\$bytes[1] -eq 0xBB -and \\\\$bytes[2] -eq 0xBF\\) {\n        \\\\$clean = \\\\$bytes[3..\\(\\\\$bytes.Length-1\\)]\n        [System.IO.File]::WriteAllBytes\\(\\\\$f.FullName, \\\\$clean\\)\n        Write-Host \\('Fixed BOM: ' + \\\\$f.Name\\)\n    }\n}\nWrite-Host 'Done scanning'\n\")",
+      "Bash(where python:*)",
+      "Bash(where python3:*)",
+      "Bash(python:*)"
+    ]
+  }
+}
